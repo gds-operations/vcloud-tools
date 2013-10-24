@@ -3,7 +3,7 @@ Vcloud-tools guide
 
 ## [Vcloud Walker][vcloudwalker]
 
-## [Configure edgegateways using fog][edgegateway]
+## [Configure edgegateway services][edgegateway]
 
 ## [Tag search][tag_search]
 
