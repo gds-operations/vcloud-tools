@@ -5,9 +5,9 @@ Vcloud-tools guide
 
 ## [Configure edgegateways using fog][edgegateway]
 
-## [Tagged search][tagged_search]
+## [Tag search][tag_search]
 
 [vcloudwalker]: https://github.com/alphagov/vcloud-walker
-[edgegateway]: edgegateway.md
-[tagged_search]: tagged_search.md
+[edgegateway]: docs/edgegateway.md
+[tag_search]: docs/tag_search.md
 
