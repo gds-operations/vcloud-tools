@@ -2,9 +2,9 @@
 
 require 'rubygems'
 require 'bundler/setup'
+require 'csv'
 require 'fog'
 require 'optparse'
-require 'pp'
 
 def parse_args
   options = {}
@@ -31,6 +31,11 @@ def parse_args
 
     opts.on('--filter', '=FILTER', 'Filter expression') do |v|
       options[:filter] += v.split(',')
+    end
+
+    opts.on('-o', '--output-format', '=FORMAT', 'Output format: csv, tsv') do |v|
+      # TODO: validate!
+      options[:output_format] = v.downcase
     end
 
     opts.on_tail("-h", "--help", "Show usage instructions") do
@@ -87,9 +92,22 @@ begin
   records = response.body.keys.detect {|key| key.to_s =~ /Record|Reference$/}
   break if response.body[records].nil? || response.body[records].empty?
   response.body[records] = [response.body[records]] if response.body[records].is_a?(Hash)
-  puts response.body[records].first.keys.join("\t") if options[:page] == 1
-  response.body[records].each do |record|
-    puts record.values.join("\t")
+  case options[:output_format]
+  when 'csv'
+    csv_string = CSV.generate do |csv|
+      if options[:page] == 1
+        csv << response.body[records].first.keys
+      end
+      response.body[records].each do |record|
+        csv << record.values
+      end
+    end
+    puts csv_string
+  else
+    puts response.body[records].first.keys.join("\t") if options[:page] == 1
+    response.body[records].each do |record|
+      puts record.values.join("\t")
+    end
   end
   options[:page] = response.body[:nextPage]
 end until options[:page].nil?
