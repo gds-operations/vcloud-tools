@@ -1,0 +1,20 @@
+---
+language: ruby
+bundler_args: --without development
+rvm:
+  - 2.0.0
+  - 1.9.3
+  - 1.9.2
+
+env:
+  - CI=true
+
+branches:
+  only:
+    - master
+
+# Placeholder: value in secure is nonsense.
+#notifications:
+#  campfire:
+#    rooms:
+#      secure: fkYejj+LNq5OuSvqzkN8HxQirBav2TX7h88ytIwg4LFsS16CTB/mr4VP4i51/ZSoCQWItCSeUqPg+15byjGWEngm+I1nLnBBwgRuk9ynfsiYgdnBJQPZrop/6+cTJtSukv/IyrYflZUc6/1Zu0cDqhlPRyPmulfMkpKxlCXA6Bk=
