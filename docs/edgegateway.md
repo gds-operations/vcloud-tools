@@ -15,6 +15,15 @@ vcloud.post_configure_edge_gateway_services edge_gateway_id, configuration
 The Configuration contain definitions of any of the services listed.Details of service configurations may vary,
 but the mechanism is the same for updating any Edge Gateway service.<br/>You can include one or more services when you configure an Edge Gateway.
 
+###Examples:
+
+Examples for configuring different services:
+
+firewall => https://gist.github.com/snehaso/cd839ac05c640b954bed
+
+load-balancer => https://gist.github.com/snehaso/20c080d0ec0ba7a00611
+
+nat => https://gist.github.com/snehaso/e5ae5767fe1ac2e4e98d
 
 ###Debug
 
