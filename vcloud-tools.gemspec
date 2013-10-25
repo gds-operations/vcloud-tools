@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'bundler'
   s.add_runtime_dependency 'fog', '~> 1.16.0'
-
+  s.add_runtime_dependency 'thor', '~> 0.18.1'
   s.add_development_dependency 'bundler', '~> 1.3'
   s.add_development_dependency 'rake'
 end
