@@ -1,12 +1,12 @@
 require 'rubygems'
 
-class FogInterface < DelegateClass(Fog::Compute::VcloudDirector)
+class FogInterface
 
   attr_accessor :vcloud
 
   def initialize credential = :default
     ::Fog.credential = credential
-    self.vcloud = SimpleDelegator.new(Fog::Compute::VcloudDirector.new)
+    self.vcloud = Fog::Compute::VcloudDirector.new
   end
 
 
@@ -46,11 +46,10 @@ class FogInterface < DelegateClass(Fog::Compute::VcloudDirector)
   end
 
   def post_instantiate_vapp_template vdc, template, name, params
-    p "***********"
-    #vapp = @vcloud.post_instantiate_vapp_template(extract_id(vdc), template,name,  params).body
-    #@vcloud.process_task(vapp[:Tasks][:Task])
-    #@vcloud.get_vapp( extract_id(vapp))
-    vcloud.get_vapp('vapp-3e10c403-0862-4b7c-9ebf-8bf4dd9f8df6')
+    vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template,name,  params).body
+    vcloud.process_task(vapp[:Tasks][:Task])
+    vcloud.get_vapp( extract_id(vapp))
+    #vcloud.get_vapp('vapp-a83c7dad-f779-481d-9852-fbdf182cb0d9')
   end
 
   def put_memory vm_id, memory
@@ -68,8 +67,16 @@ class FogInterface < DelegateClass(Fog::Compute::VcloudDirector)
   end
 
   def put_network_connection_system_section_vapp vm_id, section
-    task = vcloud.put_network_connection_system_section_vapp( vm_id, section).body
+    task = vcloud.put_network_connection_system_section_vapp(vm_id, section).body
     vcloud.process_task(task)
+  end
+
+  def organizations
+    vcloud.organizations
+  end
+
+  def org_name
+    vcloud.org_name
   end
 
   def delete_vapp vapp_id
