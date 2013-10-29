@@ -10,17 +10,14 @@ module Provisioner
       self.vapp_id = vapp_id
     end
 
-    def customize config, vdc_name
-      networks = fog_interface.find_networks(config["networks"], vdc_name)
 
-      hardware_config = config['hardware_config']
-
-      configure_network_interface id,networks , config['ip_address']
-      if hardware_config
+    def customize vm_config, vdc_name
+      configure_network_interfaces vm_config['network_connections']
+      if hardware_config = vm_config['hardware_config']
         put_cpu(hardware_config['cpu'])
         put_memory(hardware_config['memory'])
       end
-      add_extra_disks(config['disks'], vdc_name)
+      add_extra_disks(vm_config['disks'], vdc_name)
     end
 
 
@@ -58,21 +55,22 @@ module Provisioner
       end
     end
 
-    def configure_network_interface id, networks, machine_ip
+    def configure_network_interfaces networks_config
+      return unless networks_config
       section = {PrimaryNetworkConnectionIndex: 0}
-      section[:NetworkConnection] = networks.compact.each_with_index.map do |network, i|
+      section[:NetworkConnection] = networks_config.compact.each_with_index.map do |network, i|
         connection = {
-            network: network[:name],
+            network: network['name'],
             needsCustomization: true,
             NetworkConnectionIndex: i,
             IsConnected: true
         }
-        ip_address = machine_ip
+        ip_address = network['ip_address']
         connection[:IpAddress] = ip_address unless ip_address.nil?
         connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
         connection
       end
-      @fog_interface.put_network_connection_system_section_vapp(id, section)
+      fog_interface.put_network_connection_system_section_vapp(id, section)
     end
 
     private

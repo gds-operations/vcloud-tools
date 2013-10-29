@@ -7,22 +7,20 @@ module Provisioner
     end
 
     def provision config, vdc_name, template
-      networks = fog_interface.find_networks(config["networks"], vdc_name)
-      vdc = fog_interface.vdc(vdc_name)
+      network_names = config['vm']['network_connections'].collect { |h| h['name'] }
+      networks = fog_interface.find_networks(network_names, vdc_name)
       vapp = fog_interface.post_instantiate_vapp_template(
-          vdc,
+          fog_interface.vdc(vdc_name),
           template[:href].split('/').last,
           config['name'],
           InstantiationParams: build_network_config(networks)
       ).body
       vm = Provisioner::Vm.new(fog_interface, vapp[:Children][:Vm].first, vapp[:href].split('/').last)
-      vm.customize(config, vdc_name)
-
+      vm.customize(config['vm'], vdc_name)
       fog_interface.get_vapp(vapp[:href].split('/').last)
     end
 
-
-
+    private
     def build_network_config networks
       instantiation = {NetworkConfigSection: {NetworkConfig: []}}
       networks.compact.each do |network|
@@ -36,6 +34,5 @@ module Provisioner
       end
       instantiation
     end
-
   end
 end
