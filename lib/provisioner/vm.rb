@@ -9,8 +9,8 @@ module Provision
       self.fog_interface = fog_interface
     end
 
-    def customize config
-      #networks = fog_interface.find_networks(config["networks"], vdc_name)
+    def customize config, vdc_name
+      networks = fog_interface.find_networks(config["networks"], vdc_name)
 
       hardware_config = config['hardware_config']
 
@@ -19,7 +19,7 @@ module Provision
         put_memory(hardware_config['memory'])
       end
       #add_extra_disks(config['disks'])
-      #configure_network_interface id,networks , config['ip_address']
+      configure_network_interface id,networks , config['ip_address']
     end
 
 
@@ -47,30 +47,32 @@ module Provision
       end
     end
 
-    def add_extra_disks extra_disks
-      if extra_disks
-        extra_disks.each do |extra_disk|
-          vm.disks.create(extra_disk[:size])
-        end
-      end
-    end
-
-    #def configure_network_interface id, networks, machine_ip
-    #  section = {primary_network_connection_index: 0}
-    #  section[:NetworkConnection] = networks.compact.each_with_index.map do |network, i|
-    #    connection = {
-    #        network: network[:name],
-    #        needsCustomization: true,
-    #        NetworkConnectionIndex: i,
-    #        IsConnected: true
-    #    }
-    #    ip_address = Array(machine_ip)[i]
-    #    connection[:IpAddress] = ip_address unless ip_address.nil?
-    #    connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
-    #    connection
+    #def add_extra_disks extra_disks
+    #  if extra_disks
+    #    fog_interface.get_vdc vdc
+    #
+    #    machine[:extra_disks].each do |extra_disk|
+    #      vm.disks.create(extra_disk[:size])
+    #    end
     #  end
-    #  @fog_interface.put_network_connection_system_section_vapp(id, section)
     #end
+
+    def configure_network_interface id, networks, machine_ip
+      section = {PrimaryNetworkConnectionIndex: 0}
+      section[:NetworkConnection] = networks.compact.each_with_index.map do |network, i|
+        connection = {
+            network: network[:name],
+            needsCustomization: true,
+            NetworkConnectionIndex: i,
+            IsConnected: true
+        }
+        ip_address = Array(machine_ip)[i]
+        connection[:IpAddress] = ip_address unless ip_address.nil?
+        connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
+        connection
+      end
+      @fog_interface.put_network_connection_system_section_vapp(id, section)
+    end
 
     private
 

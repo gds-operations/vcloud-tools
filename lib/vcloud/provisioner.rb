@@ -2,11 +2,11 @@
 
 require 'rubygems'
 require 'bundler/setup'
-require 'fog'
-require_relative 'provision/vapp'
-require_relative 'provision/vm'
-require_relative 'provision/fog_interface'
-require_relative 'provision/types'
+#require 'fog'
+#require_relative 'provision/vapp'
+#require_relative 'provision/vm'
+#require_relative 'provision/fog_interface'
+#require_relative 'provision/types'
 
 
 class Provisioner

@@ -95,4 +95,10 @@ class FogInterface < DelegateClass(Fog::Compute::VcloudDirector)
   def extract_id(link)
     link[:href].split('/').last
   end
+
+  def get_vm id
+    org = vcloud.organizations.get_by_name(vcloud.org_name)
+    vdc = org.vdcs.get(vdc[:href].split('/').last)
+    disks = vdc.vapps.get(vapp_id).vms.get(vm_id).disks
+  end
 end
