@@ -16,9 +16,11 @@ module Provision
           InstantiationParams: build_network_config(networks)
       ).body
       vm = Provision::Vm.new(fog_interface, vapp[:Children][:Vm].first)
-      vm.customize(config)
+      vm.customize(config, vdc_name)
+
       fog_interface.get_vapp(vapp[:href].split('/').last)
     end
+
 
 
     def build_network_config networks
