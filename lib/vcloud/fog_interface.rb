@@ -49,7 +49,7 @@ class FogInterface
     vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template,name,  params).body
     vcloud.process_task(vapp[:Tasks][:Task])
     vcloud.get_vapp( extract_id(vapp))
-    #vcloud.get_vapp('vapp-a83c7dad-f779-481d-9852-fbdf182cb0d9')
+    #vcloud.get_vapp('vapp-ffda78c2-741a-4d8d-8201-574ae70650d0')
   end
 
   def put_memory vm_id, memory

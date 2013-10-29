@@ -13,7 +13,7 @@ describe Provisioner::Vapp do
             'cpu' => 1
         },
         'disks' => [{:size => '1024', :name => 'Hard disk 2'  }, {:size => '2048', :name => 'Hard disk 3'}],
-        'ip_address' => '192.168.254.105'
+        'ip_address' => '192.168.2.10'
     }
     @vapp = Provisioner::Vapp.new(@fog_interface).provision(@vapp_config, TEST_VDC, template)
   end
@@ -45,6 +45,17 @@ describe Provisioner::Vapp do
       @vapp_config['disks'].each do |new_disk|
          disks.should include(new_disk)
       end
+    end
+
+    it "should configure the vm network interface" do
+      vm = @vapp[:Children][:Vm].first
+      vm_network_connection = vm[:NetworkConnectionSection][:NetworkConnection]
+      vm_network_connection.should_not be_nil
+      vm_network_connection[:network].should == 'Default'
+      vm_network_connection[:NetworkConnectionIndex].should == '0'
+      vm_network_connection[:IpAddress].should == '192.168.2.10'
+      vm_network_connection[:IpAddressAllocationMode].should == 'MANUAL'
+
     end
   end
 

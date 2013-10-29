@@ -15,13 +15,12 @@ module Provisioner
 
       hardware_config = config['hardware_config']
 
-      #configure_network_interface id,networks , config['ip_address']
+      configure_network_interface id,networks , config['ip_address']
       if hardware_config
         put_cpu(hardware_config['cpu'])
         put_memory(hardware_config['memory'])
       end
       add_extra_disks(config['disks'], vdc_name)
-
     end
 
 
