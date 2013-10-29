@@ -12,12 +12,12 @@ module Provisioner
 
 
     def customize vm_config, vdc_name
-      configure_network_interfaces vm_config['network_connections']
-      if hardware_config = vm_config['hardware_config']
-        put_cpu(hardware_config['cpu'])
-        put_memory(hardware_config['memory'])
+      configure_network_interfaces vm_config[:network_connections]
+      if hardware_config = vm_config[:hardware_config]
+        put_cpu(hardware_config[:cpu])
+        put_memory(hardware_config[:memory])
       end
-      add_extra_disks(vm_config['disks'], vdc_name)
+      add_extra_disks(vm_config[:disks], vdc_name)
     end
 
 
@@ -60,12 +60,12 @@ module Provisioner
       section = {PrimaryNetworkConnectionIndex: 0}
       section[:NetworkConnection] = networks_config.compact.each_with_index.map do |network, i|
         connection = {
-            network: network['name'],
+            network: network[:name],
             needsCustomization: true,
             NetworkConnectionIndex: i,
             IsConnected: true
         }
-        ip_address = network['ip_address']
+        ip_address = network[:ip_address]
         connection[:IpAddress] = ip_address unless ip_address.nil?
         connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
         connection
