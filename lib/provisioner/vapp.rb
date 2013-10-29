@@ -1,4 +1,4 @@
-module Provision
+module Provisioner
   class Vapp
     attr_accessor :fog_interface
 
@@ -15,7 +15,7 @@ module Provision
           config['name'],
           InstantiationParams: build_network_config(networks)
       ).body
-      vm = Provision::Vm.new(fog_interface, vapp[:Children][:Vm].first)
+      vm = Provisioner::Vm.new(fog_interface, vapp[:Children][:Vm].first, vapp[:href].split('/').last)
       vm.customize(config, vdc_name)
 
       fog_interface.get_vapp(vapp[:href].split('/').last)

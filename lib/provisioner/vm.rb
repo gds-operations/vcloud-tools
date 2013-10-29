@@ -1,12 +1,13 @@
-module Provision
+module Provisioner
   class Vm
 
-    attr_accessor :fog_interface, :vm, :id
+    attr_accessor :fog_interface, :vm, :id, :vapp_id
 
-    def initialize fog_interface, vm
+    def initialize fog_interface, vm , vapp_id
       self.vm = vm
       self.id = vm[:href].split('/').last
       self.fog_interface = fog_interface
+      self.vapp_id = vapp_id
     end
 
     def customize config, vdc_name
@@ -14,12 +15,13 @@ module Provision
 
       hardware_config = config['hardware_config']
 
+      #configure_network_interface id,networks , config['ip_address']
       if hardware_config
         put_cpu(hardware_config['cpu'])
         put_memory(hardware_config['memory'])
       end
-      #add_extra_disks(config['disks'])
-      configure_network_interface id,networks , config['ip_address']
+      add_extra_disks(config['disks'], vdc_name)
+
     end
 
 
@@ -31,13 +33,11 @@ module Provision
 
     def memory
       memory_item = virtual_hardware_section.detect { |i| i[:'rasd:ResourceType'] == '4' }
-      p memory_item
       memory_item[:'rasd:VirtualQuantity']
     end
 
     def cpu
       cpu_item = virtual_hardware_section.detect { |i| i[:'rasd:ResourceType'] == '3' }
-      p cpu_item
       cpu_item[:'rasd:VirtualQuantity']
     end
 
@@ -47,15 +47,17 @@ module Provision
       end
     end
 
-    #def add_extra_disks extra_disks
-    #  if extra_disks
-    #    fog_interface.get_vdc vdc
-    #
-    #    machine[:extra_disks].each do |extra_disk|
-    #      vm.disks.create(extra_disk[:size])
-    #    end
-    #  end
-    #end
+    def add_extra_disks extra_disks, vdc_name
+      org = fog_interface.organizations.get_by_name(fog_interface.org_name)
+      vdc = org.vdcs.get_by_name(vdc_name)
+      vapp = vdc.vapps.get(vapp_id)
+      vm = vapp.vms.first
+      if extra_disks
+        extra_disks.each do |extra_disk|
+          vm.disks.create(extra_disk[:size])
+        end
+      end
+    end
 
     def configure_network_interface id, networks, machine_ip
       section = {PrimaryNetworkConnectionIndex: 0}
@@ -66,7 +68,7 @@ module Provision
             NetworkConnectionIndex: i,
             IsConnected: true
         }
-        ip_address = Array(machine_ip)[i]
+        ip_address = machine_ip
         connection[:IpAddress] = ip_address unless ip_address.nil?
         connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
         connection
