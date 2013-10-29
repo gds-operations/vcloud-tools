@@ -41,9 +41,10 @@ class FogInterface
 
   def post_instantiate_vapp_template vdc, template, name, params
     VCloud.logger.info("instantiating #{name} vapp in #{vdc[:name]}")
-    vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name,  params).body
-    vcloud.process_task(vapp[:Tasks][:Task])
-    vcloud.get_vapp( extract_id(vapp))
+    #vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name,  params).body
+    #vcloud.process_task(vapp[:Tasks][:Task])
+    #vcloud.get_vapp( extract_id(vapp))
+    vcloud.get_vapp('vapp-9b5b5e82-58a4-43cc-977d-f94116a0610c')
   end
 
   def put_memory vm_id, memory
@@ -86,7 +87,6 @@ class FogInterface
         link = vdc(vdc_name)[:AvailableNetworks][:Network].detect do |l|
           l[:type] == 'application/vnd.vmware.vcloud.network+xml' && l[:name] == network
         end
-        networks << link
     end
   end
 
