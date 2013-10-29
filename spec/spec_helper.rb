@@ -1,5 +1,5 @@
 require 'bundler/setup'
-require_relative '../lib/vcloud/provisioner'
+require_relative '../lib/vcloud'
 
 
 

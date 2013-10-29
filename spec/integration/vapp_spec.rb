@@ -6,14 +6,15 @@ describe Provisioner::Vapp do
     TEST_VDC = 'GDS Networking API Testing (IL0-DEVTEST-BASIC)'
     template = @fog_interface.template('walker-ci', 'ubuntu-precise-image-2')
     @vapp_config = {
-        'name' => "vapp-vcloud-tools-tests",
-        'networks' => ['Default'],
-        'hardware_config' => {
-            'memory' => 4096,
-            'cpu' => 1
-        },
-        'disks' => [{:size => '1024', :name => 'Hard disk 2'  }, {:size => '2048', :name => 'Hard disk 3'}],
-        'ip_address' => '192.168.2.10'
+        'name' => "vapp-vcloud-tools-tests-#{Time.now.strftime('%s')}",
+        'vm' => {
+          'hardware_config' => {
+              'memory' => 4096,
+              'cpu' => 1
+          },
+          'disks' => [{:size => '1024', :name => 'Hard disk 2'  }, {:size => '2048', :name => 'Hard disk 3'}],
+          'network_connections' => [{:network => 'Default', :ip_address => '192.168.2.10'}, {:network => 'NetworksTest2', :ip_address => '192.168.1.10'}],
+        }
     }
     @vapp = Provisioner::Vapp.new(@fog_interface).provision(@vapp_config, TEST_VDC, template)
   end
@@ -51,10 +52,20 @@ describe Provisioner::Vapp do
       vm = @vapp[:Children][:Vm].first
       vm_network_connection = vm[:NetworkConnectionSection][:NetworkConnection]
       vm_network_connection.should_not be_nil
-      vm_network_connection[:network].should == 'Default'
-      vm_network_connection[:NetworkConnectionIndex].should == '0'
-      vm_network_connection[:IpAddress].should == '192.168.2.10'
-      vm_network_connection[:IpAddressAllocationMode].should == 'MANUAL'
+      vm_network_connection.count.should == 2
+
+      primary_nic = vm_network_connection[0]
+      primary_nic[:network].should == 'Default'
+      primary_nic[:NetworkConnectionIndex].should == '0'
+      primary_nic[:IpAddress].should == '192.168.2.10'
+      primary_nic[:IpAddressAllocationMode].should == 'MANUAL'
+
+      second_nic = vm_network_connection[1]
+      second_nic[:network].should == 'Default'
+      second_nic[:NetworkConnectionIndex].should == '1'
+      second_nic[:IpAddress].should == '192.168.1.10'
+      second_nic[:IpAddressAllocationMode].should == 'MANUAL'
+      second_nic[:network].should == 'NetworkTest2'
 
     end
   end

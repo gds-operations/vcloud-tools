@@ -6,3 +6,5 @@ require 'fog'
 require 'open3'
 
 Vcloud::Provisioner.new.run
+
+

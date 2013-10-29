@@ -1,5 +1,9 @@
-require "vcloud/version"
+require 'vcloud/version'
+require 'vcloud/provisioner'
+
 
 module VCloud
-  # TODO
+  def self.logger
+   @logger ||= Logger.new(STDOUT)
+  end
 end
