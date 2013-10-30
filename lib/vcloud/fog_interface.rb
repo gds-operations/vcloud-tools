@@ -8,28 +8,28 @@ class FogInterface
 
   def org
     link = session[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
-      l[:rel] == 'down' && l[:type] == 'application/vnd.vmware.vcloud.org+xml'
+      l[:rel] == 'down' && l[:type] == Vcloud::ContentTypes::ORG
     end
     vcloud.get_organization(link[:href].split('/').last).body
   end
 
   def catalog name
     link = org[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
-      l[:type] == 'application/vnd.vmware.vcloud.catalog+xml' && l[:name] == name
+      l[:type] == Vcloud::ContentTypes::CATALOG && l[:name] == name
     end
     vcloud.get_catalog(extract_id(link)).body
   end
 
   def vdc name
     link = org[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
-      l[:type] == 'application/vnd.vmware.vcloud.vdc+xml' && l[:name] == name
+      l[:type] == Vcloud::ContentTypes::VDC && l[:name] == name
     end
     vcloud.get_vdc(link[:href].split('/').last).body
   end
 
   def template catalog_name, template_name
     link = catalog(catalog_name)[:CatalogItems][:CatalogItem].detect do |l|
-      l[:type] == 'application/vnd.vmware.vcloud.catalogItem+xml' && l[:name].match(template_name)
+      l[:type] == Vcloud::ContentTypes::CATALOG_ITEM && l[:name].match(template_name)
     end
     catalog_item = vcloud.get_catalog_item(extract_id(link)).body
     catalog_item[:Entity]
@@ -41,10 +41,10 @@ class FogInterface
 
   def post_instantiate_vapp_template vdc, template, name, params
     VCloud.logger.info("instantiating #{name} vapp in #{vdc[:name]}")
-    #vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name,  params).body
-    #vcloud.process_task(vapp[:Tasks][:Task])
-    #vcloud.get_vapp( extract_id(vapp))
-    vcloud.get_vapp('vapp-9b5b5e82-58a4-43cc-977d-f94116a0610c')
+    vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name,  params).body
+    vcloud.process_task(vapp[:Tasks][:Task])
+    vcloud.get_vapp( extract_id(vapp))
+    #vcloud.get_vapp('vapp-9b5b5e82-58a4-43cc-977d-f94116a0610c')
   end
 
   def put_memory vm_id, memory
@@ -85,7 +85,7 @@ class FogInterface
   def find_networks network_names , vdc_name
     network_names.collect do |network|
         link = vdc(vdc_name)[:AvailableNetworks][:Network].detect do |l|
-          l[:type] == 'application/vnd.vmware.vcloud.network+xml' && l[:name] == network
+          l[:type] == Vcloud::ContentTypes::Network && l[:name] == network
         end
     end
   end
