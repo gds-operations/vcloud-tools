@@ -1,23 +1,25 @@
 module Provisioner
   class Vapp
-    attr_accessor :fog_interface
+    attr_reader :vdc, :id
 
     def initialize vcloud
-      self.fog_interface = vcloud
+      @fog_interface = vcloud
     end
 
     def provision config, vdc_name, template
+      @vdc = @fog_interface.vdc_object_by_name vdc_name 
       network_names = config[:vm][:network_connections].collect { |h| h[:name] }
-      networks = fog_interface.find_networks(network_names, vdc_name)
-      vapp = fog_interface.post_instantiate_vapp_template(
-          fog_interface.vdc(vdc_name),
+      networks = @fog_interface.find_networks(network_names, vdc_name)
+      vapp = @fog_interface.post_instantiate_vapp_template(
+          @fog_interface.vdc(vdc_name),
           template[:href].split('/').last,
           config[:name],
           InstantiationParams: build_network_config(networks)
       ).body
-      vm = Provisioner::Vm.new(fog_interface, vapp[:Children][:Vm].first, vapp[:href].split('/').last)
-     vm.customize(config[:vm], vdc_name)
-      fog_interface.get_vapp(vapp[:href].split('/').last)
+      @id = vapp[:href].split('/').last
+      vm = Provisioner::Vm.new(@fog_interface, vapp[:Children][:Vm].first, self)
+      vm.customize(config[:vm])
+      @fog_interface.get_vapp(vapp[:href].split('/').last)
     end
 
     private

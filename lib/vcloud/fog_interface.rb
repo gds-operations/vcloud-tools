@@ -13,6 +13,11 @@ class FogInterface
     vcloud.get_organization(link[:href].split('/').last).body
   end
 
+  def vdc_object_by_name vdc_name
+     org = vcloud.organizations.get_by_name(vcloud.org_name)
+     org.vdcs.get_by_name vdc_name
+  end
+
   def catalog name
     link = org[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
       l[:type] == Vcloud::ContentTypes::CATALOG && l[:name] == name
@@ -44,7 +49,6 @@ class FogInterface
     vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name,  params).body
     vcloud.process_task(vapp[:Tasks][:Task])
     vcloud.get_vapp( extract_id(vapp))
-    #vcloud.get_vapp('vapp-9b5b5e82-58a4-43cc-977d-f94116a0610c')
   end
 
   def put_memory vm_id, memory
