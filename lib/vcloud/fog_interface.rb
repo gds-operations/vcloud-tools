@@ -85,7 +85,7 @@ class FogInterface
   def find_networks network_names , vdc_name
     network_names.collect do |network|
         link = vdc(vdc_name)[:AvailableNetworks][:Network].detect do |l|
-          l[:type] == Vcloud::ContentTypes::Network && l[:name] == network
+          l[:type] == Vcloud::ContentTypes::NETWORK && l[:name] == network
         end
     end
   end
