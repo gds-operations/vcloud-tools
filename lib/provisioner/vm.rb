@@ -1,29 +1,27 @@
 module Provisioner
   class Vm
 
-    attr_accessor :fog_interface, :vm, :id, :vapp_id
+    attr_reader :vm, :vapp, :id
 
-    def initialize fog_interface, vm , vapp_id
-      self.vm = vm
-      self.id = vm[:href].split('/').last
-      self.fog_interface = fog_interface
-      self.vapp_id = vapp_id
+    def initialize fog_interface, vm, vapp
+      @vm = vm
+      @fog_interface = fog_interface
+      @vapp = vapp
+      @id = vm[:href].split('/').last
     end
 
-
-    def customize vm_config, vdc_name
+    def customize vm_config
       configure_network_interfaces vm_config[:network_connections]
       if hardware_config = vm_config[:hardware_config]
         put_cpu(hardware_config[:cpu])
         put_memory(hardware_config[:memory])
       end
-      add_extra_disks(vm_config[:disks], vdc_name)
+      add_extra_disks(vm_config[:disks])
     end
-
 
     def put_memory(new_memory)
       unless memory.to_i == new_memory
-        fog_interface.put_memory(id, new_memory)
+        @fog_interface.put_memory(id, new_memory)
       end
     end
 
@@ -39,17 +37,17 @@ module Provisioner
 
     def put_cpu(new_cpu)
       unless cpu.to_i == new_cpu
-        fog_interface.put_cpu(id, new_cpu)
+        @fog_interface.put_cpu(id, new_cpu)
       end
     end
 
-    def add_extra_disks extra_disks, vdc_name
-      org = fog_interface.organizations.get_by_name(fog_interface.org_name)
-      vdc = org.vdcs.get_by_name(vdc_name)
-      vapp = vdc.vapps.get(vapp_id)
-      vm = vapp.vms.first
+    def add_extra_disks extra_disks
+      vdc = self.vapp.vdc
+      fog_vapp = vdc.vapps.get(vapp.id)
+      vm = fog_vapp.vms.first
       if extra_disks
         extra_disks.each do |extra_disk|
+          VCloud.logger.info("adding a disk of size #{extra_disk[:size]}MB into VM #{vm.id}")
           vm.disks.create(extra_disk[:size])
         end
       end
@@ -70,7 +68,7 @@ module Provisioner
         connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
         connection
       end
-      fog_interface.put_network_connection_system_section_vapp(id, section)
+      @fog_interface.put_network_connection_system_section_vapp(id, section)
     end
 
     private

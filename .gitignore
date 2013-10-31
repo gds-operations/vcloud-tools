@@ -1,7 +1,9 @@
 *.gem
 *.rbc
+*.swp
 /.bundle/
 /.ruby-version
 /Gemfile.lock
 /bundle/
 /pkg/
+vendor/

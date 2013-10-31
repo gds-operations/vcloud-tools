@@ -1,0 +1,36 @@
+---
+  vdc: "GDS Networking API Testing (IL0-DEVTEST-BASIC)"
+  catalog: "walker-ci"
+  catalog_item: "ubuntu-precise-image-2"
+  bootstrap:
+    script_path: ''
+    facts:
+      environment: "Development"
+      role: "webserver"
+  vapps:
+    - 
+      name: "vapp-11"
+      networks:
+        - "Default"
+      vm:  0
+        hardware_config:
+          memory: 4096
+          cpu: 2
+        network_connections:
+          -
+            name: Default
+            ip_address: 192.168.1.10
+          -
+            name: NetworkTest2
+            ip_address: 192.168.2.10
+
+        disks:
+          -
+            size: 1024
+          -
+            size: 2048
+        bootstrap:
+            script_path: ''
+            facts:
+              environment: "Development"
+              role: "webserver"

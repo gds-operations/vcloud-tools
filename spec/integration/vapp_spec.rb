@@ -19,10 +19,12 @@ describe Provisioner::Vapp do
     @vapp = Provisioner::Vapp.new(@fog_interface).provision(@vapp_config, TEST_VDC, template)
   end
 
-  context "provision vapp" do
-    it "should create a vapp" do
-      @vapp[:name].should == 'vapp-vcloud-tools-tests'
-      @vapp[:"ovf:NetworkSection"][:"ovf:Network"][:ovf_name].should == "Default"
+  context 'provision vapp' do
+    it 'should create a vapp' do
+      @vapp[:name].should == @vapp_config[:name]
+      @vapp[:'ovf:NetworkSection'][:'ovf:Network'].count.should == 2
+      vapp_networks = @vapp[:'ovf:NetworkSection'][:'ovf:Network'].collect {|connection| connection[:ovf_name]}
+      vapp_networks.should == ['Default', 'NetworkTest2']
     end
 
     it "should create vm within vapp" do
