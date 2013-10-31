@@ -21,10 +21,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9.2'
 
   s.add_runtime_dependency 'bundler'
-<<<<<<< HEAD
   s.add_runtime_dependency 'fog', '~> 1.17.0'
-=======
->>>>>>> 0c646b319a43f01a1ee1f1dfbe6b403be9c38d4f
   s.add_runtime_dependency 'thor', '~> 0.18.1'
   s.add_development_dependency 'bundler', '~> 1.3'
   s.add_development_dependency 'rake'
