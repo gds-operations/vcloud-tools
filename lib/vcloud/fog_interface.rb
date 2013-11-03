@@ -1,8 +1,7 @@
 class FogInterface
   attr_accessor :vcloud
 
-  def initialize credential = :default
-    ::Fog.credential = credential
+  def initialize
     self.vcloud = Fog::Compute::VcloudDirector.new
   end
 

@@ -6,6 +6,6 @@ require 'fog'
 require 'open3'
 require_relative '../lib/vcloud'
 
-Vcloud::Provisioner.new.run
+Vcloud::Provision.new.run
 
 
