@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+require 'erb'
+require 'fog'
+require 'open3'
+require 'pp'
+require_relative '../lib/vcloud'
+
+vapp_name = ARGV.shift
+vdc_name  = ARGV.shift
+
+fi = FogInterface.new
+
+begin
+  vdc = fi.vdc_object_by_name(vdc_name)
+rescue
+  p "Could not retreive vDC '#{vdc_name}'"
+  exit 1
+end
+ 
+begin
+  vapp = fi.get_vapp_by_vdc_and_name(vdc, vapp_name)
+rescue
+  p "Could not retreive vApp '#{vapp_name}'"
+  exit 1
+end
+
+# This does not work, as it does not STOP the vApp :(
+#begin
+#  puts "Powering off vApp #{vapp_name} (#{vapp.id})"
+#  fi.power_off_vapp vapp.id
+#rescue
+#end
+#
+#begin
+#  puts "Shutdown vApp #{vapp_name} (#{vapp.id})"
+#  fi.shutdown_vapp vapp.id
+#rescue
+#end
+
+puts "Deleting vApp #{vapp_name} (#{vapp.id})"
+if ( fi.delete_vapp vapp.id )
+  puts "Success!"
+else
+  puts "FAILED!"
+end
+
