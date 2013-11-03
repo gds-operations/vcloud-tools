@@ -1,6 +1,7 @@
 *.gem
 *.rbc
 *.swp
+*.un~
 /.bundle/
 /.ruby-version
 /Gemfile.lock
