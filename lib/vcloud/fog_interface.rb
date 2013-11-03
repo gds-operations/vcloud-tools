@@ -93,6 +93,16 @@ class FogInterface
     end
   end
 
+  def put_guest_customization_section vm_id, vm_name, script
+    VCloud.logger.info("configuring guest customization section for vm : #{vm_id}")
+    task = vcloud.put_guest_customization_section_vapp(vm_id, {
+        :Enabled => true,
+        :CustomizationScript => script,
+        :ComputerName => vm_name
+    }).body
+    vcloud.process_task(task)
+  end
+
   private
   def extract_id(link)
     link[:href].split('/').last

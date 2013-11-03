@@ -17,6 +17,11 @@ module Provisioner
         update_memory_size_in_mb(hardware_config[:memory])
       end
       add_extra_disks(vm_config[:disks])
+      configure_guest_customization_section(
+            @vapp.name,
+            vm_config[:bootstrap][:script_path],
+            vm_config[:bootstrap][:facts]
+            )
     end
 
     def update_memory_size_in_mb(new_memory)
@@ -72,15 +77,46 @@ module Provisioner
         connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
         connection
       end
-      @fog_interface.put_network_connection_system_section_vapp(id, section)
+      begin
+        @fog_interface.put_network_connection_system_section_vapp(id, section)
+      rescue
+        puts "\n"
+        puts "=== networks_config:"
+        pp networks_config
+        puts "=== PUT request data section:"
+        pp section
+        raise
+      end
     end
 
-    private
+    def configure_guest_customization_section name, preamble_path, facts={}
+      interpolated_preamble = generate_preamble(preamble_path, facts)
+      begin
+        @fog_interface.put_guest_customization_section(@id, name, interpolated_preamble)
+      rescue
+        puts "\n"
+        puts "=== facts:"
+        pp facts
+        puts "=== interpolated preamble:"
+        pp interpolated_preamble
+        raise
+      end
+    end
+
+    def generate_preamble(script_path, facts)
+      root = '.'
+      vapp_name = vapp.name
+      script = ERB.new(File.read(script_path), nil, '>-').result(binding)
+      # vCloud can only handle preamble scripts < 2048 bytes
+      if script.bytesize >= 2048 
+        script = Open3.capture2(File.join(root, 'bin/minifier.py'), stdin_data: script).first
+      end
+      script
+    end
 
     def virtual_hardware_section
       vm[:'ovf:VirtualHardwareSection'][:'ovf:Item']
     end
-
 
   end
 end

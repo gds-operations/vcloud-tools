@@ -12,6 +12,7 @@ module Provisioner
       @fog_interface = double(:fog_interface)
       @mock_vapp     = double(:vapp)
       @mock_vapp.stub(:name).and_return(@vapp_name)
+      @data_dir = File.join(File.dirname(__FILE__), "../data")
       @mock_vm = {
         :name => "#{@vapp_name}",
         :href => "vm-href/#{@vm_id}",
@@ -74,6 +75,23 @@ module Provisioner
         it "should update cpu count in input is ok" do
           @fog_interface.should_receive(:put_cpu).with(@vm_id, 2)
           @vm.update_cpu_count(2)
+        end
+      end
+    end
+
+    describe '#generate_preamble' do
+      context "configure vm network connections" do
+        it "should interpolate facts hash into template" do
+          facts = { :message => 'hello world' }
+          erbfile = "#{@data_dir}/basic_preamble_test.erb"
+          expected_output = File.read("#{erbfile}.OUT")
+          @vm.generate_preamble(erbfile, facts).should == expected_output
+        end
+        it "should minify script if >=2048 bytes" do
+          facts = { :message => 'hello world' }
+          erbfile = "#{@data_dir}/unminified_large_script.sh.erb"
+          expected_output = File.read("#{erbfile}.OUT")
+          @vm.generate_preamble(erbfile, facts).should == expected_output
         end
       end
     end
