@@ -17,6 +17,7 @@ module Provisioner
         update_memory_size_in_mb(hardware_config[:memory])
       end
       add_extra_disks(vm_config[:disks])
+      update_metadata(vm_config[:metadata])
       configure_guest_customization_section(
             @vapp.name,
             vm_config[:bootstrap][:script_path],
@@ -47,6 +48,13 @@ module Provisioner
       return if new_cpu_count.to_i == 0
       unless cpu.to_i == new_cpu_count.to_i
         @fog_interface.put_cpu(id, new_cpu_count)
+      end
+    end
+
+    def update_metadata(metadata)
+      return if metadata.nil?
+      metadata.each do |k, v|
+        @fog_interface.put_vapp_metadata_value(id, k, v)
       end
     end
 

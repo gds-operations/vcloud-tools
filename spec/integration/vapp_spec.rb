@@ -7,12 +7,23 @@ describe Provisioner::Vapp do
     template = @fog_interface.template('walker-ci', 'nick-method-precise64')
 
     script_path = File.join(File.dirname(__FILE__), "../data/default_preamble.sh.erb")
+    # NB: be careful with DateTime.now et al, as object has nanoseconds which
+    # are lost in serialization
+    comparison_date = DateTime.parse('2013-10-23 15:34:00 +0000')
     @vapp_config = {
         :name => "vapp-vcloud-tools-tests-#{Time.now.strftime('%s')}",
         :vm => {
           :hardware_config => {
               :memory => 4096,
               :cpu => 2
+          },
+          :metadata => {
+            :is_integer => 1024,
+            :is_string  => 'Hello World',
+            :is_datetime => comparison_date,
+            :is_true => true,
+            :is_false => false,
+            :integration_test_vm => true,
           },
           :disks => [
             {:size => '1024', :name => 'Hard disk 2'  },
@@ -36,6 +47,7 @@ describe Provisioner::Vapp do
     @vm = @vapp[:Children][:Vm].first
     @vm_id = @vm[:href].split('/').last
 
+    @vapp_metadata = @fog_interface.get_vapp_metadata_hash(@vm_id)
   end
 
   context 'provision vapp' do
@@ -56,6 +68,16 @@ describe Provisioner::Vapp do
     it "change cpu for given vm" do
       extract_memory(@vm).should == @vapp_config[:vm][:hardware_config][:memory].to_s
       extract_cpu(@vm).should == @vapp_config[:vm][:hardware_config][:cpu].to_s
+    end
+
+    it "should have added the right number of metadata values" do
+      @vapp_metadata.count.should == @vapp_config[:vm][:metadata].count
+    end
+
+    it "the metadata should be equivalent to our input" do
+      @vapp_metadata.each do |k, v|
+        @vapp_config[:vm][:metadata][k].should == v
+      end
     end
 
     it "should attach extra hard disks to vm" do

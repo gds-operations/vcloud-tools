@@ -112,7 +112,36 @@ class FogInterface
     end
   end
 
+  def get_vapp_metadata_hash(id)
+    metadata = {}
+    @vcloud.get_vapp_metadata(id).body[:MetadataEntry].each do |entry|
+      next unless entry[:type] == 'application/vnd.vmware.vcloud.metadata.value+xml'
+      key = entry[:Key].to_sym
+      val = entry[:TypedValue][:Value]
+      case entry[:TypedValue][:xsi_type]
+      when 'MetadataNumberValue'
+        val = val.to_i
+      when 'MetadataStringValue'
+        val = val.to_s
+      when 'MetadataDateTimeValue'
+        val = DateTime.parse(val)
+      when 'MetadataBooleanValue'
+        val = val == 'true' ? true : false
+      end
+      metadata[key] = val
     end
+    metadata
+  end
+
+  def get_vapp_metadata_by_key(id, key)
+    @vcloud.get_vapp_metadata_item_metadata(id, key.to_s)
+  end
+
+  def put_vapp_metadata_value(id, k, v)
+    VCloud.logger.info("putting metadata pair '#{k}'=>'#{v}' to #{id}")
+    # need to convert key to_s since Fog 0.17 borks on symbol key
+    task = @vcloud.put_vapp_metadata_item_metadata(id, k.to_s, v).body
+    @vcloud.process_task(task)
   end
 
   def put_guest_customization_section vm_id, vm_name, script
