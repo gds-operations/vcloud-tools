@@ -1,7 +1,7 @@
 ---
-  vdc: "GDS Networking API Testing (IL0-DEVTEST-BASIC)"
-  catalog: "walker-ci"
-  catalog_item: "nick-method-precise64"
+  vdc: "Test vDC"
+  catalog: "test-catalog"
+  catalog_item: "test-template"
   vapps:
     -
       name: "vapp-example-web-11"
@@ -17,7 +17,7 @@
             ip_address: 192.168.2.11
         bootstrap:
             script_path: 'scripts/basic.erb'
-            facts:
+            vars:
               environment: "Development"
               role: "webserver"
         metadata:
@@ -26,7 +26,6 @@
             is_true: true
             is_false: false
             is_integer: 53
-            is_float: 3.142
     -
       name: "vapp-example-db-12"
       networks:
@@ -48,7 +47,7 @@
             size: 2048
         bootstrap:
             script_path: 'scripts/basic.erb'
-            facts:
+            vars:
               environment: "Development"
               role: "dbserver"
     -
@@ -65,7 +64,7 @@
             ip_address: 192.168.2.13
         bootstrap:
             script_path: 'scripts/basic.erb'
-            facts:
+            vars:
               environment: "Development"
               role: "webserver"
     -
@@ -89,6 +88,6 @@
             size: 2048
         bootstrap:
             script_path: 'scripts/basic.erb'
-            facts:
+            vars:
               environment: "Development"
               role: "dbserver"
