@@ -1,5 +1,5 @@
-require_relative 'vcloud/version'
-require_relative 'vcloud/provision'
+require 'vcloud/version'
+require 'vcloud/launch'
 
 
 module VCloud
