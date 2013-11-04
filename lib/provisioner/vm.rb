@@ -54,6 +54,7 @@ module Provisioner
     def update_metadata(metadata)
       return if metadata.nil?
       metadata.each do |k, v|
+        @fog_interface.put_vapp_metadata_value(@vapp.id, k, v)
         @fog_interface.put_vapp_metadata_value(id, k, v)
       end
     end

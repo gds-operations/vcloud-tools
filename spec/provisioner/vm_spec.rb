@@ -5,7 +5,8 @@ module Provisioner
   describe Provisioner::Vm do
 
     before(:each) do
-      @vm_id   = '1'
+      @vm_id   = 'vm-1234'
+      @vapp_id = 'vapp-4321'
       @vapp_name = 'test-vm-1'
       @data_dir = File.join(File.dirname(__FILE__), "../data")
       @mock_vm_memory_size = 1024
@@ -20,6 +21,7 @@ module Provisioner
       @fog_interface = double(:fog_interface)
       @mock_vapp     = double(:vapp)
       @mock_vapp.stub(:name).and_return(@vapp_name)
+      @mock_vapp.stub(:id).and_return(@vapp_id)
       @mock_vm = {
         :name => "#{@vapp_name}",
         :href => "vm-href/#{@vm_id}",
@@ -104,7 +106,7 @@ module Provisioner
     end
 
     describe '#update_metadata' do
-      context "it should update the key+value vm metadata" do
+      context "it should update the key+value vm+vapp metadata" do
         it "should handle empty metadata hash" do
           @fog_interface.should_not_receive(:put_vapp_metadata_value)
           @vm.update_metadata(nil)
@@ -115,6 +117,11 @@ module Provisioner
           @fog_interface.should_receive(:put_vapp_metadata_value).with(@vm_id, :true_thing, true)
           @fog_interface.should_receive(:put_vapp_metadata_value).with(@vm_id, :number, 53)
           @fog_interface.should_receive(:put_vapp_metadata_value).with(@vm_id, :zero, 0)
+          @fog_interface.should_receive(:put_vapp_metadata_value).with(@vapp_id, :foo, 'bar')
+          @fog_interface.should_receive(:put_vapp_metadata_value).with(@vapp_id, :false_thing, false)
+          @fog_interface.should_receive(:put_vapp_metadata_value).with(@vapp_id, :true_thing, true)
+          @fog_interface.should_receive(:put_vapp_metadata_value).with(@vapp_id, :number, 53)
+          @fog_interface.should_receive(:put_vapp_metadata_value).with(@vapp_id, :zero, 0)
           @vm.update_metadata(@mock_metadata)
         end
       end
@@ -126,7 +133,7 @@ module Provisioner
 
         it "should configure single nic" do
           network_config = [{:name => 'Default', :ip_address => '192.168.1.1'}]
-          @fog_interface.should_receive(:put_network_connection_system_section_vapp).with('1', {
+          @fog_interface.should_receive(:put_network_connection_system_section_vapp).with(@vm_id, {
               :PrimaryNetworkConnectionIndex => 0,
               :NetworkConnection => [
                   {
@@ -147,7 +154,7 @@ module Provisioner
             {:name => 'Monitoring', :ip_address => '192.168.2.1'}
           ]
 
-          @fog_interface.should_receive(:put_network_connection_system_section_vapp).with('1', {
+          @fog_interface.should_receive(:put_network_connection_system_section_vapp).with(@vm_id, {
               :PrimaryNetworkConnectionIndex => 0,
               :NetworkConnection => [
                   {
