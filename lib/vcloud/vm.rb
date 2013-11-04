@@ -20,8 +20,7 @@ module Vcloud
       update_metadata(vm_config[:metadata])
       configure_guest_customization_section(
             @vapp.name,
-            vm_config[:bootstrap][:script_path],
-            vm_config[:bootstrap][:vars]
+            vm_config[:bootstrap]
             )
     end
 
@@ -98,8 +97,15 @@ module Vcloud
       end
     end
 
-    def configure_guest_customization_section name, preamble_path, vars={}
-      interpolated_preamble = generate_preamble(preamble_path, vars)
+    def configure_guest_customization_section name, bootstrap_config
+      if bootstrap_config.nil? or bootstrap_config[:script_path].nil?
+        interpolated_preamble = ''
+      else
+        interpolated_preamble = generate_preamble(
+           bootstrap_config[:script_path],
+           bootstrap_config[:vars]
+        )
+      end
       begin
         @fog_interface.put_guest_customization_section(@id, name, interpolated_preamble)
       rescue
