@@ -5,7 +5,7 @@ require 'erb'
 require 'fog'
 require 'open3'
 require 'pp'
-require_relative '../lib/vcloud'
+require 'vcloud'
 
 vapp_name = ARGV.shift
 vdc_name  = ARGV.shift

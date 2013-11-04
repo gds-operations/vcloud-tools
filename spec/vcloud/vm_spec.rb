@@ -1,8 +1,8 @@
-require_relative '../spec_helper'
+require 'spec_helper'
 
-module Provisioner
+module Vcloud
 
-  describe Provisioner::Vm do
+  describe Vcloud::Vm do
 
     before(:each) do
       @vm_id   = 'vm-1234'
@@ -38,7 +38,7 @@ module Provisioner
           ]
         }
       }
-      @vm = Provisioner::Vm.new(@fog_interface, @mock_vm, @mock_vapp)
+      @vm = Vcloud::Vm.new(@fog_interface, @mock_vm, @mock_vapp)
 
     end
 

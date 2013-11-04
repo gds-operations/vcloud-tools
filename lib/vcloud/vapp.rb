@@ -1,5 +1,6 @@
-module Provisioner
+module Vcloud
   class Vapp
+
     attr_reader :vdc, :id, :name
 
     def initialize vcloud
@@ -23,7 +24,7 @@ module Provisioner
           InstantiationParams: build_network_config(networks)
         ).body
         @id = vapp[:href].split('/').last
-        vm = Provisioner::Vm.new(@fog_interface, vapp[:Children][:Vm].first, self)
+        vm = Vm.new(@fog_interface, vapp[:Children][:Vm].first, self)
         vm.customize(config[:vm])
         vapp = @fog_interface.get_vapp(@id)
       end

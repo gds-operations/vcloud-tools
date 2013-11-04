@@ -1,12 +1,15 @@
-require_relative '../spec_helper'
+require 'spec_helper'
 
-describe Provisioner::Vapp do
+describe Vcloud::Vapp do
   before(:all) do
     @fog_interface = FogInterface.new
-    TEST_VDC = 'GDS Networking API Testing (IL0-DEVTEST-BASIC)'
-    template = @fog_interface.template('walker-ci', 'nick-method-precise64')
+    TEST_VDC      = ENV['VCLOUD_TEST_VDC']      || 'Test vDC'
+    TEST_CATALOG  = ENV['VCLOUD_TEST_CATALOG']  || 'test-catalog'
+    TEST_TEMPLATE = ENV['VCLOUD_TEST_TEMPLATE'] || 'test-template'
 
-    script_path = File.join(File.dirname(__FILE__), "../data/default_preamble.sh.erb")
+    template = @fog_interface.template(TEST_CATALOG, TEST_TEMPLATE)
+    script_path = File.join(File.dirname(__FILE__), "../data/basic_preamble_test.erb")
+
     # NB: be careful with DateTime.now et al, as object has nanoseconds which
     # are lost in serialization
     comparison_date = DateTime.parse('2013-10-23 15:34:00 +0000')
@@ -42,7 +45,7 @@ describe Provisioner::Vapp do
         },
     }
 
-    @vapp = Provisioner::Vapp.new(@fog_interface).provision(@vapp_config, TEST_VDC, template)
+    @vapp = Vcloud::Vapp.new(@fog_interface).provision(@vapp_config, TEST_VDC, template)
     @vapp_id = @vapp[:href].split('/').last
     @vm = @vapp[:Children][:Vm].first
     @vm_id = @vm[:href].split('/').last

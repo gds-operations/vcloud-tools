@@ -1,4 +1,4 @@
-module Provisioner
+module Vcloud
   class Vm
 
     attr_reader :vm, :vapp, :id

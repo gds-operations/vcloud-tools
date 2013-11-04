@@ -1,5 +1,5 @@
 require 'thor'
 require 'fog'
 
-require_relative 'search/vapps'
-require_relative 'search/tag_query'
+require 'search/vapps'
+require 'search/tag_query'
