@@ -38,7 +38,7 @@ describe Vcloud::Vapp do
           ],
           :bootstrap => {
             :script_path => script_path,
-            :facts => {
+            :vars => {
               :message => 'hello world'
             }
           },

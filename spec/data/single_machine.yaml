@@ -1,7 +1,7 @@
 ---
-  vdc: "GDS Networking API Testing (IL0-DEVTEST-BASIC)"
-  catalog: "walker-ci"
-  catalog_item: "nick-method-precise64"
+  vdc: "Test vDC"
+  catalog: "test-catalog"
+  catalog_item: "test-template"
   vapps:
     - 
       name: "vapp-example"
@@ -26,6 +26,6 @@
             size: 2048
         bootstrap:
             script_path: 'scripts/webserver_bootstrap.erb'
-            facts:
+            vars:
               environment: "Development"
               role: "webserver"

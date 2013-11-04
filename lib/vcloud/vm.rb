@@ -21,7 +21,7 @@ module Vcloud
       configure_guest_customization_section(
             @vapp.name,
             vm_config[:bootstrap][:script_path],
-            vm_config[:bootstrap][:facts]
+            vm_config[:bootstrap][:vars]
             )
     end
 
@@ -98,21 +98,21 @@ module Vcloud
       end
     end
 
-    def configure_guest_customization_section name, preamble_path, facts={}
-      interpolated_preamble = generate_preamble(preamble_path, facts)
+    def configure_guest_customization_section name, preamble_path, vars={}
+      interpolated_preamble = generate_preamble(preamble_path, vars)
       begin
         @fog_interface.put_guest_customization_section(@id, name, interpolated_preamble)
       rescue
         puts "\n"
-        puts "=== facts:"
-        pp facts
+        puts "=== vars:"
+        pp vars
         puts "=== interpolated preamble:"
         pp interpolated_preamble
         raise
       end
     end
 
-    def generate_preamble(script_path, facts)
+    def generate_preamble(script_path, vars)
       root = '.'
       vapp_name = vapp.name
       script = ERB.new(File.read(script_path), nil, '>-').result(binding)
