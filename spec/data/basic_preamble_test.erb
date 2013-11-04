@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Default preamble
+
+(
+echo "in $*"
+echo "message: <%= facts[:message] -%>"
+) >> /PREAMBLE_OUTPUT

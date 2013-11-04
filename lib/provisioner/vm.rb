@@ -13,14 +13,22 @@ module Provisioner
     def customize vm_config
       configure_network_interfaces vm_config[:network_connections]
       if hardware_config = vm_config[:hardware_config]
-        put_cpu(hardware_config[:cpu])
-        put_memory(hardware_config[:memory])
+        update_cpu_count(hardware_config[:cpu])
+        update_memory_size_in_mb(hardware_config[:memory])
       end
       add_extra_disks(vm_config[:disks])
+      update_metadata(vm_config[:metadata])
+      configure_guest_customization_section(
+            @vapp.name,
+            vm_config[:bootstrap][:script_path],
+            vm_config[:bootstrap][:facts]
+            )
     end
 
-    def put_memory(new_memory)
-      unless memory.to_i == new_memory
+    def update_memory_size_in_mb(new_memory)
+      return if new_memory.nil?
+      return if new_memory.to_i < 64
+      unless memory.to_i == new_memory.to_i
         @fog_interface.put_memory(id, new_memory)
       end
     end
@@ -35,9 +43,19 @@ module Provisioner
       cpu_item[:'rasd:VirtualQuantity']
     end
 
-    def put_cpu(new_cpu)
-      unless cpu.to_i == new_cpu
-        @fog_interface.put_cpu(id, new_cpu)
+    def update_cpu_count(new_cpu_count)
+      return if new_cpu_count.nil?
+      return if new_cpu_count.to_i == 0
+      unless cpu.to_i == new_cpu_count.to_i
+        @fog_interface.put_cpu(id, new_cpu_count)
+      end
+    end
+
+    def update_metadata(metadata)
+      return if metadata.nil?
+      metadata.each do |k, v|
+        @fog_interface.put_vapp_metadata_value(@vapp.id, k, v)
+        @fog_interface.put_vapp_metadata_value(id, k, v)
       end
     end
 
@@ -68,15 +86,46 @@ module Provisioner
         connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
         connection
       end
-      @fog_interface.put_network_connection_system_section_vapp(id, section)
+      begin
+        @fog_interface.put_network_connection_system_section_vapp(id, section)
+      rescue
+        puts "\n"
+        puts "=== networks_config:"
+        pp networks_config
+        puts "=== PUT request data section:"
+        pp section
+        raise
+      end
     end
 
-    private
+    def configure_guest_customization_section name, preamble_path, facts={}
+      interpolated_preamble = generate_preamble(preamble_path, facts)
+      begin
+        @fog_interface.put_guest_customization_section(@id, name, interpolated_preamble)
+      rescue
+        puts "\n"
+        puts "=== facts:"
+        pp facts
+        puts "=== interpolated preamble:"
+        pp interpolated_preamble
+        raise
+      end
+    end
+
+    def generate_preamble(script_path, facts)
+      root = '.'
+      vapp_name = vapp.name
+      script = ERB.new(File.read(script_path), nil, '>-').result(binding)
+      # vCloud can only handle preamble scripts < 2048 bytes
+      if script.bytesize >= 2048 
+        script = Open3.capture2(File.join(root, 'bin/minifier.py'), stdin_data: script).first
+      end
+      script
+    end
 
     def virtual_hardware_section
       vm[:'ovf:VirtualHardwareSection'][:'ovf:Item']
     end
-
 
   end
 end

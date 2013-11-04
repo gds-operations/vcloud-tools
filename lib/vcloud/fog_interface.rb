@@ -1,8 +1,7 @@
 class FogInterface
   attr_accessor :vcloud
 
-  def initialize credential = :default
-    ::Fog.credential = credential
+  def initialize
     self.vcloud = Fog::Compute::VcloudDirector.new
   end
 
@@ -61,6 +60,10 @@ class FogInterface
     vcloud.get_vapp(id).body
   end
 
+  def get_vapp_by_vdc_and_name(vdc, name)
+    vdc.vapps.get_by_name(name)
+  end
+
   def put_cpu vm_id, cpu
     VCloud.logger.info("putting #{cpu} CPU(s) into VM #{vm_id}")
     task = vcloud.put_cpu(vm_id, cpu).body
@@ -86,12 +89,69 @@ class FogInterface
     vcloud.process_task(task)
   end
 
+  def power_off_vapp vapp_id
+    task = vcloud.post_power_off_vapp(vapp_id).body
+    vcloud.process_task(task)
+  end
+
+  def power_on_vapp vapp_id
+    task = vcloud.post_power_on_vapp(vapp_id).body
+    vcloud.process_task(task)
+  end
+
+  def shutdown_vapp vapp_id
+    task = vcloud.post_shutdown_vapp(vapp_id).body
+    vcloud.process_task(task)
+  end
+
   def find_networks network_names , vdc_name
     network_names.collect do |network|
-        link = vdc(vdc_name)[:AvailableNetworks][:Network].detect do |l|
-          l[:type] == Vcloud::ContentTypes::NETWORK && l[:name] == network
-        end
+      vdc(vdc_name)[:AvailableNetworks][:Network].detect do |l|
+        l[:type] == Vcloud::ContentTypes::NETWORK && l[:name] == network
+      end
     end
+  end
+
+  def get_vapp_metadata_hash(id)
+    metadata = {}
+    @vcloud.get_vapp_metadata(id).body[:MetadataEntry].each do |entry|
+      next unless entry[:type] == 'application/vnd.vmware.vcloud.metadata.value+xml'
+      key = entry[:Key].to_sym
+      val = entry[:TypedValue][:Value]
+      case entry[:TypedValue][:xsi_type]
+      when 'MetadataNumberValue'
+        val = val.to_i
+      when 'MetadataStringValue'
+        val = val.to_s
+      when 'MetadataDateTimeValue'
+        val = DateTime.parse(val)
+      when 'MetadataBooleanValue'
+        val = val == 'true' ? true : false
+      end
+      metadata[key] = val
+    end
+    metadata
+  end
+
+  def get_vapp_metadata_by_key(id, key)
+    @vcloud.get_vapp_metadata_item_metadata(id, key.to_s)
+  end
+
+  def put_vapp_metadata_value(id, k, v)
+    VCloud.logger.info("putting metadata pair '#{k}'=>'#{v}' to #{id}")
+    # need to convert key to_s since Fog 0.17 borks on symbol key
+    task = @vcloud.put_vapp_metadata_item_metadata(id, k.to_s, v).body
+    @vcloud.process_task(task)
+  end
+
+  def put_guest_customization_section vm_id, vm_name, script
+    VCloud.logger.info("configuring guest customization section for vm : #{vm_id}")
+    task = vcloud.put_guest_customization_section_vapp(vm_id, {
+        :Enabled => true,
+        :CustomizationScript => script,
+        :ComputerName => vm_name
+    }).body
+    vcloud.process_task(task)
   end
 
   private
