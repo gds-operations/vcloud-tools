@@ -7,6 +7,7 @@ module Provisioner
     before(:each) do
       @vm_id   = '1'
       @vapp_name = 'test-vm-1'
+      @data_dir = File.join(File.dirname(__FILE__), "../data")
       @mock_vm_memory_size = 1024
       @mock_metadata = {
         :foo => "bar",
