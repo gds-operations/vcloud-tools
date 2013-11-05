@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Vcloud::Vapp do
   before(:all) do
-    @fog_interface = FogInterface.new
+    @fog_interface = Vcloud::FogInterface.new
     TEST_VDC      = ENV['VCLOUD_TEST_VDC']      || 'Test vDC'
     TEST_CATALOG  = ENV['VCLOUD_TEST_CATALOG']  || 'test-catalog'
     TEST_TEMPLATE = ENV['VCLOUD_TEST_TEMPLATE'] || 'test-template'

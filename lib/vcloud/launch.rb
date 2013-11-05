@@ -14,13 +14,19 @@ require 'vcloud/vm'
 module Vcloud
   class Launch
     def run
-      fog_interface = FogInterface.new
+      fog_interface = Vcloud::FogInterface.new
       config_file = ARGV.shift
       config = load_config(config_file)
+
       template = fog_interface.template(config[:catalog], config[:catalog_item])
 
+      if template.nil? 
+        Vcloud.logger.fatal("Could not find template vApp. Cannot continue.")
+        exit 2
+      end
+
       config[:vapps].each do |vapp_config|
-        VCloud.logger.info("Configuring vApp #{vapp_config[:name]}.")
+        Vcloud.logger.info("Configuring vApp #{vapp_config[:name]}.")
         Vapp.new(fog_interface).provision(
             vapp_config, config[:vdc], template
         )
