@@ -1,0 +1,79 @@
+---
+:vdc: Test vDC
+:catalog: test-catalog
+:catalog_item: test-template
+:vapps:
+- :name: vapp-example-web-11
+  :networks:
+  - Default
+  :vm:
+    :hardware_config:
+      :memory: 4096
+      :cpu: 2
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.11
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :role: webserver
+    :metadata:
+      :foo: bar
+      :multi_word_string: hello there it's a nice day
+      :is_true: true
+      :is_false: false
+      :is_integer: 53
+- :name: vapp-example-db-12
+  :networks:
+  - Default
+  :vm:
+    :hardware_config:
+      :memory: 4096
+      :cpu: 2
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.12
+    - :name: NetworkTest2
+      :ip_address: 192.168.1.12
+    :disks:
+    - :size: 2048
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :role: dbserver
+- :name: vapp-example-web-13
+  :networks:
+  - Default
+  :vm:
+    :hardware_config:
+      :memory: 1024
+      :cpu: 1
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.13
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :role: webserver
+- :name: vapp-example-db-14
+  :networks:
+  - Default
+  :vm:
+    :hardware_config:
+      :memory: 2048
+      :cpu: 2
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.14
+    - :name: NetworkTest2
+      :ip_address: 192.168.1.14
+    :disks:
+    - :size: 2048
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :role: dbserver

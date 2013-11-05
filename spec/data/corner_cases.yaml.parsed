@@ -1,0 +1,56 @@
+---
+:vdc: Test vDC
+:catalog: test-catalog
+:catalog_item: test-template
+:vapps:
+- :name: no-memory-specified
+  :networks:
+  - Default
+  :vm:
+    :hardware_config:
+      :cpu: 2
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.11
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :role: webserver
+    :metadata:
+      :is_string: hello world
+      :is_true: false
+      :is_false: false
+- :name: no-cpu-specified
+  :networks:
+  - Default
+  :vm:
+    :hardware_config:
+      :memory: 4096
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.12
+    :disks:
+    - :size: 2048
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :role: dbserver
+- :name: no-bootstrap-specified
+  :networks:
+  - Default
+  :vm:
+    :hardware_config:
+      :memory: 1024
+      :cpu: 1
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.13
+- :name: bare-minimum
+  :networks:
+  - Default
+  :vm:
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.14
