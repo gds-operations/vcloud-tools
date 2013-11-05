@@ -39,7 +39,7 @@ def parse_args
     end
 
     opts.on_tail("-h", "--help", "Show usage instructions") do
-      Kernel.abort opts
+      Kernel.abort opts.to_s
     end
   end
 
