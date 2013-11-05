@@ -1,8 +1,8 @@
-require_relative '../spec_helper'
+require 'spec_helper'
 
-module Provisioner
+module Vcloud
 
-  describe Provisioner::Vm do
+  describe Vcloud::Vm do
 
     before(:each) do
       @vm_id   = 'vm-1234'
@@ -38,7 +38,7 @@ module Provisioner
           ]
         }
       }
-      @vm = Provisioner::Vm.new(@fog_interface, @mock_vm, @mock_vapp)
+      @vm = Vcloud::Vm.new(@fog_interface, @mock_vm, @mock_vapp)
 
     end
 
@@ -90,17 +90,17 @@ module Provisioner
 
     describe '#generate_preamble' do
       context "configure vm network connections" do
-        it "should interpolate facts hash into template" do
-          facts = { :message => 'hello world' }
+        it "should interpolate vars hash into template" do
+          vars = { :message => 'hello world' }
           erbfile = "#{@data_dir}/basic_preamble_test.erb"
           expected_output = File.read("#{erbfile}.OUT")
-          @vm.generate_preamble(erbfile, facts).should == expected_output
+          @vm.generate_preamble(erbfile, vars).should == expected_output
         end
         it "should minify script if >=2048 bytes" do
-          facts = { :message => 'hello world' }
+          vars = { :message => 'hello world' }
           erbfile = "#{@data_dir}/unminified_large_script.sh.erb"
           expected_output = File.read("#{erbfile}.OUT")
-          @vm.generate_preamble(erbfile, facts).should == expected_output
+          @vm.generate_preamble(erbfile, vars).should == expected_output
         end
       end
     end

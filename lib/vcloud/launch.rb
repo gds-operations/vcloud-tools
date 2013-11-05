@@ -6,13 +6,13 @@ require 'fog'
 require 'json'
 require 'open3'
 require 'pp'
-require_relative 'content_types'
-require_relative 'fog_interface'
-require_relative '../provisioner/vapp'
-require_relative '../provisioner/vm'
+require 'vcloud/content_types'
+require 'vcloud/fog_interface'
+require 'vcloud/vapp'
+require 'vcloud/vm'
 
 module Vcloud
-  class Provision
+  class Launch
     def run
       fog_interface = FogInterface.new
       config_file = ARGV.shift
@@ -21,7 +21,7 @@ module Vcloud
 
       config[:vapps].each do |vapp_config|
         VCloud.logger.info("Configuring vApp #{vapp_config[:name]}.")
-        Provisioner::Vapp.new(fog_interface).provision(
+        Vapp.new(fog_interface).provision(
             vapp_config, config[:vdc], template
         )
       end
@@ -36,10 +36,3 @@ module Vcloud
     end
   end
 end
-
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-module Provisioner
+module Vcloud
   class Vm
 
     attr_reader :vm, :vapp, :id
@@ -20,8 +20,7 @@ module Provisioner
       update_metadata(vm_config[:metadata])
       configure_guest_customization_section(
             @vapp.name,
-            vm_config[:bootstrap][:script_path],
-            vm_config[:bootstrap][:facts]
+            vm_config[:bootstrap]
             )
     end
 
@@ -98,33 +97,46 @@ module Provisioner
       end
     end
 
-    def configure_guest_customization_section name, preamble_path, facts={}
-      interpolated_preamble = generate_preamble(preamble_path, facts)
+    def configure_guest_customization_section name, bootstrap_config
+      if bootstrap_config.nil? or bootstrap_config[:script_path].nil?
+        interpolated_preamble = ''
+      else
+        interpolated_preamble = generate_preamble(
+           bootstrap_config[:script_path],
+           bootstrap_config[:vars]
+        )
+      end
       begin
         @fog_interface.put_guest_customization_section(@id, name, interpolated_preamble)
       rescue
         puts "\n"
-        puts "=== facts:"
-        pp facts
+        puts "=== vars:"
+        pp vars
         puts "=== interpolated preamble:"
         pp interpolated_preamble
         raise
       end
     end
 
-    def generate_preamble(script_path, facts)
-      root = '.'
+    def generate_preamble(script_path, vars)
       vapp_name = vapp.name
       script = ERB.new(File.read(script_path), nil, '>-').result(binding)
       # vCloud can only handle preamble scripts < 2048 bytes
       if script.bytesize >= 2048 
-        script = Open3.capture2(File.join(root, 'bin/minifier.py'), stdin_data: script).first
+        script = Open3.capture2(minifier_tool_location, stdin_data: script).first
       end
       script
     end
 
     def virtual_hardware_section
       vm[:'ovf:VirtualHardwareSection'][:'ovf:Item']
+    end
+
+    private
+
+    def minifier_tool_location 
+      # ugly ugly, but cannot package non-ruby binstubs.
+      File.join(File.dirname(File.expand_path(__FILE__)), '../../libexec/minifier.py')
     end
 
   end
