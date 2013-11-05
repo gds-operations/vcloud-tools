@@ -1,8 +1,8 @@
-#Provision VApps and VMS
+# Launch vApps and VMs
 
 Usage:
 
-    bundle exec bin/vcloud-provision {config_file}
+    bundle exec vcloud-launch {config_file}
 
 Example configuration files can be located in:
 

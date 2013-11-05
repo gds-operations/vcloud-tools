@@ -10,7 +10,7 @@ require 'vcloud'
 vapp_name = ARGV.shift
 vdc_name  = ARGV.shift
 
-fi = FogInterface.new
+fi = Vcloud::FogInterface.new
 
 begin
   vdc = fi.vdc_object_by_name(vdc_name)

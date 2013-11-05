@@ -3,7 +3,7 @@ Vcloud-tools guide
 
 A collection of tools that support automation of VMWare VCloud Director
 
-## [Vcloud Provision][vcloud-provision]
+## [Vcloud Launch][vcloud-launch]
 A tool that takes a YAML configuration file describing a vDC, and provisions
 the vApps and VMs contained within.
 
@@ -24,5 +24,5 @@ For more details see: http://fog.io/about/getting_started.html#debugging.
 [vcloudwalker]: https://github.com/alphagov/vcloud-walker
 [edgegateway]: docs/edgegateway.md
 [tag_search]: docs/tag_search.md
-[vcloud-provision]: docs/vcloud-provision.md
+[vcloud-launch]: docs/vcloud-launch.md
 
