@@ -1,3 +1,3 @@
-module VCloud
+module Vcloud
   VERSION = '0.0.2'
 end

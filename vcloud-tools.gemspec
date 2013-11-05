@@ -6,7 +6,7 @@ require 'vcloud/version'
 
 Gem::Specification.new do |s|
   s.name        = 'vcloud-tools'
-  s.version     = VCloud::VERSION
+  s.version     = Vcloud::VERSION
   s.authors     = ['Government Digital Services']
   s.summary     = %q{Tools for VMware vCloud}
   s.homepage    = 'https://github.com/alphagov/vcloud-tools'
