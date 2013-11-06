@@ -15,6 +15,9 @@ describe Vcloud::Vapp do
     comparison_date = DateTime.parse('2013-10-23 15:34:00 +0000')
     @vapp_config = {
         :name => "vapp-vcloud-tools-tests-#{Time.now.strftime('%s')}",
+        :vdc_name => "#{TEST_VDC}",
+        :catalog  => "#{TEST_CATALOG}",
+        :catalog_item  => "#{TEST_TEMPLATE}",
         :vm => {
           :hardware_config => {
               :memory => 4096,
@@ -45,7 +48,7 @@ describe Vcloud::Vapp do
         },
     }
 
-    @vapp = Vcloud::Vapp.new(@fog_interface).provision(@vapp_config, TEST_VDC, template)
+    @vapp = Vcloud::Vapp.new(@fog_interface).provision(@vapp_config)
     @vapp_id = @vapp[:href].split('/').last
     @vm = @vapp[:Children][:Vm].first
     @vm_id = @vm[:href].split('/').last
