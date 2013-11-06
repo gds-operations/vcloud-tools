@@ -1,11 +1,36 @@
 #!/usr/bin/env ruby
+
 require 'rubygems'
 require 'bundler/setup'
-require 'erb'
-require 'fog'
-require 'open3'
-require 'vcloud'
+require 'optparse'
+require 'methadone'
 
-Vcloud::Launch.new.run
+require 'vcloud/launch'
+
+class App
+  include Methadone::Main
+  include Methadone::CLILogging
+  include Vcloud
+
+  main do |org_config_file|
+    Launch.new.run(org_config_file, options)
+  end
 
 
+  on("--[no-]verbose", "Verbose output")
+  on("--[no-]debug",   "Debugging output")
+
+  arg :org_config_file
+
+  description '
+  vcloud-launch takes a configuration describing a vCloud Org,
+  and tries to make it a reality.
+
+  See https://github.com/alphagov/vcloud-tools for more info'
+
+  version Vcloud::VERSION
+
+  #use_log_level_option
+
+  go!
+end

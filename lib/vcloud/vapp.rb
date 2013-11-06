@@ -23,6 +23,7 @@ module Vcloud
       networks = @fog_interface.find_networks(network_names, @vdc_name)
 
       if model_vapp = @fog_interface.get_vapp_by_vdc_and_name(@vdc, @name)
+        @id = model_vapp.id
         vapp = @fog_interface.get_vapp(model_vapp.id)
         Vcloud.logger.info("Found existing vApp #{vapp[:name]} in vDC '#{vdc.name}'. Skipping.")
       else
@@ -39,6 +40,11 @@ module Vcloud
         vapp = @fog_interface.get_vapp(@id)
       end
       vapp
+    end
+
+    def power_on
+      Vcloud.logger.info("Powering on vApp #{@name}")
+      @fog_interface.power_on_vapp(@id)
     end
 
     def running? vapp
