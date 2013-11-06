@@ -1,11 +1,12 @@
 ---
-:vdc: Test vDC
-:catalog: test-catalog
-:catalog_item: test-template
+:vdcs:
+- :name: Test vDC
+
 :vapps:
 - :name: vapp-11
-  :networks:
-  - Default
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
   :vm:
     :hardware_config:
       :memory: 4096
@@ -15,8 +16,11 @@
       :ip_address: 192.168.1.10
     - :name: NetworkTest2
       :ip_address: 192.168.2.10
+    :extra_disks: []
     :bootstrap:
       :script_path: scripts/basic.erb
       :vars:
         :environment: Development
         :role: webserver
+    :metadata:
+      :foo: bar
