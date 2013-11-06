@@ -1,7 +1,10 @@
 ---
-  vdc: "Test vDC"
+defaults:
   catalog: "test-catalog"
   catalog_item: "test-template"
+
+vdcs:
+- name: "Test vDC"
   vapps:
     -
       name: "no-memory-specified"
@@ -34,7 +37,7 @@
           -
             name: Default
             ip_address: 192.168.2.12
-        disks:
+        extra_disks:
           -
             size: 2048
         bootstrap:

@@ -28,7 +28,7 @@ describe Vcloud::Vapp do
             :is_false => false,
             :integration_test_vm => true,
           },
-          :disks => [
+          :extra_disks => [
             {:size => '1024', :name => 'Hard disk 2'  },
             {:size => '2048', :name => 'Hard disk 3'}
           ],
@@ -86,7 +86,7 @@ describe Vcloud::Vapp do
     it "should attach extra hard disks to vm" do
       disks = extract_disks(@vm)
       disks.count.should == 3
-      @vapp_config[:vm][:disks].each do |new_disk|
+      @vapp_config[:vm][:extra_disks].each do |new_disk|
          disks.should include(new_disk)
       end
     end

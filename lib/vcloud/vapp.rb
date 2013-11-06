@@ -7,11 +7,20 @@ module Vcloud
       @fog_interface = vcloud
     end
 
-    def provision config, vdc_name, template
-      @vdc = @fog_interface.vdc_object_by_name vdc_name
+    def provision config
       @name = config[:name]
+
+      @vdc = @fog_interface.vdc_object_by_name config[:vdc_name]
+      template = @fog_interface.template(config[:catalog], config[:catalog_item])
+
+      if template.nil? 
+        Vcloud.logger.fatal("Could not find template vApp. Cannot continue.")
+        exit 2
+      end
+
       network_names = config[:vm][:network_connections].collect { |h| h[:name] }
       networks = @fog_interface.find_networks(network_names, vdc_name)
+
       if model_vapp = @fog_interface.get_vapp_by_vdc_and_name(@vdc, @name)
         vapp = @fog_interface.get_vapp(model_vapp.id)
         Vcloud.logger.info("Found existing vApp #{vapp[:name]} in vDC '#{vdc.name}'. Skipping.")
