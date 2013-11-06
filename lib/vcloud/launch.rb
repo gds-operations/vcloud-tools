@@ -1,3 +1,5 @@
+require 'vcloud'
+
 module Vcloud
   class Launch
 
@@ -14,6 +16,8 @@ module Vcloud
 
     def load_config config_file
       config = YAML::load(File.open(config_file))
+      deprecation_handler :vdc if config["vdc"]
+
       # slightly dirty hack to get our YAML data into a symbolized key hash :)
       json_string = JSON.generate(config)
       config = JSON.parse(json_string, :symbolize_names => true)
@@ -145,6 +149,24 @@ module Vcloud
 
       ret
 
+    end
+
+    def deprecation_handler type
+
+      case type
+      when :vdc
+        puts 'Config file format has changed. vDCs now specified as:'
+        puts '  vdcs:'
+        puts '    - name: "vDC 1"'
+        puts '    - name: "vDC 2"'
+        puts 'See spec/data/machines.yaml for an example'
+        Kernel.exit
+      when :run_needs_config_file
+        puts 'Vcloud::Launch.run now needs config_file passed as single argument.'
+        puts 'Ideally you should be using the vcloud-launch CLI tool, which now'
+        puts 'has a shiny options interface'
+        Kernel.exit
+      end
     end
 
   end
