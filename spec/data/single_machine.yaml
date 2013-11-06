@@ -5,6 +5,7 @@ defaults:
 
 vdcs:
 - name: "Test vDC"
+  vdc: "Test vDC"
   vapps:
     - 
       name: "vapp-example"
