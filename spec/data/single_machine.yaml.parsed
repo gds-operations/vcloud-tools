@@ -1,0 +1,26 @@
+---
+:vdcs:
+- :name: Test vDC
+:vapps:
+- :name: vapp-example
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
+  :vm:
+    :hardware_config:
+      :memory: 4096
+      :cpu: 2
+    :extra_disks:
+    - :size: 1024
+    - :size: 2048
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.10
+    - :name: NetworkTest2
+      :ip_address: 192.168.1.10
+    :bootstrap:
+      :script_path: scripts/webserver_bootstrap.erb
+      :vars:
+        :environment: Development
+        :role: webserver
+    :metadata: {}

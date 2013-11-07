@@ -4,8 +4,8 @@
 echo "============================================================"
 echo "in ${1}:"
 echo "vapp_name: <%= vapp_name -%>"
-echo "role: <%= facts[:role] -%>"
-echo "environment: <%= facts[:environment] -%>"
+echo "role: <%= vars[:role] -%>"
+echo "environment: <%= vars[:environment] -%>"
 echo
 env 
 ) >> /PREAMBLE_OUT

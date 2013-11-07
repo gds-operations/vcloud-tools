@@ -1,0 +1,73 @@
+---
+:vdcs:
+- :name: Test vDC
+
+:vapps:
+- :name: no-memory-specified
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
+  :vm:
+    :hardware_config:
+      :cpu: 2
+    :extra_disks: []
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.11
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :role: webserver
+    :metadata:
+      :is_string: hello world
+      :is_true: false
+      :is_false: false
+- :name: no-cpu-specified
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
+  :vm:
+    :hardware_config:
+      :memory: 4096
+    :extra_disks:
+    - :size: 2048
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.12
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :role: dbserver
+    :metadata: {}
+- :name: no-bootstrap-specified
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
+  :vm:
+    :hardware_config:
+      :memory: 1024
+      :cpu: 1
+    :extra_disks: []
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.13
+    :bootstrap: 
+      :script_path:
+      :vars: {}
+    :metadata: {}
+- :name: bare-minimum
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
+  :vm:
+    :hardware_config: {}
+    :extra_disks: []
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.14
+    :bootstrap: 
+      :script_path:
+      :vars: {}
+    :metadata: {}

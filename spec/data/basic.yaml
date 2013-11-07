@@ -1,12 +1,13 @@
 ---
-  vdc: "Test vDC"
+defaults:
   catalog: "test-catalog"
   catalog_item: "test-template"
+
+vdcs:
+- name: "Test vDC"
   vapps:
     - 
       name: "vapp-11"
-      networks:
-        - "Default"
       vm:
         hardware_config:
           memory: 4096
@@ -23,3 +24,5 @@
             vars:
               environment: "Development"
               role: "webserver"
+        metadata:
+            foo: 'bar'

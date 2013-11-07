@@ -16,7 +16,7 @@ module Vcloud
         update_cpu_count(hardware_config[:cpu])
         update_memory_size_in_mb(hardware_config[:memory])
       end
-      add_extra_disks(vm_config[:disks])
+      add_extra_disks(vm_config[:extra_disks])
       update_metadata(vm_config[:metadata])
       configure_guest_customization_section(
             @vapp.name,

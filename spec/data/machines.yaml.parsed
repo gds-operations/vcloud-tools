@@ -1,0 +1,108 @@
+---
+:vdcs:
+- :name: Test vDC
+:vapps:
+
+- :name: vapp-example-web-11
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
+  :vm:
+    :hardware_config:
+      :memory: 4096
+      :cpu: 2
+    :extra_disks: []
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.11
+    - :name: NetworkTest2
+      :ip_address: 192.168.1.11
+    :bootstrap:
+      :script_path: scripts/webserver.erb
+      :vars:
+        :environment: Development
+        :is_vcloud_launch_provisioned: true
+        :role: webserver
+    :metadata:
+      :foo: bar
+      :environment: development
+      :role: webserver
+
+- :name: vapp-example-web-12
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
+  :vm:
+    :hardware_config:
+      :memory: 4096
+      :cpu: 2
+    :extra_disks: []
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.12
+    - :name: NetworkTest2
+      :ip_address: 192.168.1.12
+    :bootstrap:
+      :script_path: scripts/webserver.erb
+      :vars:
+        :environment: Development
+        :is_vcloud_launch_provisioned: true
+        :role: webserver
+    :metadata:
+      :foo: baz
+      :environment: development
+      :role: webserver
+
+- :name: vapp-example-db-13
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
+  :vm:
+    :hardware_config:
+      :memory: 8192
+      :cpu: 4
+    :extra_disks:
+    - :size: 20480
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.13
+    - :name: NetworkTest2
+      :ip_address: 192.168.1.13
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :is_vcloud_launch_provisioned: true
+        :role: dbserver
+    :metadata:
+      :foo: baz
+      :environment: development
+      :is_webserver: false
+      :role: dbserver
+
+- :name: vapp-example-db-14
+  :vdc_name: Test vDC
+  :catalog: test-catalog
+  :catalog_item: test-template
+  :vm:
+    :hardware_config:
+      :memory: 8192
+      :cpu: 4
+    :extra_disks:
+    - :size: 20480
+    :network_connections:
+    - :name: Default
+      :ip_address: 192.168.2.14
+    - :name: NetworkTest2
+      :ip_address: 192.168.1.14
+    :bootstrap:
+      :script_path: scripts/basic.erb
+      :vars:
+        :environment: Development
+        :is_vcloud_launch_provisioned: true
+        :role: dbserver
+    :metadata:
+      :foo: baz
+      :environment: development
+      :is_webserver: false
+      :role: dbserver
