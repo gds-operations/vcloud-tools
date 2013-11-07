@@ -21,3 +21,5 @@ RSpec::Core::RakeTask.new(:integration_test) do |task|
   end
   task.pattern = FileList['spec/integration/*_spec.rb']
 end
+
+task :default => [:spec]
