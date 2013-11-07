@@ -2,6 +2,7 @@
 *.rbc
 *.swp
 *.un~
+vcloud_env.sh
 /.bundle/
 /.ruby-version
 /Gemfile.lock
