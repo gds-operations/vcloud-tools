@@ -3,14 +3,21 @@ require 'vcloud'
 module Vcloud
   class Launch
 
-    def run
+    def initialize
+      @cli_options = {}
+    end
+
+    def run (config_file = nil, options = {})
+      @cli_options = options
       fog_interface = Vcloud::FogInterface.new
-      config_file = ARGV.shift
+      deprecation_handler :run_needs_config_file if config_file.nil?
+
       config = load_config(config_file)
 
       config[:vapps].each do |vapp_config|
         Vcloud.logger.info("Configuring vApp #{vapp_config[:name]}.")
-        Vapp.new(fog_interface).provision(vapp_config)
+        vapp = Vapp.new(fog_interface)
+        vapp.provision(vapp_config)
       end
     end
 
