@@ -8,3 +8,4 @@ vcloud_env.sh
 /bundle/
 /pkg/
 vendor/
+results.html
