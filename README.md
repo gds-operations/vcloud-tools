@@ -16,8 +16,10 @@ Examples of fog usage to configure Edge Gateway Services
 ## [Tag search][tag_search]
 A tool that will perform operations on a set of Vapps that match the given tags.
 
-####Required set-up
-VCloud-tools is based around (fog)[http://fog.io/].
+Required set-up
+===============
+
+VCloud-tools is based around [fog].
 
 To use it you need a `.fog` file in your home directory.
 
@@ -30,17 +32,12 @@ For example:
 
 Unfortunately current usage of fog requires the password in this file.
 
-####Troubleshooting
+## Troubleshooting
 
 To troubleshoot fog related issues, set environment variables DEBUG or EXCON_DEBUG.
 For more details see: http://fog.io/about/getting_started.html#debugging.
 
-[vcloudwalker]: https://github.com/alphagov/vcloud-walker
-[edgegateway]: docs/edgegateway.md
-[tag_search]: docs/tag_search.md
-[vcloud-launch]: docs/vcloud-launch.md
-
-#### Testing
+## Testing
 
 To run the unit tests: `bundle exec rake spec`
 
@@ -55,3 +52,10 @@ VM. The easiest thing to do is create a local shell script called
     export VCLOUD\_TEST\_TEMPLATE="name-of-template"
 
 Then run this before you run the integration test.
+
+
+[vcloudwalker]: https://github.com/alphagov/vcloud-walker
+[edgegateway]: docs/edgegateway.md
+[tag_search]: docs/tag_search.md
+[vcloud-launch]: docs/vcloud-launch.md
+[fog]: http://fog.io/
