@@ -111,7 +111,7 @@ module Vcloud
       rescue
         puts "\n"
         puts "=== vars:"
-        pp vars
+        pp bootstrap_config[:vars]
         puts "=== interpolated preamble:"
         pp interpolated_preamble
         raise
