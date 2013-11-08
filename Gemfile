@@ -10,5 +10,4 @@ group :development do
   gem 'aruba'
 end
 
-gem 'methadone'
 gem 'fog', :git => 'git@github.com:fog/fog.git', :branch => 'master'
