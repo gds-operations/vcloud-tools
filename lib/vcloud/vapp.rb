@@ -32,7 +32,7 @@ module Vcloud
           template[:href].split('/').last,
           @name,
           InstantiationParams: build_network_config(networks)
-        ).body
+        )
         @id = vapp[:href].split('/').last
         vm = Vm.new(@fog_interface, vapp[:Children][:Vm].first, self)
         vm.customize(config[:vm])
