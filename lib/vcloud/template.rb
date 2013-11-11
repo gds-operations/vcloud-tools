@@ -17,8 +17,7 @@ module Vcloud
       end
 
       if @catalog_item_entity.nil?
-        Vcloud.logger.fatal("Could not find template vApp. Cannot continue.")
-        exit 2
+        raise "Could not find template vApp."
       end
 
       begin

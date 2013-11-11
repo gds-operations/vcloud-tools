@@ -57,18 +57,11 @@ module Vcloud
           #TODO some detail of the actual vapp?
         end
 
-        it "should exit with an error if there is no template" do
+        it "should log the error and move on if there is no template" do
           @mock_fog_interface.stub(:template).and_return(nil)
-
           vapp = Vcloud::Vapp.new @mock_fog_interface
-          expected_exit_status = 2
-          actual_exit_status = nil
-          begin
-            actual_vapp = vapp.provision config
-          rescue SystemExit => e
-            actual_exit_status = e.status
-          end
-          expected_exit_status.should equal(actual_exit_status)
+          Vcloud.logger.should_receive(:error).with("Could not provision vApp: Could not find template vApp.")
+          vapp.provision config
         end
 
       end

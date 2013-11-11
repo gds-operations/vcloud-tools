@@ -39,7 +39,6 @@ module Vcloud
 
       rescue RuntimeError => e
         Vcloud.logger.error("Could not provision vApp: #{e.message}")
-        return nil
 
       end
       vapp
