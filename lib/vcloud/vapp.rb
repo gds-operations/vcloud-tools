@@ -14,7 +14,7 @@ module Vcloud
       @vdc = @fog_interface.vdc_object_by_name @vdc_name
       template = @fog_interface.template(config[:catalog], config[:catalog_item])
 
-      if template.nil? 
+      if template.nil?
         Vcloud.logger.fatal("Could not find template vApp. Cannot continue.")
         exit 2
       end
