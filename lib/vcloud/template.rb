@@ -8,20 +8,20 @@ module Vcloud
       @fog_interface = fog_interface
       @catalog_name  = args[:catalog]
       @name          = args[:catalog_item]
-      @fog_model_template_object = nil
+      @catalog_item_entity = nil
     end
     
     def id
-      if @fog_model_template_object.nil?
-        @fog_model_template_object = @fog_interface.template(@catalog_name, @name)
+      if @catalog_item_entity.nil?
+        @catalog_item_entity = @fog_interface.template(@catalog_name, @name)
       end
 
-      if @fog_model_template_object.nil?
+      if @catalog_item_entity.nil?
         Vcloud.logger.fatal("Could not find template vApp. Cannot continue.")
         exit 2
       end
 
-      @fog_model_template_object[:href].split('/').last
+      @catalog_item_entity[:href].split('/').last
     end
 
   end
