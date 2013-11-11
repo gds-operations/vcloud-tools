@@ -26,7 +26,7 @@ module Vcloud
     end
 
     it 'should return the id of the template' do
-      test_id = '128'
+      test_id = 'vappTemplate-12345678-90ab-cdef-0123-4567890abcde'
       test_catalog_item_entity = {
         :href => "/#{test_id}"
       }
@@ -34,7 +34,6 @@ module Vcloud
       test_template = Template.new(@mock_fog_interface, @test_config)
       test_template.id.should == test_id
     end
-
 
     # we think this test and functionality should actually be in fog_interface
     # but implementing it here for now
@@ -44,13 +43,16 @@ module Vcloud
       }
       @mock_fog_interface.stub(:template).and_return(test_catalog_item_entity)
       test_template = Template.new(@mock_fog_interface, @test_config)
-      begin
-        test_id = test_template.id
-      rescue RuntimeError => e
-        actual_error_message = e.message
-      end
-      "Id is not of expected form".should == actual_error_message
+      test_template.id.should == nil
     end
+
+    it 'should fail gracefully if FogInterface::template does not return a hash' do
+      test_catalog_item_entity = []
+      @mock_fog_interface.stub(:template).and_return(test_catalog_item_entity)
+      test_template = Template.new(@mock_fog_interface, @test_config)
+      test_template.id.should == nil
+    end
+
   end
 
 end
