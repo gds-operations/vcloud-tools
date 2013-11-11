@@ -17,7 +17,7 @@ module Vcloud
       }])
       @mock_model_vapp = double(:model_vapp)
       @mock_model_vapp.stub(:id).and_return('1')
-      @mock_fog_interface.stub(:get_vapp).and_return({:name => 'sneha' })
+      @mock_fog_interface.stub(:get_vapp).and_return({:name => 'test-vapp-1' })
       @mock_fog_interface.stub(:vdc).and_return({ })
       @mock_fog_request_vapp = {
         :href => '/sam',
@@ -41,6 +41,7 @@ module Vcloud
         }
         it "should return a vapp if it already exists" do
           @mock_fog_interface.stub(:get_vapp_by_vdc_and_name).and_return(@mock_model_vapp)
+          Vcloud.logger.should_receive(:info)
           vapp = Vcloud::Vapp.new @mock_fog_interface
           actual_vapp = vapp.provision config
           expect(actual_vapp).not_to be_empty
@@ -50,6 +51,7 @@ module Vcloud
           @mock_vm = double(:vm)
           @mock_vm.stub(:customize).and_return(nil)
           @mock_fog_interface.stub(:get_vapp_by_vdc_and_name).and_return(nil)
+          Vcloud.logger.should_receive(:info)
           Vm.stub(:new) { @mock_vm }
           vapp = Vcloud::Vapp.new @mock_fog_interface
           actual_vapp = vapp.provision config
