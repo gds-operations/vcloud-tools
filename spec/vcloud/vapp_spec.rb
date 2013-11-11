@@ -7,9 +7,10 @@ module Vcloud
     before(:each) do
       @mock_fog_interface = double(:fog_interface)
       @mock_vdc = double(:vdc)
-      @mock_vdc.stub(:name).and_return('dan')
+      @mock_vdc.stub(:name).and_return('Test vDC 1')
       @mock_fog_interface.stub(:vdc_object_by_name).and_return(@mock_vdc)
-      @mock_fog_interface.stub(:template).and_return({:href => '/carl' })
+      @mock_fog_interface.stub(:template).and_return({:href => 
+                         '/vappTemplate-12345678-90ab-cdef-0123-4567890abcde' })
       @mock_fog_interface.stub(:find_networks).and_return([{
         :name => 'charlotte',
         :href => '/charlotte',

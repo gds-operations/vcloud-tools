@@ -21,18 +21,14 @@ module Vcloud
         exit 2
       end
 
-      fetched_id = nil
       begin
         fetched_id = @catalog_item_entity[:href].split('/').last
       rescue
-        # something has gone wrong in our vcloud connection
-        Vcloud.logger.warn("Could not retrieve a template entity from vCloud")
-        fetched_id = nil
+        raise "Could not retrieve a template entity from vCloud"
       end
 
       unless fetched_id =~ /^vappTemplate-[-0-9a-f]+$/ 
-        Vcloud.logger.warn("Bogus template id #{fetched_id}")
-        fetched_id = nil
+        raise "Bogus template id #{fetched_id}"
       end
 
       fetched_id
