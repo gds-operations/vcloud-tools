@@ -12,17 +12,17 @@ module Vcloud
       @mock_fog_interface.stub(:template).and_return({:href => 
                          '/vappTemplate-12345678-90ab-cdef-0123-4567890abcde' })
       @mock_fog_interface.stub(:find_networks).and_return([{
-        :name => 'charlotte',
-        :href => '/charlotte',
+        :name => 'org-vdc-1-net-1',
+        :href => '/org-vdc-1-net-1-id',
       }])
       @mock_model_vapp = double(:model_vapp)
       @mock_model_vapp.stub(:id).and_return('1')
       @mock_fog_interface.stub(:get_vapp).and_return({:name => 'test-vapp-1' })
       @mock_fog_interface.stub(:vdc).and_return({ })
       @mock_fog_request_vapp = {
-        :href => '/sam',
+        :href => '/test-vapp-1-id',
         :Children => {
-          :Vm => ['hello']
+          :Vm => ['bogus vm data']
         }
       }
       @mock_fog_interface.stub(:post_instantiate_vapp_template).and_return(@mock_fog_request_vapp)
@@ -31,14 +31,15 @@ module Vcloud
     describe '#provision' do
       context "provisioning a vapp" do
         config = {
-          :name     => 'mike',
-          :vdc_name => 'anna',
-          :catalog  => 'bob',
-          :catalog_item => 'andrew',
+          :name     => 'test-vapp-1',
+          :vdc_name => 'Test vDC 1',
+          :catalog  => 'org1-catalog',
+          :catalog_item => 'org1-template',
           :vm => {
-            :network_connections => [{:name => 'charlotte' }]
+            :network_connections => [{:name => 'org-vdc-1-net-1' }]
           }
         }
+
         it "should return a vapp if it already exists" do
           @mock_fog_interface.stub(:get_vapp_by_vdc_and_name).and_return(@mock_model_vapp)
           Vcloud.logger.should_receive(:info)
