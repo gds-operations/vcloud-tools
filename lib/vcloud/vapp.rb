@@ -12,12 +12,8 @@ module Vcloud
       @vdc_name = config[:vdc_name]
 
       @vdc = @fog_interface.vdc_object_by_name @vdc_name
-      template = @fog_interface.template(config[:catalog], config[:catalog_item])
-
-      if template.nil?
-        Vcloud.logger.fatal("Could not find template vApp. Cannot continue.")
-        exit 2
-      end
+      template = Vcloud::Template.new(@fog_interface, config)
+      template_id = template.id
 
       network_names = config[:vm][:network_connections].collect { |h| h[:name] }
       networks = @fog_interface.find_networks(network_names, @vdc_name)
@@ -29,7 +25,7 @@ module Vcloud
         Vcloud.logger.info("Instantiating new vApp #{@name} in vDC '#{vdc.name}'")
         vapp = @fog_interface.post_instantiate_vapp_template(
           @fog_interface.vdc(@vdc_name),
-          template[:href].split('/').last,
+          template_id,
           @name,
           InstantiationParams: build_network_config(networks)
         )

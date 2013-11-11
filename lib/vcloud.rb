@@ -12,6 +12,7 @@ require 'vcloud/content_types'
 require 'vcloud/fog_interface'
 require 'vcloud/vapp'
 require 'vcloud/vm'
+require 'vcloud/template'
 
 module Vcloud
 
