@@ -59,4 +59,3 @@ Then run this before you run the integration test.
 [tag_search]: docs/tag_search.md
 [vcloud-launch]: docs/vcloud-launch.md
 [fog]: http://fog.io/
-
