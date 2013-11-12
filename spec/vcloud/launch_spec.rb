@@ -16,7 +16,6 @@ module Vcloud
         it "should correctly parse all valid configurations" do
           Dir.entries(@data_dir).each do |file|
             next unless file =~ /\.yaml$/
-            puts "File: #{file}"
             full_path = File.join(@data_dir, file)
             expected_data = YAML::load(File.open("#{full_path}.parsed"))
             Vcloud::Launch.new.load_config(full_path).should == expected_data

@@ -53,7 +53,7 @@ module Vcloud
       Vcloud.logger.info("instantiating #{name} vapp in #{vdc[:name]}")
       vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name,  params).body
       vcloud.process_task(vapp[:Tasks][:Task])
-      vcloud.get_vapp( extract_id(vapp))
+      vcloud.get_vapp( extract_id(vapp)).body
     end
 
     def put_memory vm_id, memory
