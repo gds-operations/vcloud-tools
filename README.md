@@ -60,4 +60,3 @@ Then run this before you run the integration test.
 [vcloud-launch]: docs/vcloud-launch.md
 [fog]: http://fog.io/
 
-==
