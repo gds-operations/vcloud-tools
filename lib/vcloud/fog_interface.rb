@@ -101,6 +101,7 @@ module Vcloud
     end
 
     def power_on_vapp vapp_id
+      Vcloud.logger.info("Powering on vApp #{vapp_id}")
       task = vcloud.post_power_on_vapp(vapp_id).body
       vcloud.process_task(task)
     end

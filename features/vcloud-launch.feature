@@ -10,5 +10,8 @@ Feature: "vcloud-launch" works as a useful command-line tool
     And the banner should document that this app takes options
     And the following options should be documented:
       |--version|
+      |--verbose|
+      |--debug|
+      |--no_power_on|
     And the banner should document that this app's arguments are:
       |org_config_file|
