@@ -17,8 +17,9 @@ class App
   end
 
 
-  on("--[no-]verbose", "Verbose output")
-  on("--[no-]debug",   "Debugging output")
+  on("--verbose", "Verbose output")
+  on("--debug",   "Debugging output")
+  on("--no_power_on",  "Do not power on vApps (default is to power on)")
 
   arg :org_config_file
 

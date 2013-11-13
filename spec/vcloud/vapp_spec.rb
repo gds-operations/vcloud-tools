@@ -28,6 +28,40 @@ module Vcloud
       @mock_fog_interface.stub(:post_instantiate_vapp_template).and_return(@mock_fog_request_vapp)
     end
 
+    describe '#power_on' do
+      context "powering on a vapp" do
+
+        config = {
+          :name     => 'test-vapp-1',
+          :vdc_name => 'Test vDC 1',
+        }
+
+        it "should power on a vapp that is not powered on" do
+          vapp = Vcloud::Vapp.new @mock_fog_interface, config
+          @mock_fog_interface.stub(:get_vapp_by_vdc_and_name).and_return(@mock_model_vapp)
+          @mock_fog_interface.should_receive(:power_on_vapp).with(vapp.id)
+          state = vapp.power_on
+          expect(state) == true
+        end
+
+        it "should not power on a vapp that is already powered on, but should return true" do
+          vapp = Vcloud::Vapp.new @mock_fog_interface, config
+          @mock_fog_interface.stub(:get_vapp_by_vdc_and_name).and_return(@mock_model_vapp)
+          @mock_fog_interface.stub(:get_vapp).and_return({:status => 4})
+          @mock_fog_interface.should_not_receive(:power_on_vapp)
+          state = vapp.power_on
+          expect(state) == true
+        end
+
+        it "should raise an error if vapp does not exist" do
+          vapp = Vcloud::Vapp.new @mock_fog_interface, config
+          @mock_fog_interface.stub(:get_vapp_by_vdc_and_name).and_return(nil)
+          expect { vapp.power_on }.to raise_exception(RuntimeError, 'Cannot power on a missing vApp.')
+        end
+
+      end
+    end
+
     describe '#provision' do
       context "provisioning a vapp" do
         config = {
