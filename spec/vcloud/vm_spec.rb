@@ -89,19 +89,17 @@ module Vcloud
     end
 
     describe '#generate_preamble' do
-      context "configure vm network connections" do
-        it "should interpolate vars hash into template" do
-          vars = { :message => 'hello world' }
-          erbfile = "#{@data_dir}/basic_preamble_test.erb"
-          expected_output = File.read("#{erbfile}.OUT")
-          @vm.generate_preamble(erbfile, vars).should == expected_output
-        end
-        it "should minify script if >=2048 bytes" do
-          vars = { :message => 'hello world' }
-          erbfile = "#{@data_dir}/unminified_large_script.sh.erb"
-          expected_output = File.read("#{erbfile}.OUT")
-          @vm.generate_preamble(erbfile, vars).should == expected_output
-        end
+      it "should interpolate vars hash into template" do
+        vars = { :message => 'hello world' }
+        erbfile = "#{@data_dir}/basic_preamble_test.erb"
+        expected_output = File.read("#{erbfile}.OUT")
+        @vm.generate_preamble(erbfile, vars).should == expected_output
+      end
+      it "should minify script if >=2048 bytes" do
+        vars = { :message => 'hello world' }
+        erbfile = "#{@data_dir}/unminified_large_script.sh.erb"
+        expected_output = File.read("#{erbfile}.OUT")
+        @vm.generate_preamble(erbfile, vars).should == expected_output
       end
     end
 
