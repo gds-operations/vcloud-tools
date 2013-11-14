@@ -3,14 +3,14 @@ module Vcloud
 
     attr_reader :vm, :vapp, :id
 
-    def initialize fog_interface, vm, vapp
+    def initialize(fog_interface, vm, vapp)
       @vm = vm
       @fog_interface = fog_interface
       @vapp = vapp
       @id = vm[:href].split('/').last
     end
 
-    def customize vm_config
+    def customize(vm_config)
       configure_network_interfaces vm_config[:network_connections]
       if hardware_config = vm_config[:hardware_config]
         update_cpu_count(hardware_config[:cpu])
@@ -58,7 +58,7 @@ module Vcloud
       end
     end
 
-    def add_extra_disks extra_disks
+    def add_extra_disks(extra_disks)
       vdc = self.vapp.vdc
       fog_vapp = vdc.vapps.get(vapp.id)
       vm = fog_vapp.vms.first
@@ -70,7 +70,7 @@ module Vcloud
       end
     end
 
-    def configure_network_interfaces networks_config
+    def configure_network_interfaces(networks_config)
       return unless networks_config
       section = {PrimaryNetworkConnectionIndex: 0}
       section[:NetworkConnection] = networks_config.compact.each_with_index.map do |network, i|
@@ -97,7 +97,7 @@ module Vcloud
       end
     end
 
-    def configure_guest_customization_section name, bootstrap_config
+    def configure_guest_customization_section(name, bootstrap_config)
       if bootstrap_config.nil? or bootstrap_config[:script_path].nil?
         interpolated_preamble = ''
       else

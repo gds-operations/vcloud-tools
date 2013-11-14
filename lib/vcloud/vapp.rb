@@ -3,7 +3,7 @@ module Vcloud
 
     attr_reader :vdc, :name
 
-    def initialize vcloud, config = {}
+    def initialize(vcloud, config = {})
       @fog_interface = vcloud
       @name = config[:name]
       @vdc_name = config[:vdc_name]
@@ -18,7 +18,7 @@ module Vcloud
       @id = model_vapp ? model_vapp.id : nil
     end
 
-    def provision config
+    def provision(config)
       @name = config[:name]
       @vdc_name = config[:vdc_name]
 
@@ -69,7 +69,7 @@ module Vcloud
 
     private
 
-    def build_network_config networks
+    def build_network_config(networks)
       instantiation = {NetworkConfigSection: {NetworkConfig: []}}
       networks.compact.each do |network|
         instantiation[:NetworkConfigSection][:NetworkConfig] << {

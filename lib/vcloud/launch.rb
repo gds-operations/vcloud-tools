@@ -7,7 +7,7 @@ module Vcloud
       @cli_options = {}
     end
 
-    def run (config_file = nil, options = {})
+    def run(config_file = nil, options = {})
       @cli_options = options
       fog_interface = Vcloud::FogInterface.new
       deprecation_handler :run_needs_config_file if config_file.nil?
@@ -25,7 +25,7 @@ module Vcloud
       end
     end
 
-    def load_config config_file
+    def load_config(config_file)
       config = YAML::load(File.open(config_file))
       deprecation_handler :vdc if config["vdc"]
 
@@ -88,7 +88,7 @@ module Vcloud
 
     end
 
-    def merge_defaults data, parent = nil
+    def merge_defaults(data, parent = nil)
 
       if parent.nil?
         parent = Vcloud::clone_object(Vcloud::Constants::EMPTY_VAPP_DEFAULTS)
@@ -162,7 +162,7 @@ module Vcloud
 
     end
 
-    def deprecation_handler type
+    def deprecation_handler(type)
 
       case type
       when :vdc

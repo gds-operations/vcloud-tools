@@ -4,7 +4,7 @@ module Vcloud
 
   class Template
 
-    def initialize fog_interface, args = {}
+    def initialize(fog_interface, args = {})
       @fog_interface = fog_interface
       @catalog_name  = args[:catalog]
       @name          = args[:catalog_item]
