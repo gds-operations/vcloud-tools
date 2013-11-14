@@ -35,8 +35,7 @@ module Vcloud
       parse_config(config)
     end
 
-    private
-
+  private
     def parse_config(config)
 
       parsed_config = {

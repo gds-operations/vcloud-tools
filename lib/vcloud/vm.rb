@@ -132,9 +132,8 @@ module Vcloud
       vm[:'ovf:VirtualHardwareSection'][:'ovf:Item']
     end
 
-    private
-
-    def minifier_tool_location 
+  private
+    def minifier_tool_location
       # ugly ugly, but cannot package non-ruby binstubs.
       File.join(File.dirname(File.expand_path(__FILE__)), '../../libexec/minifier.py')
     end

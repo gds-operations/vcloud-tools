@@ -67,8 +67,7 @@ module Vcloud
       vapp[:status].to_i == 4 ? true : false
     end
 
-    private
-
+  private
     def build_network_config(networks)
       instantiation = {NetworkConfigSection: {NetworkConfig: []}}
       networks.compact.each do |network|

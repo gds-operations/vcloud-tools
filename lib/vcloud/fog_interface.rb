@@ -161,7 +161,7 @@ module Vcloud
       vcloud.process_task(task)
     end
 
-    private
+  private
     def extract_id(link)
       link[:href].split('/').last
     end
