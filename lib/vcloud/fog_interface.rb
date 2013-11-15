@@ -15,8 +15,8 @@ module Vcloud
     end
 
     def vdc_object_by_name(vdc_name)
-       org = vcloud.organizations.get_by_name(vcloud.org_name)
-       org.vdcs.get_by_name vdc_name
+      org = vcloud.organizations.get_by_name(vcloud.org_name)
+      org.vdcs.get_by_name vdc_name
     end
 
     def catalog(name)
@@ -51,9 +51,9 @@ module Vcloud
 
     def post_instantiate_vapp_template(vdc, template, name, params)
       Vcloud.logger.info("instantiating #{name} vapp in #{vdc[:name]}")
-      vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name,  params).body
+      vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name, params).body
       vcloud.process_task(vapp[:Tasks][:Task])
-      vcloud.get_vapp( extract_id(vapp)).body
+      vcloud.get_vapp(extract_id(vapp)).body
     end
 
     def put_memory(vm_id, memory)
@@ -77,9 +77,15 @@ module Vcloud
     end
 
     def put_network_connection_system_section_vapp(vm_id, section)
-      Vcloud.logger.info("adding NIC into VM #{vm_id}")
-      task = vcloud.put_network_connection_system_section_vapp(vm_id, section).body
-      vcloud.process_task(task)
+      begin
+        Vcloud.logger.info("adding NIC into VM #{vm_id}")
+        task = vcloud.put_network_connection_system_section_vapp(vm_id, section).body
+        vcloud.process_task(task)
+      rescue
+        Vcloud.logger.info("failed to put_network_connection_system_section_vapp for vm : #{vm_id} ")
+        Vcloud.logger.info("requested network section : #{section.inspect}")
+        raise
+      end
     end
 
     def organizations
@@ -111,7 +117,7 @@ module Vcloud
       vcloud.process_task(task)
     end
 
-    def find_networks(network_names , vdc_name)
+    def find_networks(network_names, vdc_name)
       network_names.collect do |network|
         vdc(vdc_name)[:AvailableNetworks][:Network].detect do |l|
           l[:type] == Vcloud::ContentTypes::NETWORK && l[:name] == network
@@ -126,14 +132,14 @@ module Vcloud
         key = entry[:Key].to_sym
         val = entry[:TypedValue][:Value]
         case entry[:TypedValue][:xsi_type]
-        when 'MetadataNumberValue'
-          val = val.to_i
-        when 'MetadataStringValue'
-          val = val.to_s
-        when 'MetadataDateTimeValue'
-          val = DateTime.parse(val)
-        when 'MetadataBooleanValue'
-          val = val == 'true' ? true : false
+          when 'MetadataNumberValue'
+            val = val.to_i
+          when 'MetadataStringValue'
+            val = val.to_s
+          when 'MetadataDateTimeValue'
+            val = DateTime.parse(val)
+          when 'MetadataBooleanValue'
+            val = val == 'true' ? true : false
         end
         metadata[key] = val
       end
@@ -152,16 +158,25 @@ module Vcloud
     end
 
     def put_guest_customization_section(vm_id, vm_name, script)
-      Vcloud.logger.info("configuring guest customization section for vm : #{vm_id}")
-      task = vcloud.put_guest_customization_section_vapp(vm_id, {
-          :Enabled => true,
-          :CustomizationScript => script,
-          :ComputerName => vm_name
-      }).body
-      vcloud.process_task(task)
+      begin
+        Vcloud.logger.info("configuring guest customization section for vm : #{vm_id}")
+        customization_req = {
+            :Enabled => true,
+            :CustomizationScript => script,
+            :ComputerName => vm_name
+        }
+        task = vcloud.put_guest_customization_section_vapp(vm_id, customization_req).body
+        vcloud.process_task(task)
+      rescue
+        Vcloud.logger.info("=== vars:")
+        Vcloud.logger.info(bootstrap_config[:vars].inspect)
+        Vcloud.logger.info("=== interpolated preamble:")
+        Vcloud.logger.info(interpolated_preamble)
+        raise
+      end
     end
 
-  private
+    private
     def extract_id(link)
       link[:href].split('/').last
     end
