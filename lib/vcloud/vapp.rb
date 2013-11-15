@@ -3,6 +3,10 @@ module Vcloud
 
     attr_reader :vdc, :name
 
+    module STATUS
+      RUNNING = 4
+    end
+
     def initialize(vcloud, config = {})
       @fog_interface = vcloud
       @name = config[:name]
@@ -42,14 +46,13 @@ module Vcloud
             InstantiationParams: build_network_config(networks)
           )
           @id = vapp[:href].split('/').last
-          vm = Vm.new(@fog_interface, vapp[:Children][:Vm].first, self)
+          vm = Vcloud::Vm.new(@fog_interface, vapp[:Children][:Vm].first, self)
           vm.customize(config[:vm])
           vapp = @fog_interface.get_vapp(@id)
         end
 
       rescue RuntimeError => e
         Vcloud.logger.error("Could not provision vApp: #{e.message}")
-
       end
       vapp
     end
@@ -64,7 +67,7 @@ module Vcloud
     def running?
       raise "Cannot call running? on a missing vApp." unless id
       vapp = @fog_interface.get_vapp(id)
-      vapp[:status].to_i == 4 ? true : false
+      vapp[:status].to_i == STATUS::RUNNING ? true : false
     end
 
   private
