@@ -6,6 +6,7 @@ require 'open3'
 require 'pp'
 
 require 'vcloud/version'
+require 'vcloud/deprecator'
 require 'vcloud/launch'
 require 'vcloud/constants'
 require 'vcloud/content_types'

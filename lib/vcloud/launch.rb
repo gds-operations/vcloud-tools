@@ -10,7 +10,7 @@ module Vcloud
     def run(config_file = nil, options = {})
       @cli_options = options
       fog_interface = Vcloud::FogInterface.new
-      deprecation_handler :run_needs_config_file if config_file.nil?
+      Deprecator.mandatory_input_config_file if config_file.nil?
 
       puts "cli_options:" if @cli_options[:debug]
       pp @cli_options if @cli_options[:debug]
@@ -27,7 +27,7 @@ module Vcloud
 
     def load_config(config_file)
       config = YAML::load(File.open(config_file))
-      deprecation_handler :vdc if config["vdc"]
+      Deprecator.single_vdc_support if config['vdc']
 
       # slightly dirty hack to get our YAML data into a symbolized key hash :)
       json_string = JSON.generate(config)
@@ -160,24 +160,5 @@ module Vcloud
       ret
 
     end
-
-    def deprecation_handler(type)
-
-      case type
-      when :vdc
-        puts 'Config file format has changed. vDCs now specified as:'
-        puts '  vdcs:'
-        puts '    - name: "vDC 1"'
-        puts '    - name: "vDC 2"'
-        puts 'See spec/data/machines.yaml for an example'
-        Kernel.exit
-      when :run_needs_config_file
-        puts 'Vcloud::Launch.run now needs config_file passed as single argument.'
-        puts 'Ideally you should be using the vcloud-launch CLI tool, which now'
-        puts 'has a shiny options interface'
-        Kernel.exit
-      end
-    end
-
   end
 end
