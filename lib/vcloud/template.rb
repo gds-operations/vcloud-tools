@@ -1,7 +1,5 @@
 module Vcloud
 
-  attr_reader :name, :catalog_name
-
   class Template
 
     def initialize(fog_interface, args = {})
@@ -10,7 +8,7 @@ module Vcloud
       @name          = args[:catalog_item]
       @catalog_item_entity = nil
     end
-    
+
     def id
       if @catalog_item_entity.nil?
         @catalog_item_entity = @fog_interface.template(@catalog_name, @name)

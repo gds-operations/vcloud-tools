@@ -14,9 +14,9 @@ module Vcloud
       vcloud.get_organization(link[:href].split('/').last).body
     end
 
-    def vdc_object_by_name(vdc_name)
-      org = vcloud.organizations.get_by_name(vcloud.org_name)
-      org.vdcs.get_by_name vdc_name
+    def get_vapp_by_name_and_vdc_name name, vdc_name
+      response = vcloud.get_vapps_in_lease_from_query({:filter => 'name==#{name}'})
+      response.body[:VAppRecord].detect{|record| record[:vdcName] == vdc_name}
     end
 
     def catalog(name)
@@ -64,10 +64,6 @@ module Vcloud
 
     def get_vapp(id)
       vcloud.get_vapp(id).body
-    end
-
-    def get_vapp_by_vdc_and_name(vdc, name)
-      vdc.vapps.get_by_name(name)
     end
 
     def put_cpu(vm_id, cpu)

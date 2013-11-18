@@ -48,7 +48,7 @@ describe Vcloud::Vapp do
         },
     }
 
-    @vapp = Vcloud::Vapp.new(@fog_interface).provision(@vapp_config)
+    @vapp = Vcloud::Vapp.provision(@vapp_config)
     @vapp_id = @vapp[:href].split('/').last
     @vm = @vapp[:Children][:Vm].first
     @vm_id = @vm[:href].split('/').last
