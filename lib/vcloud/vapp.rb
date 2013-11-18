@@ -1,30 +1,34 @@
 module Vcloud
   class Vapp
 
-    attr_reader :vdc, :name
+    attr_accessor :attributes
 
     module STATUS
       RUNNING = 4
     end
 
-    def initialize(vcloud, config = {})
-      @fog_interface = vcloud
-      @name = config[:name]
-      @vdc_name = config[:vdc_name]
+    def initialize(vcloud, attributes)
+      @fog_interface = Vcloud::FogInterface.new
+      self.attributes = attributes
     end
 
     def id
-      return nil unless @vdc_name
-      return nil unless @name
-      return @id unless @id.nil?
-      @vdc = @fog_interface.vdc_object_by_name @vdc_name
-      model_vapp = @fog_interface.get_vapp_by_vdc_and_name(@vdc, @name)
-      @id = model_vapp ? model_vapp.id : nil
+     return nil unless attributes && attributes[:href]
+     attributes[:href].split('/').last
+    end
+
+    def name
+      attributes[:name]
+    end
+
+    def vdc_id
+      link = attributes[:Link].detect { |l| l[:rel] == Vcloud::RELATION::PARENT && l[:type] == Vcloud::ContentTypes::VDC }
+      link ? link[:href].split('/').last : raise('a vapp without parent vdc found')
     end
 
     def provision(config)
-      @name = config[:name]
-      @vdc_name = config[:vdc_name]
+      name = config[:name]
+      vdc_name = config[:vdc_name]
 
       begin
 
@@ -32,17 +36,17 @@ module Vcloud
         template_id = template.id
 
         network_names = config[:vm][:network_connections].collect { |h| h[:name] }
-        networks = @fog_interface.find_networks(network_names, @vdc_name)
+        networks = @fog_interface.find_networks(network_names, vdc_name)
 
         if id
           vapp = @fog_interface.get_vapp(id)
-          Vcloud.logger.info("Found existing vApp #{vapp[:name]} in vDC '#{vdc.name}'. Skipping.")
+          Vcloud.logger.info("Found existing vApp #{vapp[:name]} in vDC '#{vdc_name}'. Skipping.")
         else
-          Vcloud.logger.info("Instantiating new vApp #{@name} in vDC '#{vdc.name}'")
+          Vcloud.logger.info("Instantiating new vApp #{name} in vDC '#{vdc_name}'")
           vapp = @fog_interface.post_instantiate_vapp_template(
-            @fog_interface.vdc(@vdc_name),
+            @fog_interface.vdc(vdc_name),
             template_id,
-            @name,
+            name,
             InstantiationParams: build_network_config(networks)
           )
           @id = vapp[:href].split('/').last
