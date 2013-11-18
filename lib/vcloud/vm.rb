@@ -85,16 +85,7 @@ module Vcloud
         connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
         connection
       end
-      begin
-        @fog_interface.put_network_connection_system_section_vapp(id, section)
-      rescue
-        puts "\n"
-        puts "=== networks_config:"
-        pp networks_config
-        puts "=== PUT request data section:"
-        pp section
-        raise
-      end
+      @fog_interface.put_network_connection_system_section_vapp(id, section)
     end
 
     def configure_guest_customization_section(name, bootstrap_config)
@@ -102,20 +93,11 @@ module Vcloud
         interpolated_preamble = ''
       else
         interpolated_preamble = generate_preamble(
-           bootstrap_config[:script_path],
-           bootstrap_config[:vars]
+            bootstrap_config[:script_path],
+            bootstrap_config[:vars]
         )
       end
-      begin
-        @fog_interface.put_guest_customization_section(@id, name, interpolated_preamble)
-      rescue
-        puts "\n"
-        puts "=== vars:"
-        pp bootstrap_config[:vars]
-        puts "=== interpolated preamble:"
-        pp interpolated_preamble
-        raise
-      end
+      @fog_interface.put_guest_customization_section(@id, name, interpolated_preamble)
     end
 
     def generate_preamble(script_path, vars)
