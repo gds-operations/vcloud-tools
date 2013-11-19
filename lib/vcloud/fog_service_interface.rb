@@ -8,26 +8,26 @@ module Vcloud
     end
 
     def org
-      link = session[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
-        l[:rel] == 'down' && l[:type] == Vcloud::ContentTypes::ORG
+      link = session[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
+        l[:type] == Vcloud::ContentTypes::ORG
       end
       vcloud.get_organization(link[:href].split('/').last).body
     end
 
     def get_vapp_by_name_and_vdc_name name, vdc_name
-      response = vcloud.get_vapps_in_lease_from_query({:filter => 'name==#{name}'})
+      response = vcloud.get_vapps_in_lease_from_query({:filter => "name==#{name}"})
       response.body[:VAppRecord].detect{|record| record[:vdcName] == vdc_name}
     end
 
     def catalog(name)
-      link = org[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
+      link = org[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
         l[:type] == Vcloud::ContentTypes::CATALOG && l[:name] == name
       end
       vcloud.get_catalog(extract_id(link)).body
     end
 
     def vdc(name)
-      link = org[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
+      link = org[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
         l[:type] == Vcloud::ContentTypes::VDC && l[:name] == name
       end
       vcloud.get_vdc(link[:href].split('/').last).body
