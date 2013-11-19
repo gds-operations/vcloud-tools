@@ -7,7 +7,7 @@ module Vcloud
     end
 
     #def fog_interface
-    #  @fog_interface ||= Vcloud::FogInterface.new
+    #  @fog_interface ||= Vcloud::FogServiceInterface.new
     #end
   end
 end

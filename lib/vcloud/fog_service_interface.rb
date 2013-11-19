@@ -1,6 +1,6 @@
 module Vcloud
 
-  class FogInterface
+  class FogServiceInterface
     attr_accessor :vcloud
 
     def initialize

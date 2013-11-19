@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Vcloud::Vapp do
   before(:all) do
-    @fog_interface = Vcloud::FogInterface.new
+    @fog_interface = Vcloud::FogServiceInterface.new
     TEST_VDC      = ENV['VCLOUD_TEST_VDC']      || 'Test vDC'
     TEST_CATALOG  = ENV['VCLOUD_TEST_CATALOG']  || 'test-catalog'
     TEST_TEMPLATE = ENV['VCLOUD_TEST_TEMPLATE'] || 'test-template'
@@ -48,7 +48,7 @@ describe Vcloud::Vapp do
         },
     }
 
-    @vapp = Vcloud::Vapp.provision(@vapp_config)
+    @vapp = Vcloud::Vapp.new.provision(@vapp_config).attributes
     @vapp_id = @vapp[:href].split('/').last
     @vm = @vapp[:Children][:Vm].first
     @vm_id = @vm[:href].split('/').last
