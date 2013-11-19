@@ -1,4 +1,4 @@
-require 'rspec/mocks'
+require 'ostruct'
 
 class StubFogInterface
 
@@ -7,8 +7,9 @@ class StubFogInterface
   end
 
   def vdc_object_by_name(vdc_name)
-    # I cannot work out how to return a fog object with one method, name
-    # no doubt it's obvious and I just need a break :)
+    vdc = OpenStruct.new
+    vdc.name = 'test-vdc-1'
+    vdc
   end
 
   def template
