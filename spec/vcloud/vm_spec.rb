@@ -18,7 +18,7 @@ module Vcloud
         :zero => 0,
       }
       @mock_vm_cpu_count = 1
-      @fog_interface = double(:fog_interface)
+      @fog_interface = StubFogInterface.new
       @mock_vapp     = double(:vapp)
       @mock_vapp.stub(:name).and_return(@vapp_name)
       @mock_vapp.stub(:id).and_return(@vapp_id)
