@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'stub_fog_interface'
 
 module Vcloud
 
