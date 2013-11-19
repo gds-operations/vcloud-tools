@@ -1,36 +1,31 @@
 module Vcloud
   class Vapp < Entity
 
-    attr_accessor :attributes
+    attr_reader :vcloud_attributes
 
-    def initialize(attributes = {})
-      self.attributes = attributes
+    def initialize(vcloud_attributes = {})
+      @vcloud_attributes = vcloud_attributes
     end
 
     module STATUS
       RUNNING = 4
     end
 
-    def id
-     return nil unless attributes && attributes[:href]
-     attributes[:href].split('/').last
-    end
-
     def name
-      attributes[:name]
+      @vcloud_attributes[:name]
     end
 
     def vdc_id
-      link = attributes[:Link].detect { |l| l[:rel] == Vcloud::RELATION::PARENT && l[:type] == Vcloud::ContentTypes::VDC }
+      link = @vcloud_attributes[:Link].detect { |l| l[:rel] == Vcloud::RELATION::PARENT && l[:type] == Vcloud::ContentTypes::VDC }
       link ? link[:href].split('/').last : raise('a vapp without parent vdc found')
     end
 
     def vms
-      attributes[:Children][:Vm]
+      @vcloud_attributes[:Children][:Vm]
     end
 
     def networks
-      attributes[:'ovf:NetworkSection'][:'ovf:Network']
+      @vcloud_attributes[:'ovf:NetworkSection'][:'ovf:Network']
     end
 
     def provision(config)
@@ -44,11 +39,11 @@ module Vcloud
         network_names = config[:vm][:network_connections].collect { |h| h[:name] }
         networks = fog_interface.find_networks(network_names, vdc_name)
 
-        if @attributes = fog_interface.get_vapp_by_name_and_vdc_name(name, vdc_name)
+        if @vcloud_attributes = fog_interface.get_vapp_by_name_and_vdc_name(name, vdc_name)
           Vcloud.logger.info("Found existing vApp #{name} in vDC '#{vdc_name}'. Skipping.")
         else
           Vcloud.logger.info("Instantiating new vApp #{name} in vDC '#{vdc_name}'")
-          @attributes = fog_interface.post_instantiate_vapp_template(
+          @vcloud_attributes = fog_interface.post_instantiate_vapp_template(
             fog_interface.vdc(vdc_name),
             template_id,
             name,
@@ -56,7 +51,7 @@ module Vcloud
           )
           vm = Vcloud::Vm.new(fog_interface, vms.first, self)
           vm.customize(config[:vm])
-          self.attributes = fog_interface.get_vapp(id)
+          @vcloud_attributes = fog_interface.get_vapp(id)
         end
 
       rescue RuntimeError => e
@@ -64,7 +59,6 @@ module Vcloud
       end
       self
     end
-
 
     def power_on
       raise "Cannot power on a missing vApp." unless id

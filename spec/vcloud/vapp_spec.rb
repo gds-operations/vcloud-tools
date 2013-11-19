@@ -18,7 +18,7 @@ module Vcloud
         }
         @vapp = Vcloud::Vapp.new(attributes)
       }
-      it { @vapp.should respond_to(:attributes) }
+      it { @vapp.should respond_to(:vcloud_attributes) }
       it { @vapp.name.should == "Webserver vapp-1" }
 
       context "vapp should have parent vdc" do
