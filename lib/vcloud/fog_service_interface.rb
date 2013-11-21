@@ -1,36 +1,34 @@
 module Vcloud
 
-  class FogInterface
-    attr_accessor :vcloud
-
+  class FogServiceInterface
     def initialize
-      self.vcloud = Fog::Compute::VcloudDirector.new
+      @vcloud = Fog::Compute::VcloudDirector.new
     end
 
     def org
-      link = session[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
-        l[:rel] == 'down' && l[:type] == Vcloud::ContentTypes::ORG
+      link = session[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
+        l[:type] == Vcloud::ContentTypes::ORG
       end
-      vcloud.get_organization(link[:href].split('/').last).body
+      @vcloud.get_organization(link[:href].split('/').last).body
     end
 
-    def vdc_object_by_name(vdc_name)
-      org = vcloud.organizations.get_by_name(vcloud.org_name)
-      org.vdcs.get_by_name vdc_name
+    def get_vapp_by_name_and_vdc_name name, vdc_name
+      response = @vcloud.get_vapps_in_lease_from_query({:filter => "name==#{name}"})
+      response.body[:VAppRecord].detect{|record| record[:vdcName] == vdc_name}
     end
 
     def catalog(name)
-      link = org[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
+      link = org[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
         l[:type] == Vcloud::ContentTypes::CATALOG && l[:name] == name
       end
-      vcloud.get_catalog(extract_id(link)).body
+      @vcloud.get_catalog(extract_id(link)).body
     end
 
     def vdc(name)
-      link = org[:Link].select { |l| l[:rel] == 'down' }.detect do |l|
+      link = org[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
         l[:type] == Vcloud::ContentTypes::VDC && l[:name] == name
       end
-      vcloud.get_vdc(link[:href].split('/').last).body
+      @vcloud.get_vdc(link[:href].split('/').last).body
     end
 
     def template(catalog_name, template_name)
@@ -41,46 +39,42 @@ module Vcloud
         Vcloud.logger.warn("Template #{template_name} not found in catalog #{catalog_name}")
         return nil
       end
-      catalog_item = vcloud.get_catalog_item(extract_id(link)).body
+      catalog_item = @vcloud.get_catalog_item(extract_id(link)).body
       catalog_item[:Entity]
     end
 
     def session
-      vcloud.get_current_session.body
+      @vcloud.get_current_session.body
     end
 
     def post_instantiate_vapp_template(vdc, template, name, params)
       Vcloud.logger.info("instantiating #{name} vapp in #{vdc[:name]}")
-      vapp = vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name, params).body
-      vcloud.process_task(vapp[:Tasks][:Task])
-      vcloud.get_vapp(extract_id(vapp)).body
+      vapp = @vcloud.post_instantiate_vapp_template(extract_id(vdc), template, name, params).body
+      @vcloud.process_task(vapp[:Tasks][:Task])
+      @vcloud.get_vapp(extract_id(vapp)).body
     end
 
     def put_memory(vm_id, memory)
       Vcloud.logger.info("putting #{memory}KB memory into VM #{vm_id}")
-      task = vcloud.put_memory(vm_id, memory).body
-      vcloud.process_task(task)
+      task = @vcloud.put_memory(vm_id, memory).body
+      @vcloud.process_task(task)
     end
 
     def get_vapp(id)
-      vcloud.get_vapp(id).body
-    end
-
-    def get_vapp_by_vdc_and_name(vdc, name)
-      vdc.vapps.get_by_name(name)
+      @vcloud.get_vapp(id).body
     end
 
     def put_cpu(vm_id, cpu)
       Vcloud.logger.info("putting #{cpu} CPU(s) into VM #{vm_id}")
-      task = vcloud.put_cpu(vm_id, cpu).body
-      vcloud.process_task(task)
+      task = @vcloud.put_cpu(vm_id, cpu).body
+      @vcloud.process_task(task)
     end
 
     def put_network_connection_system_section_vapp(vm_id, section)
       begin
         Vcloud.logger.info("adding NIC into VM #{vm_id}")
-        task = vcloud.put_network_connection_system_section_vapp(vm_id, section).body
-        vcloud.process_task(task)
+        task = @vcloud.put_network_connection_system_section_vapp(vm_id, section).body
+        @vcloud.process_task(task)
       rescue
         Vcloud.logger.info("failed to put_network_connection_system_section_vapp for vm : #{vm_id} ")
         Vcloud.logger.info("requested network section : #{section.inspect}")
@@ -89,32 +83,32 @@ module Vcloud
     end
 
     def organizations
-      vcloud.organizations
+      @vcloud.organizations
     end
 
     def org_name
-      vcloud.org_name
+      @vcloud.org_name
     end
 
     def delete_vapp(vapp_id)
-      task = vcloud.delete_vapp(vapp_id).body
-      vcloud.process_task(task)
+      task = @vcloud.delete_vapp(vapp_id).body
+      @vcloud.process_task(task)
     end
 
     def power_off_vapp(vapp_id)
-      task = vcloud.post_power_off_vapp(vapp_id).body
-      vcloud.process_task(task)
+      task = @vcloud.post_power_off_vapp(vapp_id).body
+      @vcloud.process_task(task)
     end
 
     def power_on_vapp(vapp_id)
       Vcloud.logger.info("Powering on vApp #{vapp_id}")
-      task = vcloud.post_power_on_vapp(vapp_id).body
-      vcloud.process_task(task)
+      task = @vcloud.post_power_on_vapp(vapp_id).body
+      @vcloud.process_task(task)
     end
 
     def shutdown_vapp(vapp_id)
-      task = vcloud.post_shutdown_vapp(vapp_id).body
-      vcloud.process_task(task)
+      task = @vcloud.post_shutdown_vapp(vapp_id).body
+      @vcloud.process_task(task)
     end
 
     def find_networks(network_names, vdc_name)
@@ -165,8 +159,8 @@ module Vcloud
             :CustomizationScript => script,
             :ComputerName => vm_name
         }
-        task = vcloud.put_guest_customization_section_vapp(vm_id, customization_req).body
-        vcloud.process_task(task)
+        task = @vcloud.put_guest_customization_section_vapp(vm_id, customization_req).body
+        @vcloud.process_task(task)
       rescue
         Vcloud.logger.info("=== vars:")
         Vcloud.logger.info(bootstrap_config[:vars].inspect)

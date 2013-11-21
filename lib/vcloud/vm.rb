@@ -59,9 +59,7 @@ module Vcloud
     end
 
     def add_extra_disks(extra_disks)
-      vdc = self.vapp.vdc
-      fog_vapp = vdc.vapps.get(vapp.id)
-      vm = fog_vapp.vms.first
+      vm = FogModelInterface.new.get_vm_by_href(@vm[:href])
       if extra_disks
         extra_disks.each do |extra_disk|
           Vcloud.logger.info("adding a disk of size #{extra_disk[:size]}MB into VM #{vm.id}")

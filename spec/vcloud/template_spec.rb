@@ -39,7 +39,7 @@ module Vcloud
       expect { test_template.id }.to raise_exception(RuntimeError, 'Bogus template id unexpected_id')
     end
 
-    it 'should fail gracefully if FogInterface::template does not return a hash' do
+    it 'should fail gracefully if FogServiceInterface::template does not return a hash' do
       test_catalog_item_entity = []
       @mock_fog_interface.stub(:template).and_return(test_catalog_item_entity)
       test_template = Template.new(@mock_fog_interface, @test_config)

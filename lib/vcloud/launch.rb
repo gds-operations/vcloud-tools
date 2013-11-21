@@ -9,7 +9,7 @@ module Vcloud
 
     def run(config_file = nil, options = {})
       @cli_options = options
-      fog_interface = Vcloud::FogInterface.new
+      fog_interface = Vcloud::FogServiceInterface.new
       Deprecator.mandatory_input_config_file if config_file.nil?
 
       puts "cli_options:" if @cli_options[:debug]
