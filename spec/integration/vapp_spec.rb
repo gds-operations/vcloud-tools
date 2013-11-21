@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'pp'
 
 describe Vcloud::Vapp do
   before(:all) do
@@ -6,6 +7,10 @@ describe Vcloud::Vapp do
     TEST_VDC      = ENV['VCLOUD_TEST_VDC']      || 'Test vDC'
     TEST_CATALOG  = ENV['VCLOUD_TEST_CATALOG']  || 'test-catalog'
     TEST_TEMPLATE = ENV['VCLOUD_TEST_TEMPLATE'] || 'test-template'
+    TEST_NETWORK1 = ENV['VCLOUD_TEST_NETWORK1'] || 'Default'
+    TEST_NETWORK2 = ENV['VCLOUD_TEST_NETWORK2'] || 'NetworkTest2'
+    TEST_NETWORK1_IP = ENV['VCLOUD_TEST_NETWORK1_IP'] || '192.168.2.10'
+    TEST_NETWORK2_IP = ENV['VCLOUD_TEST_NETWORK2_IP'] || '192.168.1.10'
 
     template = @fog_interface.template(TEST_CATALOG, TEST_TEMPLATE)
     script_path = File.join(File.dirname(__FILE__), "../data/basic_preamble_test.erb")
@@ -32,12 +37,12 @@ describe Vcloud::Vapp do
             :integration_test_vm => true,
           },
           :extra_disks => [
-            {:size => '1024', :name => 'Hard disk 2'  },
+            {:size => '1024', :name => 'Hard disk 2'},
             {:size => '2048', :name => 'Hard disk 3'}
           ],
           :network_connections => [
-            {:name => 'Default', :ip_address => '192.168.2.10'},
-            {:name => 'NetworkTest2', :ip_address => '192.168.1.10'}
+            {:name => "#{TEST_NETWORK1}", :ip_address => "#{TEST_NETWORK1_IP}"},
+            {:name => "#{TEST_NETWORK2}", :ip_address => "#{TEST_NETWORK2_IP}"},
           ],
           :bootstrap => {
             :script_path => script_path,
@@ -61,7 +66,7 @@ describe Vcloud::Vapp do
       @vapp[:name].should == @vapp_config[:name]
       @vapp[:'ovf:NetworkSection'][:'ovf:Network'].count.should == 2
       vapp_networks = @vapp[:'ovf:NetworkSection'][:'ovf:Network'].collect {|connection| connection[:ovf_name]}
-      vapp_networks.should =~ ['Default', 'NetworkTest2']
+      vapp_networks.should =~ [TEST_NETWORK1, TEST_NETWORK2]
     end
 
     it "should create vm within vapp" do
@@ -99,16 +104,17 @@ describe Vcloud::Vapp do
       vm_network_connection.should_not be_nil
       vm_network_connection.count.should == 2
 
-      primary_nic = vm_network_connection.detect{|connection| connection[:network] == 'Default'}
-      primary_nic[:network].should == 'Default'
+
+      primary_nic = vm_network_connection.detect{|connection| connection[:network] == TEST_NETWORK1}
+      primary_nic[:network].should == TEST_NETWORK1
       primary_nic[:NetworkConnectionIndex].should == @vm[:NetworkConnectionSection][:PrimaryNetworkConnectionIndex]
-      primary_nic[:IpAddress].should == '192.168.2.10'
+      primary_nic[:IpAddress].should == TEST_NETWORK1_IP
       primary_nic[:IpAddressAllocationMode].should == 'MANUAL'
 
-      second_nic = vm_network_connection.detect{|connection| connection[:network] == 'NetworkTest2'}
-      second_nic[:network].should == 'NetworkTest2'
+      second_nic = vm_network_connection.detect{|connection| connection[:network] == TEST_NETWORK2}
+      second_nic[:network].should == TEST_NETWORK2
       second_nic[:NetworkConnectionIndex].should == '1'
-      second_nic[:IpAddress].should == '192.168.1.10'
+      second_nic[:IpAddress].should == TEST_NETWORK2_IP
       second_nic[:IpAddressAllocationMode].should == 'MANUAL'
 
     end
