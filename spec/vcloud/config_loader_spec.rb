@@ -1,10 +1,10 @@
 require 'spec_helper'
-require 'vcloud/launch'
+require 'vcloud/config_loader'
 
 module Vcloud
 
 
-  describe Vcloud::Launch do
+  describe Vcloud::ConfigLoader do
 
     before(:all) do
       @data_dir = File.join(File.dirname(__FILE__), "../data")
@@ -18,7 +18,7 @@ module Vcloud
             next unless file =~ /\.yaml$/
             full_path = File.join(@data_dir, file)
             expected_data = YAML::load(File.open("#{full_path}.parsed"))
-            Vcloud::Launch.new.load_config(full_path).should == expected_data
+            Vcloud::ConfigLoader.new.load_config(full_path).should == expected_data
           end
         end
       end
