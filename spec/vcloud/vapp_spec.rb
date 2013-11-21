@@ -8,7 +8,7 @@ describe Vcloud::Vapp do
           :Link => [{
                         :rel => "up",
                         :type => "application/vnd.vmware.vcloud.vdc+xml",
-                        :href => "https://api.vcd.portal.skyscapecloud.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237"
+                        :href => "https://api.vcloud-director.example.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237"
                     }],
           :Children => {:Vm => [{:href => '/vm-123aea1e-a5e9-4dd1-a028-40db8c98d237'}]}
       }
@@ -39,11 +39,11 @@ describe Vcloud::Vapp do
       before(:each) do
         @fog_vapp_body = {
             :name => "Webserver vapp-1",
-            :href => "https://api.vcd.portal.skyscapecloud.com/api/vApp/vapp-63d3be58-2d5c-477d-8410-267e7c3c4a02",
+            :href => "https://api.vcloud-director.example.com/api/vApp/vapp-63d3be58-2d5c-477d-8410-267e7c3c4a02",
             :Link => [{
                           :rel => "up",
                           :type => "application/vnd.vmware.vcloud.vdc+xml",
-                          :href => "https://api.vcd.portal.skyscapecloud.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237"
+                          :href => "https://api.vcloud-director.example.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237"
                       }]
         }
         @mock_fog_interface = StubFogInterface.new
@@ -80,11 +80,11 @@ describe Vcloud::Vapp do
     before(:each) do
       @fog_vapp_body ={
           :name => 'Test vDC 1',
-          :href => 'https://api.vcd.portal.skyscapecloud.com/api/vApp/vapp-63d3be58-2d5c-477d-8410-267e7c3c4a02',
+          :href => 'https://api.vcloud-director.example.com/api/vApp/vapp-63d3be58-2d5c-477d-8410-267e7c3c4a02',
           :Link => [{
                         :rel => 'up',
                         :type => 'application/vnd.vmware.vcloud.vdc+xml',
-                        :href => 'https://api.vcd.portal.skyscapecloud.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237'
+                        :href => 'https://api.vcloud-director.example.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237'
                     }],
           :Children => {
               :Vm => ['bogus vm data']

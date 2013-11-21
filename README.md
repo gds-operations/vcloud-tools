@@ -27,7 +27,7 @@ For example:
 
     test:
       vcloud_director_username: 'username@org_name'
-      vcloud_director_host: 'api.vcd.portal.skyscapecloud.com'
+      vcloud_director_host: 'my-vcloud-director-api.example.com'
       vcloud_director_password: 'password'
 
 Unfortunately current usage of fog requires the password in this file.
