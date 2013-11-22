@@ -49,7 +49,7 @@ module Vcloud
             name,
             InstantiationParams: build_network_config(networks)
           )
-          vm = Vcloud::Vm.new(fog_interface, vms.first, self)
+          vm = Vcloud::Vm.new(vms.first, self)
           vm.customize(config[:vm])
           @vcloud_attributes = fog_interface.get_vapp(id)
         end

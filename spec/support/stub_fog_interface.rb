@@ -48,4 +48,5 @@ class StubFogInterface
     { :href => '/vappTemplate-12345678-90ab-cdef-0123-4567890abcde' }
   end
 
+
 end

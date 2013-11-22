@@ -36,8 +36,8 @@ describe Vcloud::Vm do
             ]
         }
     }
-    @vm = Vcloud::Vm.new(@fog_interface, @mock_vm, @mock_vapp)
-
+    Vcloud::FogServiceInterface.stub(:new).and_return(@fog_interface)
+    @vm = Vcloud::Vm.new(@mock_vm, @mock_vapp)
   end
 
   describe '#update_memory_size_in_mb' do
