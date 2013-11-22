@@ -14,6 +14,13 @@ describe Vcloud::ConfigLoader do
   end
 
 
+  it "should create a valid hash when input is YAML" do
+    input_file = 'spec/integration/support/working.yaml'
+    loader = Vcloud::ConfigLoader.new
+    actual_config = loader.load_config(input_file)
+    valid_config.should eq(actual_config)
+  end
+
   def valid_config
     {
       :vdcs=>[{:name=>"VDC_NAME"}],
@@ -32,11 +39,11 @@ describe Vcloud::ConfigLoader do
             {
             :name=>"NetworkTest2",
             :ip_address=>"192.168.1.10"
-          }], 
+          }],
           :bootstrap=>{
             :script_path=>"spec/data/basic_preamble_test.erb",
             :vars=>{:message=>"hello world"}
-          }, 
+          },
           :metadata=>{}
         }
       }]
