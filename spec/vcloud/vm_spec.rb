@@ -93,12 +93,6 @@ describe Vcloud::Vm do
       expected_output = File.read("#{erbfile}.OUT")
       @vm.generate_preamble(erbfile, vars).should == expected_output
     end
-    it "should minify script if >=2048 bytes" do
-      vars = {:message => 'hello world'}
-      erbfile = "#{@data_dir}/unminified_large_script.sh.erb"
-      expected_output = File.read("#{erbfile}.OUT")
-      @vm.generate_preamble(erbfile, vars).should == expected_output
-    end
   end
 
   describe '#update_metadata' do

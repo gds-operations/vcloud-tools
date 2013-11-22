@@ -99,22 +99,11 @@ module Vcloud
 
     def generate_preamble(script_path, vars)
       vapp_name = @vapp.name
-      script = ERB.new(File.read(script_path), nil, '>-').result(binding)
-      # vCloud can only handle preamble scripts < 2048 bytes
-      if script.bytesize >= 2048 
-        script = Open3.capture2(minifier_tool_location, stdin_data: script).first
-      end
-      script
+      ERB.new(File.read(script_path), nil, '>-').result(binding)
     end
 
     def virtual_hardware_section
       @vcloud_attributes[:'ovf:VirtualHardwareSection'][:'ovf:Item']
-    end
-
-  private
-    def minifier_tool_location
-      # ugly ugly, but cannot package non-ruby binstubs.
-      File.join(File.dirname(File.expand_path(__FILE__)), '../../libexec/minifier.py')
     end
 
   end
