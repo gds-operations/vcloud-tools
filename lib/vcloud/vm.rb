@@ -117,5 +117,9 @@ module Vcloud
       File.join(File.dirname(File.expand_path(__FILE__)), '../../libexec/minifier.py')
     end
 
+    def id_prefix
+      'vm'
+    end
+
   end
 end

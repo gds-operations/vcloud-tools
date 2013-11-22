@@ -4,19 +4,30 @@ describe Vcloud::Vapp do
   context "attributes" do
     before(:all) {
       attributes = {
-          :name => "Webserver vapp-1",
+          :name => 'Webserver vapp-1',
+          :href => 'https://api.vcd.portal.skyscapecloud.com/api/vApp/vapp-7647f3ab-ede5-4d07-bad5-4e2235800ef3',
           :Link => [{
-                        :rel => "up",
-                        :type => "application/vnd.vmware.vcloud.vdc+xml",
-                        :href => "https://api.vcloud-director.example.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237"
+                        :rel => 'up',
+                        :type => 'application/vnd.vmware.vcloud.vdc+xml',
+                        :href => 'https://api.vcloud-director.example.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237'
                     }],
           :Children => {:Vm => [{:href => '/vm-123aea1e-a5e9-4dd1-a028-40db8c98d237'}]}
       }
       @vapp = Vcloud::Vapp.new(attributes)
     }
     it { @vapp.should respond_to(:vcloud_attributes) }
-    it { @vapp.name.should == "Webserver vapp-1" }
+    it { @vapp.name.should == 'Webserver vapp-1' }
 
+    context "id" do
+      it "should extract id correctly" do
+        @vapp.id.should == 'vapp-7647f3ab-ede5-4d07-bad5-4e2235800ef3'
+      end
+
+      it "should raise error if id is not in correct format" do
+        @vapp = Vcloud::Vapp.new({:href => 'https://api.vcd.portal.skyscapecloud.com/api/vApp/7647f3ab-ede5-4d07-bad5-4e2235800ef3' })
+        lambda { @vapp.id }.should raise_error("vapp id : 7647f3ab-ede5-4d07-bad5-4e2235800ef3 is not in correct format" )
+      end
+    end
     context "vapp should have parent vdc" do
       it "should load parent vdc id from fog attributes" do
         @vapp.vdc_id.should == '074aea1e-a5e9-4dd1-a028-40db8c98d237'
@@ -67,12 +78,6 @@ describe Vcloud::Vapp do
       end
     end
 
-    context "raise error if vapp not found" do
-      it "should raise an error if vapp does not exist" do
-        vapp = Vcloud::Vapp.new({})
-        expect { vapp.power_on }.to raise_exception(RuntimeError, 'Cannot power on a missing vApp.')
-      end
-    end
   end
 
   context "provisioning a vapp" do
@@ -121,8 +126,6 @@ describe Vcloud::Vapp do
       existing_vapp = {:name => 'existing-vapp-1'}
       @mock_fog_interface.should_receive(:get_vapp_by_name_and_vdc_name).with('test-vapp-1', 'test-vdc-1').
           and_return(existing_vapp)
-      @mock_fog_interface.should_receive(:template).with("org-1-catalog", "org-1-template").and_return(
-          {:href => '/vappTemplate-12345678-90ab-cdef-0123-4567890abcde'})
       Vcloud::FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
       Vcloud.logger.should_receive(:info)
@@ -135,7 +138,8 @@ describe Vcloud::Vapp do
       @mock_vm = double(:vm)
       @mock_vm.stub(:customize).and_return(nil)
       @mock_fog_interface.should_receive(:get_vapp_by_name_and_vdc_name).with("test-vapp-1", "test-vdc-1").and_return(nil)
-      @mock_fog_interface.should_receive(:template).with("org-1-catalog", "org-1-template").and_return({:href => '/vappTemplate-12345678-90ab-cdef-0123-4567890abcde'})
+      Vcloud::VappTemplate.should_receive(:get).with('org-1-catalog', 'org-1-template').and_return(mock(:vapp_template, :id => 'vappTemplate-12345678-90ab-cdef-0123-4567890abcde'))
+
       Vcloud.logger.should_receive(:info)
       @mock_fog_interface.should_receive(:get_vapp).with('vapp-63d3be58-2d5c-477d-8410-267e7c3c4a02').and_return({:name => 'test-vapp-1'})
       Vcloud::Vm.stub(:new) { @mock_vm }
@@ -147,10 +151,11 @@ describe Vcloud::Vapp do
     end
 
     it "should log the error and move on if there is no template" do
-      @mock_fog_interface.should_receive(:template).with("org-1-catalog", "org-1-template").and_return(nil)
+      @mock_fog_interface.should_receive(:get_vapp_by_name_and_vdc_name).with("test-vapp-1", "test-vdc-1").and_return(nil)
+      Vcloud::VappTemplate.should_receive(:get).with('org-1-catalog', 'org-1-template').and_raise('Could not find template vApp')
       Vcloud::FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
-      Vcloud.logger.should_receive(:error).with("Could not provision vApp: Could not find template vApp.")
+      Vcloud.logger.should_receive(:error).with("Could not provision vApp: Could not find template vApp")
       Vcloud::Vapp.new.provision config
     end
 
