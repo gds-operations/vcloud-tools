@@ -102,8 +102,13 @@ module Vcloud
       ERB.new(File.read(script_path), nil, '>-').result(binding)
     end
 
+  private
     def virtual_hardware_section
       @vcloud_attributes[:'ovf:VirtualHardwareSection'][:'ovf:Item']
+    end
+
+    def id_prefix
+      'vm'
     end
 
   end

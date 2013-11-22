@@ -11,9 +11,5 @@ module Vcloud
       end
       extracted_id
     end
-
-    def fog_interface
-      @fog_interface ||= Vcloud::FogServiceInterface.new
-    end
   end
 end
