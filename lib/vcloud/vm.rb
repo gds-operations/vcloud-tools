@@ -1,13 +1,12 @@
 module Vcloud
-  class Vm
+  class Vm < Entity
 
-    attr_reader :vm, :vapp, :id
+    attr_reader :vcloud_attributes
 
-    def initialize(fog_interface, vm, vapp)
-      @vm = vm
-      @fog_interface = fog_interface
+    def initialize(vcloud_attributes, vapp)
+      @vcloud_attributes = vcloud_attributes
+      @fog_interface = FogServiceInterface.new
       @vapp = vapp
-      @id = vm[:href].split('/').last
     end
 
     def customize(vm_config)
@@ -59,10 +58,10 @@ module Vcloud
     end
 
     def add_extra_disks(extra_disks)
-      vm = FogModelInterface.new.get_vm_by_href(@vm[:href])
+      vm = FogModelInterface.new.get_vm_by_href(@vcloud_attributes[:href])
       if extra_disks
         extra_disks.each do |extra_disk|
-          Vcloud.logger.info("adding a disk of size #{extra_disk[:size]}MB into VM #{vm.id}")
+          Vcloud.logger.info("adding a disk of size #{extra_disk[:size]}MB into VM #{id}")
           vm.disks.create(extra_disk[:size])
         end
       end
@@ -95,27 +94,21 @@ module Vcloud
             bootstrap_config[:vars]
         )
       end
-      @fog_interface.put_guest_customization_section(@id, name, interpolated_preamble)
+      @fog_interface.put_guest_customization_section(id, name, interpolated_preamble)
     end
 
     def generate_preamble(script_path, vars)
-      vapp_name = vapp.name
-      script = ERB.new(File.read(script_path), nil, '>-').result(binding)
-      # vCloud can only handle preamble scripts < 2048 bytes
-      if script.bytesize >= 2048 
-        script = Open3.capture2(minifier_tool_location, stdin_data: script).first
-      end
-      script
-    end
-
-    def virtual_hardware_section
-      vm[:'ovf:VirtualHardwareSection'][:'ovf:Item']
+      vapp_name = @vapp.name
+      ERB.new(File.read(script_path), nil, '>-').result(binding)
     end
 
   private
-    def minifier_tool_location
-      # ugly ugly, but cannot package non-ruby binstubs.
-      File.join(File.dirname(File.expand_path(__FILE__)), '../../libexec/minifier.py')
+    def virtual_hardware_section
+      @vcloud_attributes[:'ovf:VirtualHardwareSection'][:'ovf:Item']
+    end
+
+    def id_prefix
+      'vm'
     end
 
   end

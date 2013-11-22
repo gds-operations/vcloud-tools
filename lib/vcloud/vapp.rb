@@ -32,16 +32,15 @@ module Vcloud
       fog_interface = Vcloud::FogServiceInterface.new
       name, vdc_name = config[:name], config[:vdc_name]
       begin
-
-        template = Vcloud::Template.new(fog_interface, config)
-        template_id = template.id
-
-        network_names = config[:vm][:network_connections].collect { |h| h[:name] }
-        networks = fog_interface.find_networks(network_names, vdc_name)
-
         if @vcloud_attributes = fog_interface.get_vapp_by_name_and_vdc_name(name, vdc_name)
           Vcloud.logger.info("Found existing vApp #{name} in vDC '#{vdc_name}'. Skipping.")
         else
+          template = Vcloud::VappTemplate.get(config[:catalog], config[:catalog_item])
+          template_id = template.id
+
+          network_names = config[:vm][:network_connections].collect { |h| h[:name] }
+          networks = fog_interface.find_networks(network_names, vdc_name)
+
           Vcloud.logger.info("Instantiating new vApp #{name} in vDC '#{vdc_name}'")
           @vcloud_attributes = fog_interface.post_instantiate_vapp_template(
             fog_interface.vdc(vdc_name),
@@ -49,7 +48,7 @@ module Vcloud
             name,
             InstantiationParams: build_network_config(networks)
           )
-          vm = Vcloud::Vm.new(fog_interface, vms.first, self)
+          vm = Vcloud::Vm.new(vms.first, self)
           vm.customize(config[:vm])
           @vcloud_attributes = fog_interface.get_vapp(id)
         end
@@ -86,6 +85,10 @@ module Vcloud
         }
       end
       instantiation
+    end
+
+    def id_prefix
+      'vapp'
     end
   end
 end

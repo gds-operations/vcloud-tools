@@ -36,8 +36,8 @@ describe Vcloud::Vm do
             ]
         }
     }
-    @vm = Vcloud::Vm.new(@fog_interface, @mock_vm, @mock_vapp)
-
+    Vcloud::FogServiceInterface.stub(:new).and_return(@fog_interface)
+    @vm = Vcloud::Vm.new(@mock_vm, @mock_vapp)
   end
 
   describe '#update_memory_size_in_mb' do
@@ -90,12 +90,6 @@ describe Vcloud::Vm do
     it "should interpolate vars hash into template" do
       vars = {:message => 'hello world'}
       erbfile = "#{@data_dir}/basic_preamble_test.erb"
-      expected_output = File.read("#{erbfile}.OUT")
-      @vm.generate_preamble(erbfile, vars).should == expected_output
-    end
-    it "should minify script if >=2048 bytes" do
-      vars = {:message => 'hello world'}
-      erbfile = "#{@data_dir}/unminified_large_script.sh.erb"
       expected_output = File.read("#{erbfile}.OUT")
       @vm.generate_preamble(erbfile, vars).should == expected_output
     end

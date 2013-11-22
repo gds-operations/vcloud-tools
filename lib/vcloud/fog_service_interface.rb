@@ -55,7 +55,7 @@ module Vcloud
     end
 
     def put_memory(vm_id, memory)
-      Vcloud.logger.info("putting #{memory}KB memory into VM #{vm_id}")
+      Vcloud.logger.info("putting #{memory}MB memory into VM #{vm_id}")
       task = @vcloud.put_memory(vm_id, memory).body
       @vcloud.process_task(task)
     end
@@ -162,10 +162,8 @@ module Vcloud
         task = @vcloud.put_guest_customization_section_vapp(vm_id, customization_req).body
         @vcloud.process_task(task)
       rescue
-        Vcloud.logger.info("=== vars:")
-        Vcloud.logger.info(bootstrap_config[:vars].inspect)
         Vcloud.logger.info("=== interpolated preamble:")
-        Vcloud.logger.info(interpolated_preamble)
+        Vcloud.logger.info(script)
         raise
       end
     end

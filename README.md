@@ -27,7 +27,7 @@ For example:
 
     test:
       vcloud_director_username: 'username@org_name'
-      vcloud_director_host: 'api.vcd.portal.skyscapecloud.com'
+      vcloud_director_host: 'my-vcloud-director-api.example.com'
       vcloud_director_password: 'password'
 
 Unfortunately current usage of fog requires the password in this file.
@@ -50,6 +50,10 @@ VM. The easiest thing to do is create a local shell script called
     export VCLOUD\_TEST\_VDC="Name of the VDC"
     export VCLOUD\_TEST\_CATALOG="catalog-name"
     export VCLOUD\_TEST\_TEMPLATE="name-of-template"
+    export VCLOUD\_TEST\_NETWORK1="name-of-primary-network"
+    export VCLOUD\_TEST\_NETWORK2="name-of-secondary-network"
+    export VCLOUD\_TEST\_NETWORK1_IP="ip-on-primary-network"
+    export VCLOUD\_TEST\_NETWORK2_IP="ip-on-secondary-network"
 
 Then run this before you run the integration test.
 
