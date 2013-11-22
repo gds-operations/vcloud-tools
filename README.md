@@ -50,6 +50,10 @@ VM. The easiest thing to do is create a local shell script called
     export VCLOUD\_TEST\_VDC="Name of the VDC"
     export VCLOUD\_TEST\_CATALOG="catalog-name"
     export VCLOUD\_TEST\_TEMPLATE="name-of-template"
+    export VCLOUD\_TEST\_NETWORK1="name-of-primary-network"
+    export VCLOUD\_TEST\_NETWORK2="name-of-secondary-network"
+    export VCLOUD\_TEST\_NETWORK1_IP="ip-on-primary-network"
+    export VCLOUD\_TEST\_NETWORK2_IP="ip-on-secondary-network"
 
 Then run this before you run the integration test.
 
