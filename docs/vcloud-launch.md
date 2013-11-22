@@ -31,3 +31,8 @@ Limitations:
   next release.
 * The configuration currently describes a single vDC. This is expected to change
   to describe a complete Org.
+* vCloud has some interesting ideas about the size of potential 'guest customisation 
+  scripts' (aka preambles). You may need to use an external minify tool to reduce
+  the size, or speak to your provider to up the limit. 2048 bytes seems to be a 
+  practical default maximum, though YMMV.
+
