@@ -7,7 +7,7 @@ describe Vcloud::ConfigLoader do
   end
 
   it "should create a valid hash when input is JSON" do
-    input_file = 'spec/integration/support/working.json'
+    input_file = 'spec/data/working.json'
     loader = Vcloud::ConfigLoader.new
     actual_config = loader.load_config(input_file)
     valid_config.should eq(actual_config)
@@ -15,7 +15,7 @@ describe Vcloud::ConfigLoader do
 
 
   it "should create a valid hash when input is YAML" do
-    input_file = 'spec/integration/support/working.yaml'
+    input_file = 'spec/data/working.yaml'
     loader = Vcloud::ConfigLoader.new
     actual_config = loader.load_config(input_file)
     valid_config.should eq(actual_config)
