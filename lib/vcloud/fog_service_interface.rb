@@ -55,7 +55,7 @@ module Vcloud
     end
 
     def put_memory(vm_id, memory)
-      Vcloud.logger.info("putting #{memory}KB memory into VM #{vm_id}")
+      Vcloud.logger.info("putting #{memory}MB memory into VM #{vm_id}")
       task = @vcloud.put_memory(vm_id, memory).body
       @vcloud.process_task(task)
     end
