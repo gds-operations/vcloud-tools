@@ -21,6 +21,13 @@ describe Vcloud::ConfigLoader do
     valid_config.should eq(actual_config)
   end
 
+  it "should create a valid hash when input is YAML with anchor defaults" do
+    input_file = 'spec/data/working_with_defaults.yaml'
+    loader = Vcloud::ConfigLoader.new
+    actual_config = loader.load_config(input_file)
+    valid_config.should eq(actual_config)
+  end
+
   def valid_config
     {
       :vdcs=>[{:name=>"VDC_NAME"}],
