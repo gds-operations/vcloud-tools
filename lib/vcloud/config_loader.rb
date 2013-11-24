@@ -6,14 +6,13 @@ module Vcloud
     def load_config(config_file)
       config = YAML::load(File.open(config_file))
 
-      # We have to use this hack again if we are to do everything in YAML
-      # better might be to write a symbolize keys method?
+      # There is no way in YAML or Ruby to symbolize keys in a hash
       json_string = JSON.generate(config)
       config = JSON.parse(json_string, :symbolize_names => true)
 
       Deprecator.single_vdc_support if config['vdc']
       config
     end
-  end
 
+  end 
 end
