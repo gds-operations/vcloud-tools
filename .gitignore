@@ -3,6 +3,7 @@
 *.swp
 *.un~
 vcloud_env.sh
+replace_variables.sh
 /.bundle/
 /Gemfile.lock
 /bundle/

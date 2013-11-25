@@ -16,6 +16,7 @@ require 'vcloud/fog_service_interface'
 require 'vcloud/fog_model_interface'
 require 'vcloud/vapp'
 require 'vcloud/vm'
+require 'vcloud/config_loader'
 require 'vcloud/vapp_template'
 
 module Vcloud

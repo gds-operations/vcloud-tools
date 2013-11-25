@@ -23,5 +23,14 @@ module Vcloud
       Kernel.exit
     end
 
+    def self.old_yaml_format
+      logger = Vcloud.logger
+
+      logger.info('Config file format has changed.')
+      logger.info('Please use YAML anchors to specify defaults.')
+
+      Kernel.exit
+    end
+
   end
 end
