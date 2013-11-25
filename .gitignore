@@ -9,3 +9,4 @@ vcloud_env.sh
 /pkg/
 vendor/
 results.html
+fog_integration_test.config
