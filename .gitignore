@@ -11,3 +11,4 @@ replace_variables.sh
 vendor/
 coverage/
 results.html
+fog_integration_test.config
