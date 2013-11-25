@@ -5,6 +5,7 @@ module Vcloud
 
     def load_config(config_file)
       config = YAML::load(File.open(config_file))
+      Deprecator.old_yaml_format if config['defaults']
 
       # There is no way in YAML or Ruby to symbolize keys in a hash
       json_string = JSON.generate(config)
