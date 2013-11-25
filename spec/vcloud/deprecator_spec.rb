@@ -3,6 +3,14 @@ require 'spec_helper'
 describe Vcloud::Deprecator do
   let(:mock_logger) { double(:vcloud_logger) }
 
+  it "should print info about changing from old yaml format" do
+    Vcloud.should_receive(:logger).and_return(mock_logger)
+    mock_logger.should_receive(:info).with('Config file format has changed.')
+    mock_logger.should_receive(:info).with('Please use YAML anchors to specify defaults.')
+    Kernel.should_receive(:exit).once
+    Vcloud::Deprecator.old_yaml_format
+  end
+
   it "should print info about supporting multiple vdcs" do
     Vcloud.should_receive(:logger).and_return(mock_logger)
 
