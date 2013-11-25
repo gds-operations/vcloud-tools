@@ -30,6 +30,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec-mocks', '~> 2.14.4'
   s.add_development_dependency 'simplecov', '~> 0.8.2'
   s.add_development_dependency 'aruba', '~> 0.5.3'
-  s.add_development_dependency 'unf', '~> 0.1.3'
   s.add_development_dependency 'cucumber', '~> 1.3.10'
 end
