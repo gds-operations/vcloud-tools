@@ -20,7 +20,7 @@ SimpleCov.at_exit do
   # do not change the coverage percentage, instead add more unit tests to fix coverage failures.
   if SimpleCov.result.covered_percent < 70
     print "ERROR::BAD_COVERAGE\n"
-    print "Coverage is less than acceptable limit. Please add more tests to improve the coverage"
+    print "Coverage is less than acceptable limit(70%). Please add more tests to improve the coverage"
     exit(1)
   end
 end
