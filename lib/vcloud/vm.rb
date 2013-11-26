@@ -19,7 +19,8 @@ module Vcloud
       update_metadata(vm_config[:metadata])
       configure_guest_customization_section(
             @vapp.name,
-            vm_config[:bootstrap]
+            vm_config[:bootstrap],
+            vm_config[:extra_disks]
             )
     end
 
@@ -85,13 +86,14 @@ module Vcloud
       @fog_interface.put_network_connection_system_section_vapp(id, section)
     end
 
-    def configure_guest_customization_section(name, bootstrap_config)
+    def configure_guest_customization_section(name, bootstrap_config, extra_disks)
       if bootstrap_config.nil? or bootstrap_config[:script_path].nil?
         interpolated_preamble = ''
       else
+        preamble_vars = bootstrap_config[:vars].merge(extra_disks)
         interpolated_preamble = generate_preamble(
             bootstrap_config[:script_path],
-            bootstrap_config[:vars]
+            preamble_vars,
         )
       end
       @fog_interface.put_guest_customization_section(id, name, interpolated_preamble)

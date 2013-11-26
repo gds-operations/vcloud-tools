@@ -40,6 +40,39 @@ describe Vcloud::Vm do
     @vm = Vcloud::Vm.new(@mock_vm, @mock_vapp)
   end
 
+  it "orchestrate customization" do
+    vm_config = {
+        :hardware_config => {
+            :memory => 4096,
+            :cpu => 2
+        },
+        :metadata => {
+            :shutdown => true
+        },
+        :extra_disks => [
+            {:size => '1024', :name => 'Hard disk 2', :fs_file => 'mysql', :fs_mntops => 'mysql-something'},
+            {:size => '2048', :name => 'Hard disk 3', :fs_file => 'solr', :fs_mntops => 'solr-something'}
+        ],
+
+        :network_connections => [
+            {:name => "network1", :ip_address => "198.12.1.21"},
+        ],
+        :bootstrap => {
+            :script_path => '/tmp/boostrap.erb',
+            :vars => {
+                :message => 'hello world'
+            }
+        }
+    }
+    @vm.should_receive(:configure_network_interfaces).with(vm_config[:network_connections])
+    @vm.should_receive(:update_cpu_count).with(2)
+    @vm.should_receive(:update_memory_size_in_mb).with(4096)
+    @vm.should_receive(:add_extra_disks).with(vm_config[:extra_disks])
+    @vm.should_receive(:update_metadata).with(vm_config[:metadata])
+    @vm.should_receive(:configure_guest_customization_section).with(@vapp_name, vm_config[:bootstrap], vm_config[:extra_disks])
+    @vm.customize(vm_config)
+  end
+
   describe '#update_memory_size_in_mb' do
     context "update memory in VM" do
       it "should not allow memory size < 64MB" do
@@ -93,6 +126,7 @@ describe Vcloud::Vm do
       expected_output = File.read("#{erbfile}.OUT")
       @vm.generate_preamble(erbfile, vars).should == expected_output
     end
+
   end
 
   describe '#update_metadata' do
