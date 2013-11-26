@@ -9,21 +9,6 @@ module Vcloud
       @vapp = vapp
     end
 
-    def customize(vm_config)
-      configure_network_interfaces vm_config[:network_connections]
-      if hardware_config = vm_config[:hardware_config]
-        update_cpu_count(hardware_config[:cpu])
-        update_memory_size_in_mb(hardware_config[:memory])
-      end
-      add_extra_disks(vm_config[:extra_disks])
-      update_metadata(vm_config[:metadata])
-      configure_guest_customization_section(
-            @vapp.name,
-            vm_config[:bootstrap],
-            vm_config[:extra_disks]
-            )
-    end
-
     def update_memory_size_in_mb(new_memory)
       return if new_memory.nil?
       return if new_memory.to_i < 64
@@ -40,6 +25,10 @@ module Vcloud
     def cpu
       cpu_item = virtual_hardware_section.detect { |i| i[:'rasd:ResourceType'] == '3' }
       cpu_item[:'rasd:VirtualQuantity']
+    end
+
+    def vapp_name
+      @vapp.name
     end
 
     def update_cpu_count(new_cpu_count)
@@ -90,7 +79,7 @@ module Vcloud
       if bootstrap_config.nil? or bootstrap_config[:script_path].nil?
         interpolated_preamble = ''
       else
-        preamble_vars = bootstrap_config[:vars].merge(extra_disks)
+        preamble_vars = bootstrap_config[:vars].merge(:extra_disks => extra_disks)
         interpolated_preamble = generate_preamble(
             bootstrap_config[:script_path],
             preamble_vars,

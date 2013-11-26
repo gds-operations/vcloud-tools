@@ -142,7 +142,7 @@ describe Vcloud::Vapp do
 
       Vcloud.logger.should_receive(:info)
       @mock_fog_interface.should_receive(:get_vapp).with('vapp-63d3be58-2d5c-477d-8410-267e7c3c4a02').and_return({:name => 'test-vapp-1'})
-      Vcloud::Vm.stub(:new) { @mock_vm }
+      Vcloud::VmOrchestrator.stub(:new) { @mock_vm }
       Vcloud::FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
       actual_vapp = Vcloud::Vapp.new().provision config
