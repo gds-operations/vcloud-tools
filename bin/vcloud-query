@@ -5,6 +5,8 @@ require 'bundler/setup'
 require 'csv'
 require 'fog'
 require 'optparse'
+require 'pp'
+require 'yaml'
 
 def parse_args
   options = {}
@@ -27,6 +29,10 @@ def parse_args
 
     opts.on('--fields', '=NAMES', 'Attribute or metadata key names') do |v|
       options[:fields] = v
+    end
+
+    opts.on('--format', '=ATTRIBUTE', 'Data formaat to retrieve: records, idrecords, references') do |v|
+      options[:format] = v
     end
 
     opts.on('--filter', '=FILTER', 'Filter expression') do |v|
@@ -93,6 +99,10 @@ begin
   break if response.body[records].nil? || response.body[records].empty?
   response.body[records] = [response.body[records]] if response.body[records].is_a?(Hash)
   case options[:output_format]
+  when 'yaml'
+    puts YAML.dump(response.body)
+  when 'raw'
+    pp response.body
   when 'csv'
     csv_string = CSV.generate do |csv|
       if options[:page] == 1
