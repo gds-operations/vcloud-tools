@@ -7,6 +7,7 @@ require 'fog'
 require 'optparse'
 require 'pp'
 require 'yaml'
+require 'vcloud'
 
 def parse_args
   options = {}
@@ -67,57 +68,5 @@ options = parse_args
 Fog.credential = options.delete(:credential) if options[:credential]
 vcloud = Fog::Compute::VcloudDirector.new
 
-if ARGV.size == 0
-  query_list = vcloud.get_execute_query.body
-  queries = {}
-  type_width = 0
-  query_list[:Link].select do |link|
-    link[:rel] == 'down'
-  end.map do |link|
-    href = Nokogiri::XML.fragment(link[:href])
-    query = CGI.parse(URI.parse(href.text).query)
-    [query['type'].first, query['format'].first]
-  end.each do |type, format|
-    queries[type] ||= []
-    queries[type] << format
-    type_width = [type_width, type.size].max
-  end
-  queries.keys.sort.each do |type|
-    puts "%-#{type_width}s %s" % [type, queries[type].sort.join(',')]
-  end
-  Kernel.exit(0)
-end
+Vcloud::Query.new.run(ARGV.first, options)
 
-options[:page] = 1
-begin
-  begin
-    response = vcloud.get_execute_query(type=ARGV.first, options)
-  rescue Fog::Compute::VcloudDirector::BadRequest, Fog::Compute::VcloudDirector::Forbidden => e
-    Kernel.abort("#{File.basename($0)}: #{e.message}")
-  end
-  records = response.body.keys.detect {|key| key.to_s =~ /Record|Reference$/}
-  break if response.body[records].nil? || response.body[records].empty?
-  response.body[records] = [response.body[records]] if response.body[records].is_a?(Hash)
-  case options[:output_format]
-  when 'yaml'
-    puts YAML.dump(response.body)
-  when 'raw'
-    pp response.body
-  when 'csv'
-    csv_string = CSV.generate do |csv|
-      if options[:page] == 1
-        csv << response.body[records].first.keys
-      end
-      response.body[records].each do |record|
-        csv << record.values
-      end
-    end
-    puts csv_string
-  else
-    puts response.body[records].first.keys.join("\t") if options[:page] == 1
-    response.body[records].each do |record|
-      puts record.values.join("\t")
-    end
-  end
-  options[:page] = response.body[:nextPage]
-end until options[:page].nil?
