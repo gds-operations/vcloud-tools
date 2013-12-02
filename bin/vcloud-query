@@ -2,71 +2,64 @@
 
 require 'rubygems'
 require 'bundler/setup'
-require 'csv'
-require 'fog'
 require 'optparse'
-require 'pp'
-require 'yaml'
+require 'methadone'
+
 require 'vcloud'
 
-def parse_args
-  options = {}
+class App
 
-  opt_parser = OptionParser.new do |opts|
-    opts.banner = "Usage: #{File.basename($0)} [options] [TYPE]"
-    opts.separator ''
-    opts.separator 'Available Options:'
+  include Methadone::Main
+  include Methadone::CLILogging
+  include Vcloud
 
-    opts.on('-A', '--sort-asc', '=ATTRIBUTE', 'Sort ascending') do |v|
-      options[:sortAsc] = v
-    end
-    opts.on('-D', '--sort-desc', '=ATTRIBUTE', 'Sort descending') do |v|
-      options[:sortDesc] = v
-    end
-
-    opts.on('-c', '--credential', '=GROUP', 'fog credential group') do |v|
-      options[:credential] = v
-    end
-
-    opts.on('--fields', '=NAMES', 'Attribute or metadata key names') do |v|
-      options[:fields] = v
-    end
-
-    opts.on('--format', '=ATTRIBUTE', 'Data formaat to retrieve: records, idrecords, references') do |v|
-      options[:format] = v
-    end
-
-    opts.on('--filter', '=FILTER', 'Filter expression') do |v|
-      options[:filter] += v.split(',')
-    end
-
-    opts.on('-o', '--output-format', '=FORMAT', 'Output format: csv, tsv') do |v|
-      # TODO: validate!
-      options[:output_format] = v.downcase
-    end
-
-    opts.on_tail("-h", "--help", "Show usage instructions") do
-      Kernel.abort opts.to_s
-    end
+  main do |type|
+    Query.new.run(type, options)
   end
 
-  begin
-    opt_parser.parse!
-  rescue OptionParser::InvalidOption, OptionParser::MissingArgument => e
-    Kernel.abort "#{$0}: #{e.message}"
+
+  on("--verbose", "Verbose output")
+  on("--debug",   "Debugging output")
+  on("--no_power_on",  "Do not power on vApps (default is to power on)")
+  
+  on('-A', '--sort-asc', '=ATTRIBUTE', 'Sort ascending') do |v|
+    options[:sortAsc] = v
   end
 
-  #if ARGV.size > 1
-  #  Kernel.abort opt_parser
-  #end
+  on('-D', '--sort-desc', '=ATTRIBUTE', 'Sort descending') do |v|
+    options[:sortDesc] = v
+  end
 
-  options
+  on('--fields NAMES', 'Attribute or metadata key names') do |v|
+    options[:fields] = v
+  end
+
+  on('--format', '=ATTRIBUTE', 'Data format to retrieve: records, idrecords, references') do |v|
+    options[:format] = v
+  end
+
+  on('--filter', '=FILTER', 'Filter expression') do |v|
+    options[:filter] += v.split(',')
+  end
+
+  on('-o', '--output-format', '=FORMAT', 'Output format: csv, tsv') do |v|
+    # TODO: validate!
+    options[:output_format] = v.downcase
+  end
+
+  arg :type, :optional
+
+  description '
+  vcloud-query takes a query type and returns all vCloud entities of 
+  that type, obeying supplied filter rules.
+
+  Without a type argument, returns a list of all potential types to query.
+
+  See https://github.com/alphagov/vcloud-tools for more info'
+
+  version Vcloud::VERSION
+
+  #use_log_level_option
+
+  go!
 end
-
-options = parse_args
-
-Fog.credential = options.delete(:credential) if options[:credential]
-vcloud = Fog::Compute::VcloudDirector.new
-
-Vcloud::Query.new.run(ARGV.first, options)
-
