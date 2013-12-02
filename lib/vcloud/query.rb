@@ -5,6 +5,7 @@ module Vcloud
 
     def initialize
       @options = {}
+      @fsi = FogServiceInterface.new
     end
 
     def run(type = nil, options = {})
@@ -14,47 +15,53 @@ module Vcloud
       puts "options:" if @options[:debug]
       pp @options if @options[:debug]
 
-      fsi = FogServiceInterface.new
-
       if type.nil?
-
-        query_list = fsi.get_execute_query
-        queries = {}
-        type_width = 0
-        query_list[:Link].select do |link|
-          link[:rel] == 'down'
-        end.map do |link|
-          href = Nokogiri::XML.fragment(link[:href])
-          query = CGI.parse(URI.parse(href.text).query)
-          [query['type'].first, query['format'].first]
-        end.each do |type, format|
-          queries[type] ||= []
-          queries[type] << format
-          type_width = [type_width, type.size].max
-        end
-        queries.keys.sort.each do |type|
-          puts "%-#{type_width}s %s" % [type, queries[type].sort.join(',')]
-        end
-
+        get_and_output_potential_query_types
       else
+        get_and_output_query_results(type)
+      end
+    end
+
+    def get_and_output_query_results(type)
 
         @options[:page] = 1
         begin
           begin
-            response = fsi.get_execute_query(type=type, @options)
+            results = @fsi.get_execute_query(type=type, @options)
           rescue Fog::Compute::VcloudDirector::BadRequest, Fog::Compute::VcloudDirector::Forbidden => e
             Kernel.abort("#{File.basename($0)}: #{e.message}")
           end
 
-          break unless output_response(response)
-          @options[:page] = response[:nextPage]
+          break unless output_results(results)
+          @options[:page] = results[:nextPage]
 
         end until @options[:page].nil?
 
-      end
     end
 
-    def output_response(body)
+    def get_and_output_potential_query_types
+
+      query_list = @fsi.get_execute_query
+      queries = {}
+      type_width = 0
+      query_list[:Link].select do |link|
+        link[:rel] == 'down'
+      end.map do |link|
+        href = Nokogiri::XML.fragment(link[:href])
+        query = CGI.parse(URI.parse(href.text).query)
+        [query['type'].first, query['format'].first]
+      end.each do |type, format|
+        queries[type] ||= []
+        queries[type] << format
+        type_width = [type_width, type.size].max
+      end
+      queries.keys.sort.each do |type|
+        puts "%-#{type_width}s %s" % [type, queries[type].sort.join(',')]
+      end
+
+    end
+
+    def output_results(body)
 
       records = body.keys.detect {|key| key.to_s =~ /Record|Reference$/}
       return nil if body[records].nil? || body[records].empty?
@@ -86,5 +93,4 @@ module Vcloud
 
   end
 end
-
 
