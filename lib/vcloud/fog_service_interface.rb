@@ -119,6 +119,10 @@ module Vcloud
       end
     end
 
+    def get_execute_query(type=nil, options={})
+      @vcloud.get_execute_query(type, options).body
+    end
+
     def get_vapp_metadata_hash(id)
       metadata = {}
       @vcloud.get_vapp_metadata(id).body[:MetadataEntry].each do |entry|
