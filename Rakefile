@@ -5,6 +5,7 @@ require 'rake/testtask'
 require 'cucumber'
 require 'cucumber/rake/task'
 require 'rspec/core/rake_task'
+require 'jeweler'
 
 include Rake::DSL
 
@@ -33,3 +34,8 @@ RSpec::Core::RakeTask.new(:integration_test) do |task|
 end
 
 task :default => [:spec,:features]
+
+Jeweler::Tasks.new do |gem|
+  gem.name = 'vcloud-tools'
+end
+Jeweler::RubygemsDotOrgTasks.new
