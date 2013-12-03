@@ -22,10 +22,15 @@ usage() {
 [ -z "$VCLOUD_USER" ] && usage
 [ -z "$VCLOUD_PASS" ] && usage
 
-CURL_OPTS="-k -s"
+CURL_OPTS=${CURL_OPTS-'--silent'} 
+MAIN_QUERY_CURL_OPTS=${MAIN_QUERY_CURL_OPTS-''} 
 
-SESSION_KEY=`curl -i $CURL_OPTS \
-   -H 'Accept:application/*+xml;version=1.5' \
+api_version=${VCLOUD_API_VERSION-'5.1'} 
+
+MAIN_QUERY_CONTENT_TYPE=${MAIN_QUERY_CONTENT_TYPE-"application/*+xml;version=${api_version}"}
+
+SESSION_KEY=`curl --include $CURL_OPTS \
+   -H "Accept:application/*+xml;version=${api_version}" \
    -u "${VCLOUD_USER}@${VCLOUD_ORG}:${VCLOUD_PASS}" \
    -X POST \
    "https://${VCLOUD_HOST}/api/sessions" \
@@ -39,15 +44,15 @@ if [ -z "${SESSION_KEY}" ]; then
   exit 2
 fi
 
-curl $CURL_OPTS \
-   -H 'Accept:application/*+xml;version=1.5' \
+curl $CURL_OPTS $MAIN_QUERY_CURL_OPTS \
+   -H "Accept:${MAIN_QUERY_CONTENT_TYPE}" \
    -H "x-vcloud-authorization: ${SESSION_KEY}" \
    "https://${VCLOUD_HOST}/api/$1"
 
-# Log out -- fails with 401
-#curl $CURL_OPTS \
-#   -H 'Accept:application/*+xml;version=1.5' \
-#   -H "x-vcloud-authorization: ${SESSION_KEY}" \
-#   -X DELETE \
-#   "https://${VCLOUD_HOST}/api/sessions"
+# Log out
+curl $CURL_OPTS \
+   -H "Accept:application/*+xml;version=${api_version}" \
+   -H "x-vcloud-authorization: ${SESSION_KEY}" \
+   -X DELETE \
+   "https://${VCLOUD_HOST}/api/session"
 
