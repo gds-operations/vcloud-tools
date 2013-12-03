@@ -17,11 +17,6 @@ class App
     Query.new.run(type, options)
   end
 
-
-  on("--verbose", "Verbose output")
-  on("--debug",   "Debugging output")
-  on("--no_power_on",  "Do not power on vApps (default is to power on)")
-  
   on('-A', '--sort-asc', '=ATTRIBUTE', 'Sort ascending') do |v|
     options[:sortAsc] = v
   end
@@ -30,7 +25,7 @@ class App
     options[:sortDesc] = v
   end
 
-  on('--fields NAMES', 'Attribute or metadata key names') do |v|
+  on('--fields', '=NAMES', 'Attribute or metadata key names') do |v|
     options[:fields] = v
   end
 
@@ -47,13 +42,16 @@ class App
     options[:output_format] = v.downcase
   end
 
+  on("--verbose", "Verbose output")
+  on("--debug",   "Debugging output")
+
   arg :type, :optional
 
   description '
   vcloud-query takes a query type and returns all vCloud entities of 
   that type, obeying supplied filter rules.
 
-  Without a type argument, returns a list of all potential types to query.
+  Without a type argument, returns a list of available types to query.
 
   See https://github.com/alphagov/vcloud-tools for more info'
 
