@@ -44,7 +44,7 @@ describe Vcloud::Query do
 
     end
 
-    context "#run with a type set" do
+    context "get results with a single response page" do
 
       before(:each) do
         @mock_fog_interface = StubFogInterface.new
@@ -65,15 +65,21 @@ describe Vcloud::Query do
       end
 
       it "should output a query in tsv when run with a type" do
-        @query.should_receive(:output_query_results)
+        @query = Vcloud::Query.new('bob', :output_format => 'tsv')
+        @query.should_receive(:puts).with("field1\tfield2\tfield3")
+        @query.should_receive(:puts).with("Stuff 1\tStuff 2\tStuff 3")
+        @query.should_receive(:puts).with("More Stuff 1\tMore Stuff 2\tMore Stuff 3")
         @query.run()
       end
 
-      it "should output yaml when run with a type and yaml output option"
+      it "should output a query in csv when run with a type" do
+        @query = Vcloud::Query.new('bob', :output_format => 'csv')
+        @query.should_receive(:puts).with("field1,field2,field3\n")
+        @query.should_receive(:puts).with("Stuff 1,Stuff 2,Stuff 3\nMore Stuff 1,More Stuff 2,More Stuff 3\n")
+        @query.run()
+      end
 
-      it "should output csv when run with a type and csv output option" 
-
-      it "should output tsv when run with a type and tsv output option" 
+      it "should output a query in yaml when run with a type"
 
     end
 
