@@ -22,15 +22,24 @@ class App
     rel_url = ARGV.shift
     url = end_point + rel_url
 
-    system("/usr/bin/curl -H 'Accept:#{options[:content_type]}' -H 'x-vcloud-authorization: #{token}' #{ARGV.join(' ')} #{url}")
+    system("/usr/bin/curl #{options[:curl_base_opts]} \
+             -H 'Accept:#{options[:content_type]}' \
+             -H 'x-vcloud-authorization: #{token}' \
+             #{ARGV.join(' ')} #{url}")
 
   end
 
   options[:content_type] = "application/*+xml;version=5.1"
+  options[:curl_base_opts] = '-s'
 
   on("--content_type", "=ATTRIBUTE",
      "Override default content_type (#{options[:content_type]})" ) do |v|
     options[:content_type] = v
+  end
+
+  on("--curl_base_opts", "=ATTRIBUTE",
+     "Override base curl options (#{options[:curl_base_opts]})" ) do |v|
+    options[:curl_base_opts] = v
   end
 
   on("--verbose", "Verbose output")
