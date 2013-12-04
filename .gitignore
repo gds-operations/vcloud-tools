@@ -5,6 +5,7 @@
 vcloud_env.sh
 replace_variables.sh
 /.bundle/
+/.ruby-version
 /Gemfile.lock
 /bundle/
 /pkg/
