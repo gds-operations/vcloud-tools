@@ -172,6 +172,12 @@ module Vcloud
       end
     end
 
+    def put_vm id, name, options
+      vcloud.logger.info("updating name : #{name}, :options => #{options} in vm : #{id}")
+      task = @vcloud.put_vm(id, name, options)
+      @vcloud.process_task(task)
+    end
+
     private
     def extract_id(link)
       link[:href].split('/').last
