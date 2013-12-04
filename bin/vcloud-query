@@ -14,7 +14,7 @@ class App
   include Vcloud
 
   main do |type|
-    Query.new.run(type, options)
+    Query.new(type, options).run
   end
 
   on('-A', '--sort-asc', '=ATTRIBUTE', 'Sort ascending') do |v|
@@ -37,7 +37,7 @@ class App
     options[:filter] += v.split(',')
   end
 
-  on('-o', '--output-format', '=FORMAT', 'Output format: csv, tsv') do |v|
+  on('-o', '--output-format', '=FORMAT', 'Output format: csv, tsv, yaml') do |v|
     # TODO: validate!
     options[:output_format] = v.downcase
   end
