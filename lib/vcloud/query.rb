@@ -6,7 +6,7 @@ module Vcloud
     attr_reader :type
     attr_reader :options
 
-    def initialize(type, options={})
+    def initialize(type=nil, options={})
       @type = type
       @options = options
       @options[:output_format] ||= 'tsv'
@@ -21,14 +21,13 @@ module Vcloud
       if @type.nil?
         output_potential_query_types
       else
-        get_and_output_query_results
+        output_query_results
       end
     end
 
     def get_num_pages
       body = @fsi.get_execute_query(type=@type, @options)
       last_page = body[:lastPage] || 1
-      raise 'No lastPage in query results.' if last_page.nil?
       raise "Invalid lastPage (#{last_page}) in query results" unless last_page.is_a? Integer
       return last_page.to_i
     end
@@ -38,6 +37,7 @@ module Vcloud
 
       begin
         body = @fsi.get_execute_query(type=@type, @options.merge({:page=>page}))
+        pp body if @options[:debug]
       rescue Fog::Compute::VcloudDirector::BadRequest, Fog::Compute::VcloudDirector::Forbidden => e
         Kernel.abort("#{File.basename($0)}: #{e.message}")
       end
@@ -49,13 +49,18 @@ module Vcloud
 
     end
 
-    def get_and_output_query_results
+    def get_all_results
+      results = []
       (1..get_num_pages).each do |page|
-        results = get_results_page(page)
-        break if results.nil?
-        output_header(results) if page == 1
-        output_results(results)
+        results += get_results_page(page)
       end
+      results
+    end
+
+    def output_query_results
+      results = get_all_results
+      output_header(results)
+      output_results(results)
     end
 
     def output_potential_query_types
