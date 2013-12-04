@@ -24,11 +24,15 @@ describe Vcloud::VmOrchestrator do
             :vars => {
                 :message => 'hello world'
             }
+        },
+        :storage_profile => {
+            :name => 'basic-storage',
+            :href => 'https://vcloud.example.net/api/vdcStorageProfile/000aea1e-a5e9-4dd1-a028-40db8c98d237'
         }
     }
     fog_vm = { :href => '/vm-123aea1e-a5e9-4dd1-a028-40db8c98d237' }
     vapp = double(:vapp, :name => 'web-app1')
-    vm = double(:vm, :vapp_name => 'web-app1', :vapp => vapp)
+    vm = double(:vm, :vapp_name => 'web-app1', :vapp => vapp, :name => 'test-vm-1')
     Vcloud::Vm.should_receive(:new).and_return(vm)
 
     vm.should_receive(:configure_network_interfaces).with(vm_config[:network_connections])
@@ -37,8 +41,8 @@ describe Vcloud::VmOrchestrator do
     vm.should_receive(:add_extra_disks).with(vm_config[:extra_disks])
     vm.should_receive(:update_metadata).with(vm_config[:metadata])
     vm.should_receive(:configure_guest_customization_section).with('web-app1', vm_config[:bootstrap], vm_config[:extra_disks])
+    vm.should_receive(:update_storage_profile).with(vm_config[:storage_profile])
 
     Vcloud::VmOrchestrator.new(fog_vm, vapp).customize(vm_config)
   end
-
 end

@@ -17,6 +17,7 @@ module Vcloud
           vm_config[:bootstrap],
           vm_config[:extra_disks]
       )
+      @vm.update_storage_profile(vm_config[:storage_profile]) if vm_config[:storage_profile]
     end
 
   end

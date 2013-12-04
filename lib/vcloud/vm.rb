@@ -100,6 +100,15 @@ module Vcloud
       script
     end
 
+    def update_storage_profile storage_profile
+      if valid_storage_profile?(storage_profile)
+        @fog_interface.put_vm(id, name, {:StorageProfile => storage_profile})
+      else
+        Vcloud.logger.info("bad storage profile: #{storage_profile}")
+        false
+      end
+    end
+
   private
     def virtual_hardware_section
       @vcloud_attributes[:'ovf:VirtualHardwareSection'][:'ovf:Item']
@@ -107,6 +116,10 @@ module Vcloud
 
     def id_prefix
       'vm'
+    end
+
+    def valid_storage_profile?(storage_profile)
+      storage_profile.key?(:name) && storage_profile.key?(:href)
     end
 
   end

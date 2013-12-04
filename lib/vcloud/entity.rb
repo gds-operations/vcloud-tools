@@ -11,5 +11,9 @@ module Vcloud
       end
       extracted_id
     end
+
+    def name
+      @vcloud_attributes[:name]
+    end
   end
 end
