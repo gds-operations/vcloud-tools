@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# This is an illustrative (functional) example of how to use just curl 
+# to talk to the vCloud API. 
+#
+# The rest of the tools in vcloud-tools use Fog and hence have a unified 
+# credential/session handling system - and should as a result be used instead
+# of this example.
+#
+
 usage() {
   echo "vcloud-curl: simple curl wrapper to allow GET requests to vcloud API"
   echo
