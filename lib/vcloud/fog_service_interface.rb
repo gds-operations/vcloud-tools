@@ -178,6 +178,14 @@ module Vcloud
       @vcloud.process_task(task)
     end
 
+    def vcloud_token
+      @vcloud.vcloud_token
+    end
+
+    def end_point
+      @vcloud.end_point
+    end
+
     private
     def extract_id(link)
       link[:href].split('/').last
