@@ -2,17 +2,26 @@ require 'spec_helper'
 
 describe Vcloud::Query do
   context "attributes" do
-    before(:all) do
-      @mock_fog_interface = StubFogInterface.new
-      Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
-      @query = Vcloud::Query.new
+
+    context "our object should have methods" do
+      before(:each) do
+        @mock_fog_interface = StubFogInterface.new
+        Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        @query = Vcloud::Query.new()
+      end
+      it { @query.should respond_to(:run) }
     end
 
-    it { @query.should respond_to(:run) }
+    context "#run with no type set" do
+      
+      before(:each) do
+        @mock_fog_interface = StubFogInterface.new
+        Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        @query = @query = Vcloud::Query.new()
+      end
 
-    context "run" do
-      it "should call get_and_output_potential_query_types when run not provided with a type" do
-        @query.should_receive(:get_and_output_potential_query_types)
+      it "should call output_potential_query_types when run not provided with a type" do
+        @query.should_receive(:output_potential_query_types)
         @query.run()
       end
 
@@ -30,12 +39,34 @@ describe Vcloud::Query do
         @query.should_receive(:puts).with("alice records,references")
         @query.should_receive(:puts).with("bob   records")
 
-        @query.get_and_output_potential_query_types
+        @query.output_potential_query_types
+      end
+
+    end
+
+    context "#run with a type set" do
+
+      before(:each) do
+        @mock_fog_interface = StubFogInterface.new
+        Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        @query = Vcloud::Query.new('bob')
+        @mock_fog_interface.stub(:get_execute_query).and_return( { 
+          :WibbleRecord=>
+            [{:field1=>"Stuff 1",
+              :field2=>"Stuff 2",
+              :field3=>"Stuff 3",
+            },
+             {:field1=>"More Stuff 1",
+              :field2=>"More Stuff 2",
+              :field3=>"More Stuff 3",
+            },
+            ]
+        } )
       end
 
       it "should output a query in tsv when run with a type" do
-        @query.should_receive(:get_and_output_query_results).with('bob')
-        @query.run('bob')
+        @query.should_receive(:output_query_results)
+        @query.run()
       end
 
       it "should output yaml when run with a type and yaml output option"
