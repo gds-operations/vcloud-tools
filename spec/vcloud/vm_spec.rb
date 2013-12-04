@@ -90,9 +90,15 @@ describe Vcloud::Vm do
       vars = {:message => 'hello world'}
       erbfile = "#{@data_dir}/basic_preamble_test.erb"
       expected_output = File.read("#{erbfile}.OUT")
-      @vm.generate_preamble(erbfile, vars).should == expected_output
+      @vm.generate_preamble(erbfile, nil, vars).should == expected_output
     end
 
+    it "should interpolate vars hash and post-process template" do
+      vars = {:message => 'hello world'}
+      erbfile = "#{@data_dir}/basic_preamble_test.erb"
+      expected_output = File.read("#{erbfile}.OUT")
+      @vm.generate_preamble(erbfile, '/bin/cat', vars).should == expected_output
+    end
   end
 
   describe '#update_metadata' do

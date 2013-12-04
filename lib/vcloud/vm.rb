@@ -81,16 +81,23 @@ module Vcloud
       else
         preamble_vars = bootstrap_config[:vars].merge(:extra_disks => extra_disks)
         interpolated_preamble = generate_preamble(
-            bootstrap_config[:script_path],
-            preamble_vars,
+          bootstrap_config[:script_path],
+          bootstrap_config[:script_post_processor],
+          preamble_vars,
         )
       end
       @fog_interface.put_guest_customization_section(id, name, interpolated_preamble)
     end
 
-    def generate_preamble(script_path, vars)
+    def generate_preamble(script_path, script_post_processor, vars)
       vapp_name = @vapp.name
-      ERB.new(File.read(script_path), nil, '>-').result(binding)
+      script = ERB.new(File.read(File.expand_path(script_path)), nil, '>-')
+        .result(binding)
+      if script_post_processor
+        script = Open3.capture2(File.expand_path(script_post_processor),
+                                stdin_data: script).first
+      end
+      script
     end
 
   private
