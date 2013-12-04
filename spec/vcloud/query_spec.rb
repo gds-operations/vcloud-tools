@@ -44,6 +44,28 @@ describe Vcloud::Query do
 
     end
 
+    context "gracefully handle zero results" do
+      before(:each) do
+        @mock_fog_interface = StubFogInterface.new
+        Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        @query = Vcloud::Query.new('bob')
+        @mock_fog_interface.stub(:get_execute_query).and_return({})
+      end
+
+      it "should not output when given tsv output_format" do
+        @query = Vcloud::Query.new('bob', :output_format => 'tsv')
+        @query.should_not_receive(:puts)
+        @query.run()
+      end
+
+      it "should not output when given csv output_format" do
+        @query = Vcloud::Query.new('bob', :output_format => 'csv')
+        @query.should_not_receive(:puts)
+        @query.run()
+      end
+
+    end
+
     context "get results with a single response page" do
 
       before(:each) do

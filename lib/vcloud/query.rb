@@ -52,7 +52,7 @@ module Vcloud
     def get_all_results
       results = []
       (1..get_num_pages).each do |page|
-        results += get_results_page(page)
+        results += get_results_page(page) || []
       end
       results
     end
@@ -88,6 +88,7 @@ module Vcloud
     private
 
     def output_header(results)
+      return if results.size == 0
       case @options[:output_format]
       when 'csv'
         csv_string = CSV.generate do |csv|
@@ -100,6 +101,7 @@ module Vcloud
     end
 
     def output_results(results)
+      return if results.size == 0
 
       case @options[:output_format]
       when 'yaml'
