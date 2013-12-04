@@ -34,11 +34,10 @@ class App
   end
 
   on('--filter', '=FILTER', 'Filter expression') do |v|
-    options[:filter] += v.split(',')
+    options[:filter] = v
   end
 
   on('-o', '--output-format', '=FORMAT', 'Output format: csv, tsv, yaml') do |v|
-    # TODO: validate!
     options[:output_format] = v.downcase
   end
 
