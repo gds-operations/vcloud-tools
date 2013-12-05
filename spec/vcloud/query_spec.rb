@@ -101,7 +101,7 @@ describe Vcloud::Query do
         @query.run()
       end
 
-      it "should output a query in yaml when run with a type"
+#      it "should output a query in yaml when run with a type"
 
     end
 
