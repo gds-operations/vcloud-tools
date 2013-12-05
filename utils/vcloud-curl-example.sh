@@ -12,10 +12,10 @@ usage() {
   echo "vcloud-curl: simple curl wrapper to allow GET requests to vcloud API"
   echo
   echo "Usage:"
-  echo "  vcloud-curl {request}"
+  echo "  vcloud-curl-example.sh {request}"
   echo 
-  echo "where {request} is the resource required after the /api part of the url"
-  echo "eg: vcloud-curl vApp/{vm-id}/virtualHardwareSection/cpu"
+  echo "where {request} is the resource required after the /api end point"
+  echo "eg: vcloud-curl-example.sh vApp/{vm-id}/virtualHardwareSection/cpu"
   echo 
   echo "You must set in environment:"
   echo "  VCLOUD_HOST"
