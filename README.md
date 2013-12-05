@@ -10,6 +10,9 @@ the vApps and VMs contained within.
 ## [Vcloud Walker][vcloudwalker]
 A tool that reports on the current state of an environment
 
+## [Vcloud Query][vcloud-query]
+A tool to expose the vCloud Query API.
+
 ## [Configure edgegateway services][edgegateway]
 Examples of fog usage to configure Edge Gateway Services
 
@@ -69,4 +72,5 @@ Then run this before you run the integration test.
 [edgegateway]: docs/edgegateway.md
 [tag_search]: docs/tag_search.md
 [vcloud-launch]: docs/vcloud-launch.md
+[vcloud-query]: docs/vcloud-query.md
 [fog]: http://fog.io/
