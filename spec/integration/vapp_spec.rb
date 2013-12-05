@@ -11,6 +11,8 @@ describe Vcloud::Vapp do
     TEST_NETWORK2 = ENV['VCLOUD_TEST_NETWORK2'] || 'NetworkTest2'
     TEST_NETWORK1_IP = ENV['VCLOUD_TEST_NETWORK1_IP'] || '192.168.2.10'
     TEST_NETWORK2_IP = ENV['VCLOUD_TEST_NETWORK2_IP'] || '192.168.1.10'
+    TEST_STORAGE_PROFILE = ENV['VCLOUD_TEST_STORAGE_PROFILE'] || 'TestStorageProfile'
+    TEST_STORAGE_PROFILE_HREF = ENV['VCLOUD_TEST_STORAGE_PROFILE_HREF'] || 'https://vcloud.examples.net/api/vdcStorageProfile/1'
 
     template = @fog_interface.template(TEST_CATALOG, TEST_TEMPLATE)
     script_path = File.join(File.dirname(__FILE__), "../data/basic_preamble_test.erb")
@@ -48,8 +50,12 @@ describe Vcloud::Vapp do
             :script_path => script_path,
             :vars => {
               :message => 'hello world'
-            }
+            },
           },
+          :storage_profile => {
+            :name => TEST_STORAGE_PROFILE,
+            :href => TEST_STORAGE_PROFILE_HREF
+          }
         },
     }
 
@@ -119,9 +125,14 @@ describe Vcloud::Vapp do
 
     end
 
-    it 'should assign guest customization script to a VM' do
+    it 'should assign guest customization script to the VM' do
       @vm[:GuestCustomizationSection][:CustomizationScript].should =~ /message: hello world/
       @vm[:GuestCustomizationSection][:ComputerName].should == @vapp_config[:name]
+    end
+
+    it "should assign storage profile to the VM" do
+      @vm[:StorageProfile][:name].should == TEST_STORAGE_PROFILE
+      @vm[:StorageProfile][:href].should == TEST_STORAGE_PROFILE_HREF
     end
 
   end

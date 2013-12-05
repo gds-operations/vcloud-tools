@@ -36,12 +36,12 @@ describe Vcloud::VmOrchestrator do
     Vcloud::Vm.should_receive(:new).and_return(vm)
 
     vm.should_receive(:configure_network_interfaces).with(vm_config[:network_connections])
+    vm.should_receive(:update_storage_profile).with(vm_config[:storage_profile])
     vm.should_receive(:update_cpu_count).with(2)
     vm.should_receive(:update_memory_size_in_mb).with(4096)
     vm.should_receive(:add_extra_disks).with(vm_config[:extra_disks])
     vm.should_receive(:update_metadata).with(vm_config[:metadata])
     vm.should_receive(:configure_guest_customization_section).with('web-app1', vm_config[:bootstrap], vm_config[:extra_disks])
-    vm.should_receive(:update_storage_profile).with(vm_config[:storage_profile])
 
     Vcloud::VmOrchestrator.new(fog_vm, vapp).customize(vm_config)
   end
