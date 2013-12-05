@@ -39,7 +39,7 @@ describe Vcloud::Query do
         @query.should_receive(:puts).with("alice records,references")
         @query.should_receive(:puts).with("bob   records")
 
-        @query.output_potential_query_types
+        @query.run
       end
 
     end

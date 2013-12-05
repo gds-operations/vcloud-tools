@@ -37,6 +37,16 @@ module Vcloud
       end
     end
 
+    def get_all_results
+      results = []
+      (1..get_num_pages).each do |page|
+        results += get_results_page(page) || []
+      end
+      results
+    end
+
+    private
+
     def get_num_pages
       body = @fsi.get_execute_query(type=@type, @options)
       last_page = body[:lastPage] || 1
@@ -59,14 +69,6 @@ module Vcloud
       return nil if body[records].nil? || body[records].empty?
       body[records]
 
-    end
-
-    def get_all_results
-      results = []
-      (1..get_num_pages).each do |page|
-        results += get_results_page(page) || []
-      end
-      results
     end
 
     def output_query_results
@@ -96,8 +98,6 @@ module Vcloud
       end
 
     end
-
-    private
 
     def output_header(results)
       return if results.size == 0
