@@ -1,53 +1,61 @@
-#!/bin/sh
+#!/usr/bin/env ruby
 
-usage() {
-  echo "vcloud-curl: simple curl wrapper to allow GET requests to vcloud API"
-  echo
-  echo "Usage:"
-  echo "  vcloud-curl {request}"
-  echo 
-  echo "where {request} is the resource required after the /api part of the url"
-  echo "eg: vcloud-curl vApp/{vm-id}/virtualHardwareSection/cpu"
-  echo 
-  echo "You must set in environment:"
-  echo "  VCLOUD_HOST"
-  echo "  VCLOUD_ORG"
-  echo "  VCLOUD_USER"
-  echo "  VCLOUD_PASS"
-  exit 1
-}
+require 'rubygems'
+require 'bundler/setup'
+require 'pp'
+require 'vcloud'
+require 'methadone'
 
-[ -z "$VCLOUD_HOST" ] && usage
-[ -z "$VCLOUD_ORG" ]  && usage
-[ -z "$VCLOUD_USER" ] && usage
-[ -z "$VCLOUD_PASS" ] && usage
+ENV['FOG_MOCK'] && Fog.mock!
 
-CURL_OPTS="-k -s"
+class App
 
-SESSION_KEY=`curl -i $CURL_OPTS \
-   -H 'Accept:application/*+xml;version=1.5' \
-   -u "${VCLOUD_USER}@${VCLOUD_ORG}:${VCLOUD_PASS}" \
-   -X POST \
-   "https://${VCLOUD_HOST}/api/sessions" \
-   | grep '^x-vcloud-authorization:' \
-   | tr -d '\r' \
-   | awk '{print $2}'
-   `
+  include Methadone::Main
+  include Methadone::CLILogging
 
-if [ -z "${SESSION_KEY}" ]; then
-  echo "Failed to get vCloud session. Bailing"
-  exit 2
-fi
+  main do
 
-curl $CURL_OPTS \
-   -H 'Accept:application/*+xml;version=1.5' \
-   -H "x-vcloud-authorization: ${SESSION_KEY}" \
-   "https://${VCLOUD_HOST}/api/$1"
+    fsi = Vcloud::FogServiceInterface.new()
+    token = fsi.vcloud_token
+    end_point = fsi.end_point
 
-# Log out -- fails with 401
-#curl $CURL_OPTS \
-#   -H 'Accept:application/*+xml;version=1.5' \
-#   -H "x-vcloud-authorization: ${SESSION_KEY}" \
-#   -X DELETE \
-#   "https://${VCLOUD_HOST}/api/sessions"
+    rel_url = ARGV.shift
+    url = end_point + rel_url
+
+    system("/usr/bin/curl #{options[:curl_base_opts]} \
+             -H 'Accept:#{options[:content_type]}' \
+             -H 'x-vcloud-authorization: #{token}' \
+             #{ARGV.join(' ')} #{url}")
+
+  end
+
+  options[:content_type] = "application/*+xml;version=5.1"
+  options[:curl_base_opts] = '-s'
+
+  on("--content_type", "=ATTRIBUTE",
+     "Override default content_type (#{options[:content_type]})" ) do |v|
+    options[:content_type] = v
+  end
+
+  on("--curl_base_opts", "=ATTRIBUTE",
+     "Override base curl options (#{options[:curl_base_opts]})" ) do |v|
+    options[:curl_base_opts] = v
+  end
+
+  on("--verbose", "Verbose output")
+  on("--debug",   "Debugging output")
+  
+  arg :relative_url, :optional
+
+  description '
+  vcloud-curl takes a relative URL for a query (to the base api url), then
+  shells out to cURL with the remainder of ARGV
+
+  See https://github.com/alphagov/vcloud-tools for more info'
+
+  version Vcloud::VERSION
+
+  go!
+end
+
 
