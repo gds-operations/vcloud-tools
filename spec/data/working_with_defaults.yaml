@@ -1,10 +1,10 @@
 ---
-vdcs:
-- name: &default_vdc_name
-        VDC_NAME
+anchors:
+- &VDC_NAME dcs-dev
+
 vapps:
 - name: vapp-vcloud-tools-tests
-  vdc_name: *default_vdc_name
+  vdc_name: *VDC_NAME
   catalog: CATALOG_NAME
   catalog_item: CATALOG_ITEM
   vm:

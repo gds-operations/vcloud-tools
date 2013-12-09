@@ -25,12 +25,11 @@ describe Vcloud::ConfigLoader do
     input_file = 'spec/data/working_with_defaults.yaml'
     loader = Vcloud::ConfigLoader.new
     actual_config = loader.load_config(input_file)
-    valid_config.should eq(actual_config)
+    valid_config['vapps'].should eq(actual_config['vapps'])
   end
 
   def valid_config
     {
-      :vdcs=>[{:name=>"VDC_NAME"}],
       :vapps=>[{
         :name=>"vapp-vcloud-tools-tests",
         :vdc_name=>"VDC_NAME",
