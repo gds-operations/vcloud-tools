@@ -1,7 +1,4 @@
 {
-  "vdcs":[{
-    "name":"VDC_NAME"
-  }],
   "vapps":[{
     "name":"vapp-vcloud-tools-tests",
     "vdc_name":"VDC_NAME",
