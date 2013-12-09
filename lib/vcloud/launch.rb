@@ -10,7 +10,6 @@ module Vcloud
 
     def run(config_file = nil, options = {})
       @cli_options = options
-      Deprecator.mandatory_input_config_file if config_file.nil?
 
       puts "cli_options:" if @cli_options[:debug]
       pp @cli_options if @cli_options[:debug]
