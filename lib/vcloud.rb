@@ -9,7 +9,6 @@ require 'pp'
 
 require 'vcloud/version'
 require 'vcloud/entity'
-require 'vcloud/deprecator'
 require 'vcloud/launch'
 require 'vcloud/query'
 require 'vcloud/constants'
