@@ -116,7 +116,7 @@ end
 
 
 def generate_input_yaml_config test_namespace
-  input_erb_config = File.join('/Users/snehaso/govuk/vcloud-tools/spec/integration/data/happy_path.yaml.erb')
+  input_erb_config = File.join(File.dirname(__FILE__), 'data/happy_path.yaml.erb')
   e =  ERB.new(File.open(input_erb_config).read)
   output_yaml_config = File.join(File.dirname(input_erb_config), "happy_path_#{Time.now.strftime('%s')}.yaml")
   File.open(output_yaml_config, 'w') { |f|
