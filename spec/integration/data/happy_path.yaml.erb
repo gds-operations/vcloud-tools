@@ -1,0 +1,36 @@
+---
+vapps:
+  - name: <%= vapp_name %>
+    vdc_name: <%= vdc_name %>
+    catalog: <%= catalog %>
+    catalog_item: <%= vapp_template %>
+    vm:
+      hardware_config:
+        memory: 4096
+        cpu: 2
+      metadata:
+        is_integer: -999
+        is_string: Hello World
+        is_datetime: <%= date_metadata %>
+        is_true: true
+        is_false: false
+        integration_test_vm: true
+      extra_disks:
+      - size: '1024'
+        name: Hard disk 2
+      - size: '2048'
+        name: Hard disk 3
+      network_connections:
+      - name: <%= network1 %>
+        ip_address: <%= network1_ip %>
+      - name: <%= network2 %>
+        ip_address: <%= network2_ip %>
+      bootstrap:
+        script_path: <%= bootstrap_script %>
+        vars:
+          message: hello world
+      storage_profile:
+        name: <%= storage_profile %>
+        href: <%= storage_profile_href %>
+
+
