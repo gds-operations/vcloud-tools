@@ -38,8 +38,10 @@ module Vcloud
           template = Vcloud::VappTemplate.get(config[:catalog], config[:catalog_item])
           template_id = template.id
 
-          network_names = config[:vm][:network_connections].collect { |h| h[:name] }
-          networks = fog_interface.find_networks(network_names, vdc_name)
+          if(config[:vm] && config[:vm][:network_connections])
+            network_names = config[:vm][:network_connections].collect { |h| h[:name] }
+            networks = fog_interface.find_networks(network_names, vdc_name)
+          end
 
           Vcloud.logger.info("Instantiating new vApp #{name} in vDC '#{vdc_name}'")
           @vcloud_attributes = fog_interface.post_instantiate_vapp_template(
@@ -48,7 +50,7 @@ module Vcloud
             name,
             InstantiationParams: build_network_config(networks)
           )
-          VmOrchestrator.new(vms.first, self).customize(config[:vm])
+          VmOrchestrator.new(vms.first, self).customize(config[:vm]) if config[:vm]
           @vcloud_attributes = fog_interface.get_vapp(id)
         end
 
@@ -74,6 +76,7 @@ module Vcloud
 
     def build_network_config(networks)
       instantiation = {NetworkConfigSection: {NetworkConfig: []}}
+      return instantiation unless networks
       networks.compact.each do |network|
         instantiation[:NetworkConfigSection][:NetworkConfig] << {
             networkName: network[:name],
