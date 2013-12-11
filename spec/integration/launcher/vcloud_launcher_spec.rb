@@ -165,7 +165,7 @@ def define_test_data
       network2_ip: ENV['VCLOUD_TEST_NETWORK2_IP'] || '192.168.1.10',
       storage_profile: ENV['VCLOUD_TEST_STORAGE_PROFILE'] || 'TestStorageProfile',
       storage_profile_href: ENV['VCLOUD_TEST_STORAGE_PROFILE_HREF'] || 'https://vcloud.examples.net/api/vdcStorageProfile/1',
-      bootstrap_script: File.join(File.dirname(__FILE__), "../../data/basic_preamble_test.erb"),
+      bootstrap_script: File.join(File.dirname(__FILE__), "data/basic_preamble_test.erb"),
       date_metadata: DateTime.parse('2013-10-23 15:34:00 +0000')
   }
 end
