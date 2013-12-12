@@ -58,7 +58,7 @@ describe Vcloud::Vapp do
                       }]
         }
         @mock_fog_interface = StubFogInterface.new
-        Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
       end
 
       it "should power on a vapp that is not powered on" do
@@ -126,7 +126,7 @@ describe Vcloud::Vapp do
       existing_vapp = {:name => 'existing-vapp-1'}
       @mock_fog_interface.should_receive(:get_vapp_by_name_and_vdc_name).with('test-vapp-1', 'test-vdc-1').
           and_return(existing_vapp)
-      Vcloud::FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
+      Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
       Vcloud.logger.should_receive(:info)
       actual_vapp = Vcloud::Vapp.new.provision config
@@ -143,7 +143,7 @@ describe Vcloud::Vapp do
       Vcloud.logger.should_receive(:info)
       @mock_fog_interface.should_receive(:get_vapp).with('vapp-63d3be58-2d5c-477d-8410-267e7c3c4a02').and_return({:name => 'test-vapp-1'})
       Vcloud::VmOrchestrator.stub(:new) { @mock_vm }
-      Vcloud::FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
+      Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
       actual_vapp = Vcloud::Vapp.new().provision config
       actual_vapp.should_not be_nil
@@ -153,7 +153,7 @@ describe Vcloud::Vapp do
     it "should log the error and move on if there is no template" do
       @mock_fog_interface.should_receive(:get_vapp_by_name_and_vdc_name).with("test-vapp-1", "test-vdc-1").and_return(nil)
       Vcloud::VappTemplate.should_receive(:get).with('org-1-catalog', 'org-1-template').and_raise('Could not find template vApp')
-      Vcloud::FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
+      Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
       Vcloud.logger.should_receive(:error).with("Could not provision vApp: Could not find template vApp")
       Vcloud::Vapp.new.provision config

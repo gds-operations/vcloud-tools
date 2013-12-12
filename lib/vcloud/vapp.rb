@@ -16,7 +16,7 @@ module Vcloud
     end
 
     def vdc_id
-      link = @vcloud_attributes[:Link].detect { |l| l[:rel] == Vcloud::RELATION::PARENT && l[:type] == Vcloud::ContentTypes::VDC }
+      link = @vcloud_attributes[:Link].detect { |l| l[:rel] == Fog::RELATION::PARENT && l[:type] == Fog::ContentTypes::VDC }
       link ? link[:href].split('/').last : raise('a vapp without parent vdc found')
     end
 
@@ -29,7 +29,7 @@ module Vcloud
     end
 
     def provision(config)
-      fog_interface = Vcloud::FogServiceInterface.new
+      fog_interface = Vcloud::Fog::ServiceInterface.new
       name, vdc_name = config[:name], config[:vdc_name]
       begin
         if @vcloud_attributes = fog_interface.get_vapp_by_name_and_vdc_name(name, vdc_name)
@@ -63,14 +63,14 @@ module Vcloud
     def power_on
       raise "Cannot power on a missing vApp." unless id
       return true if running?
-      Vcloud::FogServiceInterface.new.power_on_vapp(id)
+      Vcloud::Fog::ServiceInterface.new.power_on_vapp(id)
       running?
     end
 
   private
     def running?
       raise "Cannot call running? on a missing vApp." unless id
-      vapp = Vcloud::FogServiceInterface.new.get_vapp(id)
+      vapp = Vcloud::Fog::ServiceInterface.new.get_vapp(id)
       vapp[:status].to_i == STATUS::RUNNING ? true : false
     end
 

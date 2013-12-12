@@ -15,7 +15,7 @@ class App
 
   main do
 
-    fsi = Vcloud::FogServiceInterface.new()
+    fsi = Vcloud::Fog::ServiceInterface.new()
     token = fsi.vcloud_token
     end_point = fsi.end_point
 
