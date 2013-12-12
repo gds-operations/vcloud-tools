@@ -34,7 +34,7 @@ describe Vcloud::Vm do
             ]
         }
     }
-    Vcloud::FogServiceInterface.stub(:new).and_return(@fog_interface)
+    Vcloud::Fog::ServiceInterface.stub(:new).and_return(@fog_interface)
     @vm = Vcloud::Vm.new(@mock_vm, @mock_vapp)
   end
 

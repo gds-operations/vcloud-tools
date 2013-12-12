@@ -14,7 +14,7 @@ module Vcloud
 
     it 'should raise a RuntimeError if there is no template' do
       @mock_fog_interface.should_receive(:template).with('test_catalog', 'test_template').and_return(nil)
-      FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
+      Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
       expect { VappTemplate.get('test_catalog', 'test_template') }.to raise_exception(RuntimeError, 'Could not find template vApp')
     end
@@ -25,7 +25,7 @@ module Vcloud
             :href => "/vappTemplate-12345678-90ab-cdef-0123-4567890abcde"
         }
         @mock_fog_interface.should_receive(:template).with('test_catalog', 'test_template').and_return(test_catalog_item_entity)
-        FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
+        Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
         test_template = VappTemplate.get('test_catalog', 'test_template')
         test_template.id.should == 'vappTemplate-12345678-90ab-cdef-0123-4567890abcde'
@@ -36,7 +36,7 @@ module Vcloud
             :href => "/#{'vmTemplate-12345678-90ab-cdef-0123-4567890abcde'}"
         }
         @mock_fog_interface.should_receive(:template).with('test_catalog', 'test_template').and_return(test_catalog_item_entity)
-        FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
+        Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
         test_template = VappTemplate.get('test_catalog', 'test_template')
         expect { test_template.id }.to raise_exception(RuntimeError, 'vappTemplate id : vmTemplate-12345678-90ab-cdef-0123-4567890abcde is not in correct format')
@@ -48,7 +48,7 @@ module Vcloud
           :href => '1234'
       }
       @mock_fog_interface.should_receive(:template).with('test_catalog', 'test_template').and_return(test_catalog_item_entity)
-      FogServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
+      Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
 
       test_template = VappTemplate.get('test_catalog', 'test_template')
       expect { test_template.id }.to raise_exception(RuntimeError, 'vappTemplate id : 1234 is not in correct format')

@@ -6,7 +6,7 @@ describe Vcloud::Query do
     context "our object should have methods" do
       before(:each) do
         @mock_fog_interface = StubFogInterface.new
-        Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
         @query = Vcloud::Query.new()
       end
       it { @query.should respond_to(:run) }
@@ -16,7 +16,7 @@ describe Vcloud::Query do
       
       before(:each) do
         @mock_fog_interface = StubFogInterface.new
-        Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
         @query = @query = Vcloud::Query.new()
       end
 
@@ -47,7 +47,7 @@ describe Vcloud::Query do
     context "gracefully handle zero results" do
       before(:each) do
         @mock_fog_interface = StubFogInterface.new
-        Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
         @query = Vcloud::Query.new('bob')
         @mock_fog_interface.stub(:get_execute_query).and_return({})
       end
@@ -70,7 +70,7 @@ describe Vcloud::Query do
 
       before(:each) do
         @mock_fog_interface = StubFogInterface.new
-        Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
         @query = Vcloud::Query.new('bob')
         @mock_fog_interface.stub(:get_execute_query).and_return( { 
           :WibbleRecord=>

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Vcloud::FogModelInterface do
+describe Vcloud::Fog::ModelInterface do
 
   it "should retrive logged in organization" do
     vm_href, vdc_href = 'https://vmware.net/vapp/vm-1', 'vdc/vdc-1'
@@ -20,6 +20,6 @@ describe Vcloud::FogModelInterface do
     )
     Fog::Compute::VcloudDirector.should_receive(:new).and_return(vcloud)
 
-    Vcloud::FogModelInterface.new.get_vm_by_href(vm_href).should == vm
+    Vcloud::Fog::ModelInterface.new.get_vm_by_href(vm_href).should == vm
   end
 end

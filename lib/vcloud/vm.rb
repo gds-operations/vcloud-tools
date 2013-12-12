@@ -5,7 +5,7 @@ module Vcloud
 
     def initialize(vcloud_attributes, vapp)
       @vcloud_attributes = vcloud_attributes
-      @fog_interface = FogServiceInterface.new
+      @fog_interface = Vcloud::Fog::ServiceInterface.new
       @vapp = vapp
     end
 
@@ -48,7 +48,7 @@ module Vcloud
     end
 
     def add_extra_disks(extra_disks)
-      vm = FogModelInterface.new.get_vm_by_href(@vcloud_attributes[:href])
+      vm = Vcloud::Fog::ModelInterface.new.get_vm_by_href(@vcloud_attributes[:href])
       if extra_disks
         extra_disks.each do |extra_disk|
           Vcloud.logger.info("adding a disk of size #{extra_disk[:size]}MB into VM #{id}")

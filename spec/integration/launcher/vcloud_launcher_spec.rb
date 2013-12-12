@@ -9,7 +9,7 @@ describe Vcloud::Launch do
       test_data_1 = define_test_data
       minimum_data_erb = File.join(File.dirname(__FILE__), 'data/minimum_data_setup.yaml.erb')
       @minimum_data_yaml = generate_input_yaml_config(test_data_1, minimum_data_erb)
-      @fog_interface = Vcloud::FogServiceInterface.new
+      @fog_interface = Vcloud::Fog::ServiceInterface.new
 
       Vcloud::Launch.new.run(@minimum_data_yaml, {:no_power_on => true})
 
@@ -34,7 +34,7 @@ describe Vcloud::Launch do
     before(:all) do
       @test_data = define_test_data
       @config_yaml = generate_input_yaml_config(@test_data, File.join(File.dirname(__FILE__), 'data/happy_path.yaml.erb'))
-      @fog_interface = Vcloud::FogServiceInterface.new
+      @fog_interface = Vcloud::Fog::ServiceInterface.new
       Vcloud::Launch.new.run(@config_yaml, {:no_power_on => true})
 
       @vapp_query_result = @fog_interface.get_vapp_by_name_and_vdc_name(@test_data[:vapp_name], @test_data[:vdc_name])
