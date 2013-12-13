@@ -24,11 +24,11 @@ Cucumber::Rake::Task.new(:features) do |t|
 end
 
 RSpec::Core::RakeTask.new(:spec) do |task|
-  task.pattern = FileList['spec/vcloud/*_spec.rb']
+  task.pattern = FileList['spec/vcloud/**/*_spec.rb']
 end
 
 RSpec::Core::RakeTask.new(:integration_test) do |task|
-  task.pattern = FileList['spec/integration/*_spec.rb']
+  task.pattern = FileList['spec/integration/**/*_spec.rb']
 end
 
 task :default => [:spec,:features]
