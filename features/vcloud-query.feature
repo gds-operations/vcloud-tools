@@ -12,5 +12,6 @@ Feature: "vcloud-query" works as a useful command-line tool
       |--version|
       |--verbose|
       |--debug|
+      |--mock|
     And the banner should document that this app's arguments are:
       |type|

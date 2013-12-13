@@ -41,6 +41,7 @@ class App
     options[:output_format] = v.downcase
   end
 
+  on("--mock",    "Fog Mock mode")
   on("--verbose", "Verbose output")
   on("--debug",   "Debugging output")
 
