@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 module Vcloud
-
-  describe Vcloud::VappTemplate do
+  module Core
+    describe VappTemplate do
 
     before(:each) do
       @mock_fog_interface = double(:fog_interface)
@@ -55,5 +55,5 @@ module Vcloud
     end
 
   end
-
+  end
 end
