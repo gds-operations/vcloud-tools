@@ -7,15 +7,13 @@ require 'open3'
 require 'pp'
 
 require 'vcloud/version'
-require 'vcloud/entity'
+
+require 'vcloud/fog'
+require 'vcloud/core'
+
+require 'vcloud/config_loader'
 require 'vcloud/launch'
 require 'vcloud/query'
-require 'vcloud/fog'
-require 'vcloud/vm_orchestrator'
-require 'vcloud/vapp'
-require 'vcloud/vm'
-require 'vcloud/config_loader'
-require 'vcloud/vapp_template'
 
 module Vcloud
 
