@@ -1,6 +1,7 @@
 module Vcloud
   module Core
     class Vapp < Entity
+      extend ComputeMetadata
 
       attr_reader :vcloud_attributes
 
