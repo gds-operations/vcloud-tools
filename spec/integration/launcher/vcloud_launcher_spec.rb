@@ -44,7 +44,7 @@ describe Vcloud::Launch do
       @vm = @vapp[:Children][:Vm].first
       @vm_id = @vm[:href].split('/').last
 
-      @vapp_metadata = Vcloud::Core::Vm.get_metadata @vm_id
+      @vm_metadata = Vcloud::Core::Vm.get_metadata @vm_id
     end
 
     context 'provision vapp' do
@@ -68,13 +68,13 @@ describe Vcloud::Launch do
       end
 
       it "should have added the right number of metadata values" do
-        @vapp_metadata.count.should == 6
+        @vm_metadata.count.should == 6
       end
 
       it "the metadata should be equivalent to our input" do
-        @vapp_metadata[:is_true].should == true
-        @vapp_metadata[:is_integer].should == -999
-        @vapp_metadata[:is_string].should == 'Hello World'
+        @vm_metadata[:is_true].should == true
+        @vm_metadata[:is_integer].should == -999
+        @vm_metadata[:is_string].should == 'Hello World'
       end
 
       it "should attach extra hard disks to vm" do
