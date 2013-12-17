@@ -44,13 +44,13 @@ NB: examples assume FOG_CREDENTIAL has been set accordingly.
 
 List all potential queriable types:
 
-  vcloud-query
+    vcloud-query
 
 Get all vApps in an org, in YAML:
 
-  vcloud-query -o yaml vApp
+    vcloud-query -o yaml vApp
 
 Get all VMs with VMware Tools less than 9282, that are not a vApp Template:
 
-  vcloud-query --filter 'vmToolsVersion=lt=9282;isVAppTemplate==false' vm
+    vcloud-query --filter 'vmToolsVersion=lt=9282;isVAppTemplate==false' vm
 
