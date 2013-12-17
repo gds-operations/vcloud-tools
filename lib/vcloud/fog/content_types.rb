@@ -8,5 +8,13 @@ module Vcloud
       NETWORK = 'application/vnd.vmware.vcloud.network+xml'
       METADATA = 'application/vnd.vmware.vcloud.metadata.value+xml'
     end
+
+    module MetadataValueType
+      String = 'MetadataStringValue'
+      Number = 'MetadataNumberValue'
+      DateTime = 'MetadataDateTimeValue'
+      Boolean = 'MetadataBooleanValue'
+    end
+
   end
 end

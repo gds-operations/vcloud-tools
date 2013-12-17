@@ -9,13 +9,13 @@ module Vcloud
           key = entry[:Key].to_sym
           val = entry[:TypedValue][:Value]
           case entry[:TypedValue][:xsi_type]
-            when 'MetadataNumberValue'
+            when Fog::MetadataValueType::Number
               val = val.to_i
-            when 'MetadataStringValue'
+            when Fog::MetadataValueType::String
               val = val.to_s
-            when 'MetadataDateTimeValue'
+            when Fog::MetadataValueType::DateTime
               val = DateTime.parse(val)
-            when 'MetadataBooleanValue'
+            when Fog::MetadataValueType::Boolean
               val = val == 'true' ? true : false
           end
           metadata[key] = val

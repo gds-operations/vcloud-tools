@@ -8,24 +8,24 @@ module Vcloud
         it "should process valid metadata types" do
           metadata_entries = [
               {
-                  :type => 'application/vnd.vmware.vcloud.metadata.value+xml',
+                  :type => Fog::ContentTypes::METADATA,
                   :Key => 'role_name',
                   :TypedValue => {
                       :xsi_type => 'MetadataStringValue',
                       :Value => 'james-bond'
                   }},
               {
-                  :type => 'application/vnd.vmware.vcloud.metadata.value+xml',
+                  :type => Fog::ContentTypes::METADATA,
                   :Key => "server_number",
                   :TypedValue => {:xsi_type => "MetadataNumberValue", :Value => "-10"}
               },
               {
-                  :type => 'application/vnd.vmware.vcloud.metadata.value+xml',
+                  :type => Fog::ContentTypes::METADATA,
                   :Key => "created_at",
                   :TypedValue => {:xsi_type => "MetadataDateTimeValue", :Value => "2013-12-16T14:30:05.000Z"}
               },
               {
-                  :type => 'application/vnd.vmware.vcloud.metadata.value+xml',
+                  :type => Fog::ContentTypes::METADATA,
                   :Key => "daily_shutdown",
                   :TypedValue => {:xsi_type => "MetadataBooleanValue", :Value => "false"}
               }
@@ -41,7 +41,7 @@ module Vcloud
         it "should skip metadata entry if entry type is not application/vnd.vmware.vcloud.metadata.value+xml" do
           metadata_entries = [
               {
-                  :type => 'application/vnd.vmware.vcloud.metadata.value+xml',
+                  :type => Fog::ContentTypes::METADATA,
                   :Key => 'role_name',
                   :TypedValue => {
                       :xsi_type => 'MetadataStringValue',
@@ -61,14 +61,14 @@ module Vcloud
         it "should include unrecognized metadata types" do
           metadata_entries = [
               {
-                  :type => 'application/vnd.vmware.vcloud.metadata.value+xml',
+                  :type => Fog::ContentTypes::METADATA,
                   :Key => 'role_name',
                   :TypedValue => {
                       :xsi_type => 'MetadataStringValue',
                       :Value => 'james-bond'
                   }},
               {
-                  :type => 'application/vnd.vmware.vcloud.metadata.value+xml',
+                  :type => Fog::ContentTypes::METADATA,
                   :Key => "unrecognized_type_key",
                   :TypedValue => {:xsi_type => "MetadataWholeNumberValue", :Value => "-10"}
               },
