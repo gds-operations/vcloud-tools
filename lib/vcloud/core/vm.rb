@@ -30,7 +30,8 @@ module Vcloud
       end
 
       def name
-        @vcloud_attributes[:name]
+        fsi = Vcloud::Fog::ServiceInterface.new
+        fsi.get_vapp(id)[:name]
       end
 
       def name=(new_name)
