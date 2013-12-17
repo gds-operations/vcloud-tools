@@ -123,25 +123,8 @@ module Vcloud
         @vcloud.get_execute_query(type, options).body
       end
 
-      def get_vapp_metadata_hash(id)
-        metadata = {}
-        @vcloud.get_vapp_metadata(id).body[:MetadataEntry].each do |entry|
-          next unless entry[:type] == 'application/vnd.vmware.vcloud.metadata.value+xml'
-          key = entry[:Key].to_sym
-          val = entry[:TypedValue][:Value]
-          case entry[:TypedValue][:xsi_type]
-            when 'MetadataNumberValue'
-              val = val.to_i
-            when 'MetadataStringValue'
-              val = val.to_s
-            when 'MetadataDateTimeValue'
-              val = DateTime.parse(val)
-            when 'MetadataBooleanValue'
-              val = val == 'true' ? true : false
-          end
-          metadata[key] = val
-        end
-        metadata
+      def get_vapp_metadata(id)
+        @vcloud.get_vapp_metadata(id).body
       end
 
       def get_vapp_metadata_by_key(id, key)
