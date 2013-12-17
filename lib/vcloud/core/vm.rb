@@ -29,6 +29,15 @@ module Vcloud
         cpu_item[:'rasd:VirtualQuantity']
       end
 
+      def name
+        @vcloud_attributes[:name]
+      end
+
+      def name=(new_name)
+        fsi = Vcloud::Fog::ServiceInterface.new
+        fsi.put_vm(id, new_name) unless name == new_name
+      end
+
       def vapp_name
         @vapp.name
       end
