@@ -37,6 +37,7 @@ module Vcloud
         vm = double(:vm, :vapp_name => 'web-app1', :vapp => vapp, :name => 'test-vm-1')
         Vm.should_receive(:new).and_return(vm)
 
+        vm.should_receive(:name=).with('web-app1')
         vm.should_receive(:configure_network_interfaces).with(vm_config[:network_connections])
         vm.should_receive(:update_storage_profile).with(vm_config[:storage_profile])
         vm.should_receive(:update_cpu_count).with(2)
