@@ -44,7 +44,7 @@ describe Vcloud::Launch do
       @vm = @vapp[:Children][:Vm].first
       @vm_id = @vm[:href].split('/').last
 
-      @vapp_metadata = @fog_interface.get_vapp_metadata_hash(@vm_id)
+      @vapp_metadata = Vcloud::Core::Vm.get_metadata @vm_id
     end
 
     context 'provision vapp' do
