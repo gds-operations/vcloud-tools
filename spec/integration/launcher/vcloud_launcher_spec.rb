@@ -156,15 +156,15 @@ end
 def define_test_data
   {
       vapp_name: "vapp-vcloud-tools-tests-#{Time.now.strftime('%s')}",
-      vdc_name: ENV['VCLOUD_TEST_VDC'] || 'Test vDC',
-      catalog: ENV['VCLOUD_TEST_CATALOG'] || 'test-catalog',
-      vapp_template: ENV['VCLOUD_TEST_TEMPLATE'] || 'test-template',
-      network1: ENV['VCLOUD_TEST_NETWORK1'] || 'Default',
-      network2: ENV['VCLOUD_TEST_NETWORK2'] || 'NetworkTest2',
-      network1_ip: ENV['VCLOUD_TEST_NETWORK1_IP'] || '192.168.2.10',
-      network2_ip: ENV['VCLOUD_TEST_NETWORK2_IP'] || '192.168.1.10',
-      storage_profile: ENV['VCLOUD_TEST_STORAGE_PROFILE'] || 'TestStorageProfile',
-      storage_profile_href: ENV['VCLOUD_TEST_STORAGE_PROFILE_HREF'] || 'https://vcloud.examples.net/api/vdcStorageProfile/1',
+      vdc_name: ENV['VCLOUD_TEST_VDC'],
+      catalog: ENV['VCLOUD_TEST_CATALOG'],
+      vapp_template: ENV['VCLOUD_TEST_TEMPLATE'],
+      network1: ENV['VCLOUD_TEST_NETWORK1'],
+      network2: ENV['VCLOUD_TEST_NETWORK2'],
+      network1_ip: ENV['VCLOUD_TEST_NETWORK1_IP'],
+      network2_ip: ENV['VCLOUD_TEST_NETWORK2_IP'],
+      storage_profile: ENV['VCLOUD_TEST_STORAGE_PROFILE'],
+      storage_profile_href: ENV['VCLOUD_TEST_STORAGE_PROFILE_HREF'], # https://vcloud.examples.net/api/vdcStorageProfile/1
       bootstrap_script: File.join(File.dirname(__FILE__), "data/basic_preamble_test.erb"),
       date_metadata: DateTime.parse('2013-10-23 15:34:00 +0000')
   }
