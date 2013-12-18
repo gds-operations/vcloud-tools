@@ -35,6 +35,20 @@ For example:
 
 Unfortunately current usage of fog requires the password in this file.
 
+## Other settings
+
+Due to parallel development with the Fog gem there is some jiggery-pokery to run
+the tool from source. Our Gemfile uses an env var to guide the installation of fog.
+If you do nothing, bundler will use the most recent release of fog (pinned by us).
+This might work, but if you want to use recent additions, it might be worth using the
+latest fog code; we do. Don't worry, we've made this easy.
+
+Setting `VCLOUD_TOOLS_DEV_FOG_MASTER=true` will fetch
+Fog's lastest code, to be used with the vcloud-tools. When developing new features
+in conjunction with changes in fog, Setting `VCLOUD_TOOLS_DEV_FOG_LOCAL` allows
+development against a local version of Fog before changes have reached the fog
+master.
+
 ## Troubleshooting
 
 To troubleshoot fog related issues, set environment variables DEBUG or EXCON_DEBUG.
