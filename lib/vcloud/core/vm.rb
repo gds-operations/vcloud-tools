@@ -34,7 +34,7 @@ module Vcloud
         fsi.get_vapp(id)[:name]
       end
 
-      def name=(new_name)
+      def update_name(new_name)
         fsi = Vcloud::Fog::ServiceInterface.new
         fsi.put_vm(id, new_name) unless name == new_name
       end
