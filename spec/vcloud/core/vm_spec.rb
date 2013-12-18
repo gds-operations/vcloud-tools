@@ -213,7 +213,7 @@ module Vcloud
 
         it "should update the storage profile" do
           storage_profile = {:name => "basic-storage-profile", :href => 'https://api.example.com/api/vdcStorageProfile/1234d210-92c9-4514-b146-4b625e6c74dd'}
-          @fog_interface.should_receive(:put_vm).with('vm-1234', 'test-vm-1', { :StorageProfile => storage_profile} ).and_return(true)
+          @fog_interface.should_receive(:put_vm).with('vm-1234', 'test-vapp-1', { :StorageProfile => storage_profile} ).and_return(true)
 
           @vm.update_storage_profile(storage_profile).should == true
         end

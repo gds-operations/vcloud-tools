@@ -155,7 +155,7 @@ module Vcloud
         end
       end
 
-      def put_vm id, name, options
+      def put_vm(id, name, options={})
         Vcloud.logger.info("updating name : #{name}, :options => #{options} in vm : #{id}")
         task = @vcloud.put_vm(id, name, options).body
         @vcloud.process_task(task)
