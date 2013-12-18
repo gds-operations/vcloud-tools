@@ -1,3 +1,5 @@
+require 'vcloud/fog'
+
 require 'vcloud/core/entity'
 require 'vcloud/core/metadata_helper'
 require 'vcloud/core/compute_metadata'
