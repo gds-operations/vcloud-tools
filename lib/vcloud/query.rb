@@ -61,7 +61,7 @@ module Vcloud
       begin
         body = @fsi.get_execute_query(type=@type, @options.merge({:page=>page}))
         pp body if @options[:debug]
-      rescue Fog::Compute::VcloudDirector::BadRequest, Fog::Compute::VcloudDirector::Forbidden => e
+      rescue ::Fog::Compute::VcloudDirector::BadRequest, ::Fog::Compute::VcloudDirector::Forbidden => e
         Kernel.abort("#{File.basename($0)}: #{e.message}")
       end
 
