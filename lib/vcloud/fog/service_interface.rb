@@ -158,6 +158,7 @@ module Vcloud
         link = org[:Link].select { |l| l[:rel] == RELATION::CHILD }.detect do |l|
           l[:type] == ContentTypes::CATALOG && l[:name] == name
         end
+        raise "catalog #{name} cannot be found" unless link
         @fog.get_catalog(extract_id(link))
       end
 
@@ -165,6 +166,7 @@ module Vcloud
         link = org[:Link].select { |l| l[:rel] == RELATION::CHILD }.detect do |l|
           l[:type] == ContentTypes::VDC && l[:name] == name
         end
+        raise "vdc #{name} cannot be found" unless link
         @fog.get_vdc(link[:href].split('/').last)
 
       end
