@@ -42,8 +42,8 @@ module Vcloud
         end
 
         it "should return vms" do
-          @vapp.vms.count.should == 1
-          @vapp.vms.first[:href].should == '/vm-123aea1e-a5e9-4dd1-a028-40db8c98d237'
+          @vapp.fog_vms.count.should == 1
+          @vapp.fog_vms.first[:href].should == '/vm-123aea1e-a5e9-4dd1-a028-40db8c98d237'
         end
       end
 
@@ -82,85 +82,25 @@ module Vcloud
 
       end
 
-      context "provisioning a vapp" do
+      context "#get_by_name_and_vdc_name" do
+        it "should return nil if fog returns nil" do
 
-        before(:each) do
-          @fog_vapp_body ={
-              :name => 'Test vDC 1',
-              :href => 'https://api.vcloud-director.example.com/api/vApp/vapp-63d3be58-2d5c-477d-8410-267e7c3c4a02',
-              :Link => [{
-                            :rel => 'up',
-                            :type => 'application/vnd.vmware.vcloud.vdc+xml',
-                            :href => 'https://api.vcloud-director.example.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237'
-                        }],
-              :Children => {
-                  :Vm => ['bogus vm data']
-              }
-          }
-          @mock_fog_interface = double(:fog_interface)
-          @mock_fog_interface.stub(:find_networks).and_return([{
-                                                                   :name => 'org-vdc-1-net-1',
-                                                                   :href => '/org-vdc-1-net-1-id',
-                                                               }])
+          Vcloud::Fog::ServiceInterface.any_instance.should_receive(:get_vapp_by_name_and_vdc_name)
+          .with('vapp_name', 'vdc_name').and_return(nil)
 
-          @mock_fog_interface.stub(:vdc).and_return({})
-          @mock_fog_request_vapp = {
-              :href => '/test-vapp-1-id',
-              :Children => {
-                  :Vm => ['bogus vm data']
-              },
-              :name => 'test-vapp-1'
-          }
-          @mock_fog_interface.stub(:post_instantiate_vapp_template).and_return(@fog_vapp_body)
+          Vapp.get_by_name_and_vdc_name('vapp_name', 'vdc_name').should == nil
+
         end
 
-        config = {
-            :name => 'test-vapp-1',
-            :vdc_name => 'test-vdc-1',
-            :catalog => 'org-1-catalog',
-            :catalog_item => 'org-1-template',
-            :vm => {
-                :network_connections => [{:name => 'org-vdc-1-net-1'}]
-            }
-        }
+        it "should return vapp instance if found" do
 
-        it "should return a vapp if it already exists" do
-          existing_vapp = {:name => 'existing-vapp-1'}
-          @mock_fog_interface.should_receive(:get_vapp_by_name_and_vdc_name).with('test-vapp-1', 'test-vdc-1').
-              and_return(existing_vapp)
-          Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
+          vcloud_attr_vapp = {:id => 1}
+          Vcloud::Fog::ServiceInterface.any_instance.should_receive(:get_vapp_by_name_and_vdc_name)
+          .with('vapp_name', 'vdc_name').and_return(vcloud_attr_vapp)
 
-          Vcloud.logger.should_receive(:info)
-          actual_vapp = Vapp.new.provision config
-          actual_vapp.should_not be_nil
-          actual_vapp.name.should == 'existing-vapp-1'
+          Vapp.get_by_name_and_vdc_name('vapp_name', 'vdc_name').class.should == Core::Vapp
+
         end
-
-        it "should create a vapp if it does not exist" do
-          @mock_vm = double(:vm)
-          @mock_vm.stub(:customize).and_return(nil)
-          @mock_fog_interface.should_receive(:get_vapp_by_name_and_vdc_name).with("test-vapp-1", "test-vdc-1").and_return(nil)
-          VappTemplate.should_receive(:get).with('org-1-catalog', 'org-1-template').and_return(mock(:vapp_template, :id => 'vappTemplate-12345678-90ab-cdef-0123-4567890abcde'))
-
-          Vcloud.logger.should_receive(:info)
-          @mock_fog_interface.should_receive(:get_vapp).with('vapp-63d3be58-2d5c-477d-8410-267e7c3c4a02').and_return({:name => 'test-vapp-1'})
-          VmOrchestrator.stub(:new) { @mock_vm }
-          Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
-
-          actual_vapp = Vapp.new().provision config
-          actual_vapp.should_not be_nil
-          actual_vapp.name.should == 'test-vapp-1'
-        end
-
-        it "should log the error and move on if there is no template" do
-          @mock_fog_interface.should_receive(:get_vapp_by_name_and_vdc_name).with("test-vapp-1", "test-vdc-1").and_return(nil)
-          VappTemplate.should_receive(:get).with('org-1-catalog', 'org-1-template').and_raise('Could not find template vApp')
-          Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
-
-          Vcloud.logger.should_receive(:error).with("Could not provision vApp: Could not find template vApp")
-          Vapp.new.provision config
-        end
-
       end
 
     end

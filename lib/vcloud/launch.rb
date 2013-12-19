@@ -18,8 +18,7 @@ module Vcloud
 
       config[:vapps].each do |vapp_config|
         Vcloud.logger.info("Configuring vApp #{vapp_config[:name]}.")
-        vapp = Vcloud::Core::Vapp.new
-        vapp.provision(vapp_config)
+        vapp = ::Vcloud::VappOrchestrator.provision(vapp_config)
         vapp.power_on unless @cli_options[:no_power_on]
       end
     end
