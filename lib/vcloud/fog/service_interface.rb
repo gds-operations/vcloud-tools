@@ -10,6 +10,9 @@ module Vcloud
                      :post_instantiate_vapp_template, :put_memory, :put_cpu, :power_on_vapp, :put_vapp_metadata_value,
                      :put_vm
 
+      #########################
+      # FogFacade Inner class to represent a logic free facade over our interactions with Fog
+
       class FogFacade
         def initialize
           @vcloud = ::Fog::Compute::VcloudDirector.new
@@ -136,6 +139,9 @@ module Vcloud
           link[:href].split('/').last
         end
       end
+      #
+      #########################
+
 
 
       def initialize (fog = FogFacade.new)
@@ -184,8 +190,6 @@ module Vcloud
       end
 
 
-
-
       def put_network_connection_system_section_vapp(vm_id, section)
         begin
           Vcloud.logger.info("adding NIC into VM #{vm_id}")
@@ -209,9 +213,9 @@ module Vcloud
         begin
           Vcloud.logger.info("configuring guest customization section for vm : #{vm_id}")
           customization_req = {
-              :Enabled => true,
-              :CustomizationScript => script,
-              :ComputerName => vm_name
+            :Enabled             => true,
+            :CustomizationScript => script,
+            :ComputerName        => vm_name
           }
           @fog.put_guest_customization_section_vapp(vm_id, customization_req)
         rescue
