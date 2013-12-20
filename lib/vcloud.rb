@@ -14,6 +14,7 @@ require 'vcloud/core'
 require 'vcloud/config_loader'
 require 'vcloud/launch'
 require 'vcloud/query'
+require 'vcloud/vapp_orchestrator'
 
 module Vcloud
 

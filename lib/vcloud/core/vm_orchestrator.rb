@@ -1,8 +1,8 @@
 module Vcloud
   module Core
     class VmOrchestrator
-      def initialize vm, vapp
-        @vm = Vm.new(vm, vapp)
+      def initialize fog_vm, vapp
+        @vm = Vm.new(fog_vm, vapp)
       end
 
       def customize(vm_config)

@@ -7,6 +7,7 @@ module Vcloud
 
       def initialize(vcloud_attributes = {})
         @vcloud_attributes = vcloud_attributes
+        @fog_interface = Vcloud::Fog::ServiceInterface.new
       end
 
       module STATUS
@@ -22,7 +23,7 @@ module Vcloud
         link ? link[:href].split('/').last : raise('a vapp without parent vdc found')
       end
 
-      def vms
+      def fog_vms
         @vcloud_attributes[:Children][:Vm]
       end
 
@@ -30,49 +31,40 @@ module Vcloud
         @vcloud_attributes[:'ovf:NetworkSection'][:'ovf:Network']
       end
 
-      def provision(config)
+      def self.get_by_name_and_vdc_name(name, vdc_name)
         fog_interface = Vcloud::Fog::ServiceInterface.new
-        name, vdc_name = config[:name], config[:vdc_name]
-        begin
-          if @vcloud_attributes = fog_interface.get_vapp_by_name_and_vdc_name(name, vdc_name)
-            Vcloud.logger.info("Found existing vApp #{name} in vDC '#{vdc_name}'. Skipping.")
-          else
-            template = Vcloud::Core::VappTemplate.get(config[:catalog], config[:catalog_item])
-            template_id = template.id
+        vcloud_attributes = fog_interface.get_vapp_by_name_and_vdc_name(name, vdc_name)
+        new(vcloud_attributes) if vcloud_attributes
+      end
 
-            if (config[:vm] && config[:vm][:network_connections])
-              network_names = config[:vm][:network_connections].collect { |h| h[:name] }
-              networks = fog_interface.find_networks(network_names, vdc_name)
-            end
+      def reload
+        @fog_interface.get_vapp(id)
+      end
 
-            Vcloud.logger.info("Instantiating new vApp #{name} in vDC '#{vdc_name}'")
-            @vcloud_attributes = fog_interface.post_instantiate_vapp_template(
-                fog_interface.vdc(vdc_name),
-                template_id,
-                name,
-                InstantiationParams: build_network_config(networks)
-            )
-            VmOrchestrator.new(vms.first, self).customize(config[:vm]) if config[:vm]
-            @vcloud_attributes = fog_interface.get_vapp(id)
-          end
+      def instantiate(name, network_names, template_id, vdc_name)
+        Vcloud.logger.info("Instantiating new vApp #{name} in vDC '#{vdc_name}'")
+        networks = get_networks(network_names, vdc_name)
 
-        rescue RuntimeError => e
-          Vcloud.logger.error("Could not provision vApp: #{e.message}")
-        end
+        @vcloud_attributes = @fog_interface.post_instantiate_vapp_template(
+            @fog_interface.vdc(vdc_name),
+            template_id,
+            name,
+            InstantiationParams: build_network_config(networks)
+        )
         self
       end
 
       def power_on
         raise "Cannot power on a missing vApp." unless id
         return true if running?
-        Vcloud::Fog::ServiceInterface.new.power_on_vapp(id)
+        @fog_interface.power_on_vapp(id)
         running?
       end
 
       private
       def running?
         raise "Cannot call running? on a missing vApp." unless id
-        vapp = Vcloud::Fog::ServiceInterface.new.get_vapp(id)
+        vapp = @fog_interface.get_vapp(id)
         vapp[:status].to_i == STATUS::RUNNING ? true : false
       end
 
@@ -93,6 +85,10 @@ module Vcloud
 
       def id_prefix
         'vapp'
+      end
+
+      def get_networks(network_names, vdc_name)
+        @fog_interface.find_networks(network_names, vdc_name) if network_names
       end
     end
   end
