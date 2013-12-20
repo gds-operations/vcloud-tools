@@ -71,13 +71,15 @@ VM. The easiest thing to do is create a local shell script called
 `vcloud_env.sh` and set the contents:
 
     export FOG\_CREDENTIAL=test
-    export VCLOUD\_TEST\_VDC="Name of the VDC"
-    export VCLOUD\_TEST\_CATALOG="catalog-name"
-    export VCLOUD\_TEST\_TEMPLATE="name-of-template"
-    export VCLOUD\_TEST\_NETWORK1="name-of-primary-network"
-    export VCLOUD\_TEST\_NETWORK2="name-of-secondary-network"
-    export VCLOUD\_TEST\_NETWORK1_IP="ip-on-primary-network"
-    export VCLOUD\_TEST\_NETWORK2_IP="ip-on-secondary-network"
+    export VCLOUD\_VDC\_NAME="Name of the VDC"
+    export VCLOUD\_CATALOG\_NAME="catalog-name"
+    export VCLOUD\_TEMPLATE\_NAME="name-of-template"
+    export VCLOUD\_NETWORK1\_NAME="name-of-primary-network"
+    export VCLOUD\_NETWORK2\_NAME="name-of-secondary-network"
+    export VCLOUD\_NETWORK1\_IP="ip-on-primary-network"
+    export VCLOUD\_NETWORK2\_IP="ip-on-secondary-network"
+    export VCLOUD\_TEST\_STORAGE\_PROFILE="storage-profile-name"
+    export VCLOUD\_TEST\_STORAGE\_PROFILE_HREF="url-of-named-storage-profile"
 
 Then run this before you run the integration test.
 
