@@ -155,6 +155,7 @@ end
 
 def define_test_data
   {
+      vapp_name: "vapp-vcloud-tools-tests-#{Time.now.strftime('%s')}",
       vdc_name: ENV['VCLOUD_VDC_NAME'],
       catalog: ENV['VCLOUD_CATALOG_NAME'],
       vapp_template: ENV['VCLOUD_TEMPLATE_NAME'],
