@@ -1,12 +1,30 @@
 # Get results from the vCloud Query API
 
+vcloud-query is a light wrapper around the vCloud Query API.
+
+Any, or all, records of a particular 'type' can be returned. These types map to 
+entities in the vCloud system itself, eg: 'vm', 'vApp', 'orgVdc', 'edgeGateway'.
+
+Filters can be applied, using a simple query syntax. See below for basic usage and
+examples.
+
+Run with no arguments, it outputs a list of potential entity types to query, along
+with the potential record types to display (default 'records')
+
 #### Usage:
 
+    # Get a list of vApps, in YAML
+    vcloud-query -o yaml vApp
+
+    # Get a list of all queriable types (left column)
+    vcloud-query
+
+    # Get general usage info
     vcloud-query --help
 
 #### Supports:
 
-* Returning a list of queriable types (eg vm, vApp, EdgeGateway) from the API
+* Returning a list of queriable types (eg vm, vApp, edgeGateway) from the API
 * Displaying all vCloud entities of a given type
 * Filtering the results of the query based on common parameters such as:
   * entity name
