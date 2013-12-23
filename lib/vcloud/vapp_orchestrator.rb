@@ -11,9 +11,9 @@ module Vcloud
           template_id = template.id
 
           network_names = extract_vm_networks(vapp_config)
-          vapp = Vcloud::Core::Vapp.new.instantiate(name, network_names, template_id, vdc_name)
+          vapp = Vcloud::Core::Vapp.instantiate(name, network_names, template_id, vdc_name)
           Vcloud::Core::VmOrchestrator.new(vapp.fog_vms.first, vapp).customize(vapp_config[:vm]) if vapp_config[:vm]
-          vapp.reload
+          vapp
         end
 
       rescue RuntimeError => e
