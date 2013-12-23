@@ -38,6 +38,11 @@ module Vcloud
           expect(obj.class).to be(Vcloud::Core::Vapp)
         end
 
+        it "should store the id specified" do
+          obj = Vapp.new(@vapp_id)
+          expect(obj.id) == @vapp_id
+        end
+
         it "should raise error if id is not in correct format" do
           bogus_id = '12314124-ede5-4d07-bad5-000000111111'
           expect{ Vapp.new(bogus_id) }.to raise_error("vapp id : #{bogus_id} is not in correct format" )
