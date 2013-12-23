@@ -29,10 +29,6 @@ module Vcloud
 
       context "#initialize" do
 
-        it "should fail if constructed with no args" do
-          expect{ Vapp.new() }.to raise_exception(ArgumentError)
-        end
-
         it "should be constructable from just an id reference" do
           obj = Vapp.new(@vapp_id)
           expect(obj.class).to be(Vcloud::Core::Vapp)
@@ -51,10 +47,6 @@ module Vcloud
       end
 
       context "#get_by_name" do
-
-        it "should fail if called with no args" do
-          expect { Vapp.get_by_name() }.to raise_exception(ArgumentError)
-        end
 
         it "should return a Vapp object if name exists" do
           q_results = [
