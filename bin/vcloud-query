@@ -48,12 +48,33 @@ class App
   arg :type, :optional
 
   description '
-  vcloud-query takes a query type and returns all vCloud entities of 
+  vcloud-query takes a query type and returns all vCloud entities of
   that type, obeying supplied filter rules.
 
-  Without a type argument, returns a list of available types to query.
+  Query types map to vCloud entities, for example: vApp, vm, orgVdc, orgVdcNetwork.
 
-  See https://github.com/alphagov/vcloud-tools for more info'
+  Without a type argument, returns a list of available Entity Types to query.
+
+  See https://github.com/alphagov/vcloud-tools/blob/master/docs/vcloud-query.md for more info.
+
+  Example use:
+
+    # get a list of all vApps, returning all available parameters, in YAML
+
+    vcloud-query -o yaml vApp
+
+    # get a list of all powered off VMs return the name and containerName (vapp
+    # name)
+
+    vcloud-query --filter "status==POWERED_OFF" --fields name,containerName vm
+
+    # list all query types (types are left-most column, possible formats listed
+    # on the left (records is default, and most useful)
+
+    vcloud-query
+
+  '
+
 
   version Vcloud::VERSION
 
