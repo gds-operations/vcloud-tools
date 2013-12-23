@@ -13,14 +13,25 @@ with the potential record types to display (default 'records')
 
 #### Usage:
 
+    vcloud-query [options] [queriable type]
+
+    where [queriable type] maps to a vcloud entity type, eg: vApp, vm, orgVdc
+
+#### Examples:
+
+NB: examples assume FOG_CREDENTIAL has been set accordingly.
+
     # Get a list of vApps, in YAML
     vcloud-query -o yaml vApp
+
+    # Get general usage info
+    vcloud-query --help
 
     # Get a list of all queriable types (left column)
     vcloud-query
 
-    # Get general usage info
-    vcloud-query --help
+    # Get all VMs with VMware Tools less than 9282, that are not a vApp Template:
+    vcloud-query --filter 'vmToolsVersion=lt=9282;isVAppTemplate==false' vm
 
 #### Supports:
 
@@ -55,20 +66,4 @@ Entity metadata queries have their own subsyntax incorporating the value types:
     metadata:key1=gt=DATETIME:2012-06-18T12:00:00-05:00
 
 See http://pubs.vmware.com/vcd-51/topic/com.vmware.vcloud.api.doc_51/GUID-4FD71B6D-6797-4B8E-B9F0-618F4ACBEFAC.html for details.
-
-#### Examples:
-
-NB: examples assume FOG_CREDENTIAL has been set accordingly.
-
-List all potential queriable types:
-
-    vcloud-query
-
-Get all vApps in an org, in YAML:
-
-    vcloud-query -o yaml vApp
-
-Get all VMs with VMware Tools less than 9282, that are not a vApp Template:
-
-    vcloud-query --filter 'vmToolsVersion=lt=9282;isVAppTemplate==false' vm
 
