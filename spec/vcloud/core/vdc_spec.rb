@@ -46,14 +46,16 @@ module Vcloud
           q_results = [
             { :name => 'vdc-test-1', :href => @vdc_id }
           ]
-          Vcloud::Query.any_instance.stub(:get_all_results).and_return(q_results)
+          mock_query = double(:query, :get_all_results => q_results)
+          Vcloud::Query.should_receive(:new).with('orgVdc', :filter => "name==vdc-test-1").and_return(mock_query)
           obj = Vdc.get_by_name('vdc-test-1')
           expect(obj.class).to be(Vcloud::Core::Vdc)
         end
 
         it "should raise an error if no vDC with that name exists" do
           q_results = [ ]
-          Vcloud::Query.any_instance.stub(:get_all_results).and_return(q_results)
+          mock_query = double(:query, :get_all_results => q_results)
+          Vcloud::Query.should_receive(:new).with('orgVdc', :filter => "name==vdc-test-1").and_return(mock_query)
           expect{ Vdc.get_by_name('vdc-test-1') }.to raise_exception(RuntimeError)
         end
 
@@ -62,7 +64,8 @@ module Vcloud
             { :name => 'vdc-test-1', :href => @vapp_id },
             { :name => 'vdc-test-1', :href => '/bogus' },
           ]
-          Vcloud::Query.any_instance.stub(:get_all_results).and_return(q_results)
+          mock_query = double(:query, :get_all_results => q_results)
+          Vcloud::Query.should_receive(:new).with('orgVdc', :filter => "name==vdc-test-1").and_return(mock_query)
           expect{ Vdc.get_by_name('vdc-test-1') }.to raise_exception(RuntimeError)
         end
 
