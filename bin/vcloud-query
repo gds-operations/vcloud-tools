@@ -55,7 +55,7 @@ class App
 
   Without a type argument, returns a list of available Entity Types to query.
 
-  See https://github.com/alphagov/vcloud-tools/blob/master/docs/vcloud-query.md for more info.
+  See https://github.com/alphagov/vcloud-tools/blob/master/README.md for more info.
 
   Example use:
 
