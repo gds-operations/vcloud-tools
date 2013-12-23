@@ -28,6 +28,11 @@ module Vcloud
           expect(obj.class).to be(Vcloud::Core::Vdc)
         end
 
+        it "should store the id specified" do
+          obj = Vdc.new(@vdc_id)
+          expect(obj.id) == @vdc_id
+        end
+
         it "should raise error if id is not in correct format" do
           bogus_id = '123123-bogus-id-123445'
           expect{ Vdc.new(bogus_id) }.to raise_error("vdc id : #{bogus_id} is not in correct format" )
