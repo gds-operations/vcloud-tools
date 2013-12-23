@@ -56,17 +56,7 @@ module Vcloud
           q_results = [ ]
           mock_query = double(:query, :get_all_results => q_results)
           Vcloud::Query.should_receive(:new).with('orgVdc', :filter => "name==vdc-test-1").and_return(mock_query)
-          expect{ Vdc.get_by_name('vdc-test-1') }.to raise_exception(RuntimeError)
-        end
-
-        it "should raise an error if multiple vDCs with that name exist (NB: prescribes unique vDC names!)" do
-          q_results = [
-            { :name => 'vdc-test-1', :href => @vapp_id },
-            { :name => 'vdc-test-1', :href => '/bogus' },
-          ]
-          mock_query = double(:query, :get_all_results => q_results)
-          Vcloud::Query.should_receive(:new).with('orgVdc', :filter => "name==vdc-test-1").and_return(mock_query)
-          expect{ Vdc.get_by_name('vdc-test-1') }.to raise_exception(RuntimeError)
+          expect{ Vdc.get_by_name('vdc-test-1') }.to raise_exception(RuntimeError, "vDc vdc-test-1 not found")
         end
 
       end

@@ -16,14 +16,8 @@ module Vcloud
         unless res = q.get_all_results
           raise "Error finding vDC by name #{name}"
         end
-        case res.size
-        when 0
-          raise "vDc #{name} not found"
-        when 1
-          return self.new(res.first[:href].split('/').last)
-        else
-          raise "found multiple vDc entities with name #{name}!"
-        end
+        raise "vDc #{name} not found" unless res.size == 1
+        return self.new(res.first[:href].split('/').last)
       end
 
       def vcloud_attributes
