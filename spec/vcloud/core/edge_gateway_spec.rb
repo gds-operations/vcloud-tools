@@ -28,6 +28,11 @@ module Vcloud
           expect(obj.class).to be(Vcloud::Core::EdgeGateway)
         end
 
+        it "should store the id specified" do
+          obj = EdgeGateway.new(@edgegw_id)
+          expect(obj.id) == @edgegw_id
+        end
+
         it "should raise error if id is not in correct format" do
           bogus_id = '123123-bogus-id-123445'
           expect{ EdgeGateway.new(bogus_id) }.to raise_error("EdgeGateway id : #{bogus_id} is not in correct format" )
@@ -41,14 +46,16 @@ module Vcloud
           q_results = [
             { :name => 'edgegw-test-1', :href => @edgegw_id }
           ]
-          Vcloud::Query.any_instance.stub(:get_all_results).and_return(q_results)
+          mock_query = double(:query, :get_all_results => q_results)
+          Vcloud::Query.should_receive(:new).with('edgeGateway', :filter => "name==edgegw-test-1").and_return(mock_query)
           obj = EdgeGateway.get_by_name('edgegw-test-1')
           expect(obj.class).to be(Vcloud::Core::EdgeGateway)
         end
 
         it "should raise an error if no edgegw with that name exists" do
           q_results = [ ]
-          Vcloud::Query.any_instance.stub(:get_all_results).and_return(q_results)
+          mock_query = double(:query, :get_all_results => q_results)
+          Vcloud::Query.should_receive(:new).with('edgeGateway', :filter => "name==edgegw-test-1").and_return(mock_query)
           expect{ EdgeGateway.get_by_name('edgegw-test-1') }.to raise_exception(RuntimeError)
         end
 
@@ -57,7 +64,8 @@ module Vcloud
             { :name => 'edgegw-test-1', :href => @edgegw_id },
             { :name => 'edgegw-test-1', :href => '/bogus' },
           ]
-          Vcloud::Query.any_instance.stub(:get_all_results).and_return(q_results)
+          mock_query = double(:query, :get_all_results => q_results)
+          Vcloud::Query.should_receive(:new).with('edgeGateway', :filter => "name==edgegw-test-1").and_return(mock_query)
           expect{ EdgeGateway.get_by_name('edgegw-test-1') }.to raise_exception(RuntimeError)
         end
 
