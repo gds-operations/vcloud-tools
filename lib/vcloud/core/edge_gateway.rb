@@ -16,14 +16,8 @@ module Vcloud
         unless res = q.get_all_results
           raise "Error finding edgeGateway by name #{name}"
         end
-        case res.size
-        when 0
-          raise "edgeGateway #{name} not found"
-        when 1
-          return self.new(res.first[:href].split('/').last)
-        else
-          raise "found multiple edgeGateway entities with name #{name}!"
-        end
+        raise "edgeGateway #{name} not found" unless res.size == 1
+        return self.new(res.first[:href].split('/').last)
       end
 
       def vcloud_attributes

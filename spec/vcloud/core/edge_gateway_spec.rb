@@ -56,17 +56,7 @@ module Vcloud
           q_results = [ ]
           mock_query = double(:query, :get_all_results => q_results)
           Vcloud::Query.should_receive(:new).with('edgeGateway', :filter => "name==edgegw-test-1").and_return(mock_query)
-          expect{ EdgeGateway.get_by_name('edgegw-test-1') }.to raise_exception(RuntimeError)
-        end
-
-        it "should raise an error if multiple edgegws with that name exist (NB: prescribes unique edgegw names!)" do
-          q_results = [
-            { :name => 'edgegw-test-1', :href => @edgegw_id },
-            { :name => 'edgegw-test-1', :href => '/bogus' },
-          ]
-          mock_query = double(:query, :get_all_results => q_results)
-          Vcloud::Query.should_receive(:new).with('edgeGateway', :filter => "name==edgegw-test-1").and_return(mock_query)
-          expect{ EdgeGateway.get_by_name('edgegw-test-1') }.to raise_exception(RuntimeError)
+          expect{ EdgeGateway.get_by_name('edgegw-test-1') }.to raise_exception(RuntimeError, "edgeGateway edgegw-test-1 not found")
         end
 
       end
