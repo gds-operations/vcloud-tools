@@ -3,8 +3,13 @@ require 'spec_helper'
 module Vcloud
   module Core
     describe Vapp do
+      before(:each) do
+        @mock_fog_interface = StubFogInterface.new
+        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
+      end
+
       context "attributes" do
-        before(:all) {
+        before(:each) {
           attributes = {
               :name => 'Webserver vapp-1',
               :href => 'https://api.vcd.portal.skyscapecloud.com/api/vApp/vapp-7647f3ab-ede5-4d07-bad5-4e2235800ef3',
@@ -59,8 +64,6 @@ module Vcloud
                               :href => "https://api.vcloud-director.example.com/api/vdc/074aea1e-a5e9-4dd1-a028-40db8c98d237"
                           }]
             }
-            @mock_fog_interface = StubFogInterface.new
-            Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
           end
 
           it "should power on a vapp that is not powered on" do
@@ -83,11 +86,10 @@ module Vcloud
       end
 
       context "#get_by_name_and_vdc_name" do
+
         it "should return nil if fog returns nil" do
-
-          Vcloud::Fog::ServiceInterface.any_instance.should_receive(:get_vapp_by_name_and_vdc_name)
-          .with('vapp_name', 'vdc_name').and_return(nil)
-
+          StubFogInterface.any_instance.stub(:get_vapp_by_name_and_vdc_name)
+            .with('vapp_name', 'vdc_name').and_return(nil)
           Vapp.get_by_name_and_vdc_name('vapp_name', 'vdc_name').should == nil
 
         end
@@ -95,7 +97,7 @@ module Vcloud
         it "should return vapp instance if found" do
 
           vcloud_attr_vapp = {:id => 1}
-          Vcloud::Fog::ServiceInterface.any_instance.should_receive(:get_vapp_by_name_and_vdc_name)
+          StubFogInterface.any_instance.stub(:get_vapp_by_name_and_vdc_name)
           .with('vapp_name', 'vdc_name').and_return(vcloud_attr_vapp)
 
           Vapp.get_by_name_and_vdc_name('vapp_name', 'vdc_name').class.should == Core::Vapp
