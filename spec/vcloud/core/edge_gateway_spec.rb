@@ -23,10 +23,6 @@ module Vcloud
 
       context "#initialize" do
 
-        it "should fail if constructed with no args" do
-          expect{ EdgeGateway.new() }.to raise_exception(ArgumentError)
-        end
-
         it "should be constructable from just an id reference" do
           obj = EdgeGateway.new(@edgegw_id)
           expect(obj.class).to be(Vcloud::Core::EdgeGateway)
@@ -40,10 +36,6 @@ module Vcloud
       end
 
       context "#get_by_name" do
-
-        it "should fail if called with no args" do
-          expect { EdgeGateway.get_by_name() }.to raise_exception(ArgumentError)
-        end
 
         it "should return a EdgeGateway object if name exists" do
           q_results = [
