@@ -26,7 +26,6 @@ module Vcloud
       it "should return a vapp if it already exists" do
         existing_vapp = double(:vapp, :name => 'existing-vapp-1')
 
-        Vcloud.logger.should_receive(:info)
         Core::Vapp.should_receive(:get_by_name_and_vdc_name).with('test-vapp-1', 'test-vdc-1').and_return(existing_vapp)
         Vcloud.logger.should_receive(:info).with('Found existing vApp test-vapp-1 in vDC \'test-vdc-1\'. Skipping.')
         actual_vapp = VappOrchestrator.provision @config
