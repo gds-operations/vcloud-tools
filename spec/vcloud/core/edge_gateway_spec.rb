@@ -44,12 +44,22 @@ module Vcloud
 
         it "should return a EdgeGateway object if name exists" do
           q_results = [
-            { :name => 'edgegw-test-1', :href => @edgegw_id }
+            { :name => 'edgegw-test-1', :href => "/#{@edgegw_id}" }
           ]
           mock_query = double(:query, :get_all_results => q_results)
           Vcloud::Query.should_receive(:new).with('edgeGateway', :filter => "name==edgegw-test-1").and_return(mock_query)
-          obj = EdgeGateway.get_by_name('edgegw-test-1')
-          expect(obj.class).to be(Vcloud::Core::EdgeGateway)
+          @obj = EdgeGateway.get_by_name('edgegw-test-1')
+          expect(@obj.class).to be(Vcloud::Core::EdgeGateway)
+        end
+
+        it "should return an object with the correct id if name exists" do
+          q_results = [
+            { :name => 'edgegw-test-1', :href => "/#{@edgegw_id}" }
+          ]
+          mock_query = double(:query, :get_all_results => q_results)
+          Vcloud::Query.should_receive(:new).with('edgeGateway', :filter => "name==edgegw-test-1").and_return(mock_query)
+          @obj = EdgeGateway.get_by_name('edgegw-test-1')
+          expect(@obj.id) == @edgegw_id
         end
 
         it "should raise an error if no edgegw with that name exists" do
