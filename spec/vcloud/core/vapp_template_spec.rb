@@ -33,7 +33,7 @@ module Vcloud
 
       it "should raise error if invalid id is found" do
         test_catalog_item_entity = {
-            :href => "/#{'vmTemplate-12345678-90ab-cdef-0123-4567890abcde'}"
+            :href => "/#{'vAppTemplate-12345678-90ab-cdef-0123-4567890abcde'}"
         }
         @mock_fog_interface.should_receive(:template).with('test_catalog', 'test_template').and_return(test_catalog_item_entity)
         Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
@@ -45,7 +45,7 @@ module Vcloud
 
     it 'should fail gracefully if id is not of expected form' do
       test_catalog_item_entity = {
-          :href => '1234'
+          :href => '/1234'
       }
       @mock_fog_interface.should_receive(:template).with('test_catalog', 'test_template').and_return(test_catalog_item_entity)
       Vcloud::Fog::ServiceInterface.should_receive(:new).and_return(@mock_fog_interface)
