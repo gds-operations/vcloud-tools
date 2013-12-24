@@ -38,6 +38,10 @@ module Vcloud
         vcloud_attributes[:href]
       end
 
+      def delete
+        Vcloud::Fog::ServiceInterface.new.delete_network(id)
+      end
+
     end
   end
 end

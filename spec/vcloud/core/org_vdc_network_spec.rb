@@ -11,6 +11,7 @@ module Vcloud
         @net_name  = 'net-test-1'
         @mock_fog_interface = StubFogInterface.new
         Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
+        Vcloud::Core::Vdc.any_instance.stub(:id).and_return(@vdc_id)
       end
 
       context "Class public interface" do
@@ -22,6 +23,7 @@ module Vcloud
         it { should respond_to(:id) }
         it { should respond_to(:name) }
         it { should respond_to(:href) }
+        it { should respond_to(:delete) }
       end
 
       context "#initialize" do
@@ -82,6 +84,13 @@ module Vcloud
           expect{ OrgVdcNetwork.get_by_name(@net_name) }.to raise_exception(RuntimeError, "found multiple orgVdcNetwork with name net-test-1!")
         end
 
+      end
+
+      context "#delete" do
+        it "should call down to Fog::ServiceInterface.delete_network with the correct id" do
+          @mock_fog_interface.should_receive(:delete_network).with(@net_id)
+          OrgVdcNetwork.new(@net_id).delete
+        end
       end
 
     end
