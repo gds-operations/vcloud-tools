@@ -8,7 +8,7 @@ module Vcloud
       def_delegators :@fog, :get_vapp, :organizations, :org_name, :delete_vapp, :vcloud_token, :end_point,
                      :get_execute_query, :get_vapp_metadata, :power_off_vapp, :shutdown_vapp, :session,
                      :post_instantiate_vapp_template, :put_memory, :put_cpu, :power_on_vapp, :put_vapp_metadata_value,
-                     :put_vm
+                     :put_vm, :get_edge_gateway
 
       #########################
       # FogFacade Inner class to represent a logic free facade over our interactions with Fog
@@ -132,6 +132,10 @@ module Vcloud
           # need to convert key to_s since Fog 0.17 borks on symbol key
           task = @vcloud.put_vapp_metadata_item_metadata(id, k.to_s, v).body
           @vcloud.process_task(task)
+        end
+
+        def get_edge_gateway(id)
+          @vcloud.get_edge_gateway(id).body
         end
 
         private
