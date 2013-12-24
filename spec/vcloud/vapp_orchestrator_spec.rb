@@ -45,7 +45,7 @@ module Vcloud
 
         Core::Vapp.should_receive(:instantiate).with('test-vapp-1', ['org-vdc-1-net-1'], 1, 'test-vdc-1')
         .and_return(mock_vapp)
-        Core::VmOrchestrator.should_receive(:new).with(mock_fog_vm, mock_vapp).and_return(mock_vm_orchestrator)
+        VmOrchestrator.should_receive(:new).with(mock_fog_vm, mock_vapp).and_return(mock_vm_orchestrator)
 
         new_vapp = VappOrchestrator.provision @config
         new_vapp.should == mock_vapp
