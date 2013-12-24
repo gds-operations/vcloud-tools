@@ -15,6 +15,14 @@ module Vcloud
         Vcloud::Fog::ServiceInterface.new.get_vapp_template(id)
       end
 
+      def href
+        vcloud_attributes[:href]
+      end
+
+      def name
+        vcloud_attributes[:name]
+      end
+
       def self.get catalog_name, catalog_item_name
         raise "provide catalog and catalog item name to load vappTemplate" unless catalog_name && catalog_item_name
         body = Vcloud::Fog::ServiceInterface.new.template(catalog_name, catalog_item_name)
