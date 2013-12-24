@@ -11,6 +11,7 @@ module Vcloud
       end
 
       context "Class public interface" do
+        it { EdgeGateway.should respond_to(:get_ids_by_name) }
         it { EdgeGateway.should respond_to(:get_by_name) }
       end
 
