@@ -190,31 +190,25 @@ module Vcloud
       end
 
       context "update storage profiles" do
-        context "return false and log error if" do
-          before(:each) do
-            @fog_interface.should_not_receive(:put_vm)
-          end
-
-          it "storage profile config has no name" do
-            bad_storage_profile = { :href => 'https://api.example.com/api/vdcStorageProfile/1234d210-92c9-4514-b146-4b625e6c74dd' }
-            Vcloud.logger.should_receive(:info).with("bad storage profile: #{bad_storage_profile}")
-
-            @vm.update_storage_profile(bad_storage_profile).should == false
-          end
-
-          it "storage profile has no href" do
-            bad_storage_profile = { :name => "basic-storage-profile" }
-            Vcloud.logger.should_receive(:info).with("bad storage profile: #{bad_storage_profile}")
-
-            @vm.update_storage_profile(bad_storage_profile).should == false
-          end
-
-        end
-
         it "should update the storage profile" do
-          storage_profile = {:name => "basic-storage-profile", :href => 'https://api.example.com/api/vdcStorageProfile/1234d210-92c9-4514-b146-4b625e6c74dd'}
-          @fog_interface.should_receive(:put_vm).with('vm-1234', 'test-vapp-1', { :StorageProfile => storage_profile} ).and_return(true)
+          storage_profile = {
+            name: 'storage_profile_name',
+          }
+          vdc_results = [
+            { :vdcName => 'vdc-test-1' }
+          ]
+          mock_vdc_query = double(:query, :get_all_results => vdc_results)
 
+          storage_profile_results = [
+            { :href => 'test-href' }
+          ]
+          mock_sp_query = double(:query, :get_all_results => storage_profile_results)
+
+          Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==test-vm-1").and_return(mock_vdc_query)
+          Vcloud::Query.should_receive(:new).with('orgVdcStorageProfile', :filter => "name==storage_profile_name;vdcName==vdc-test-1").and_return(mock_sp_query)
+
+          generated_storage_profile = { name: 'storage_profile_name', href: 'test-href' }
+          @fog_interface.should_receive(:put_vm).with('vm-1234', 'test-vapp-1', { :StorageProfile => generated_storage_profile} ).and_return(true)
           @vm.update_storage_profile(storage_profile).should == true
         end
       end
