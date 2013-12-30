@@ -112,7 +112,6 @@ describe Vcloud::Launch do
 
       it "should assign storage profile to the VM" do
         @vm[:StorageProfile][:name].should == @test_data[:storage_profile]
-        @vm[:StorageProfile][:href].should == @test_data[:storage_profile_href]
       end
 
     end
@@ -164,7 +163,6 @@ def define_test_data
       network1_ip: ENV['VCLOUD_NETWORK1_IP'],
       network2_ip: ENV['VCLOUD_NETWORK2_IP'],
       storage_profile: ENV['VCLOUD_STORAGE_PROFILE_NAME'],
-      storage_profile_href: ENV['VCLOUD_TEST_STORAGE_PROFILE_HREF'], # https://vcloud.examples.net/api/vdcStorageProfile/1
       bootstrap_script: File.join(File.dirname(__FILE__), "data/basic_preamble_test.erb"),
       date_metadata: DateTime.parse('2013-10-23 15:34:00 +0000')
   }

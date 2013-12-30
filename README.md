@@ -79,7 +79,6 @@ VM. The easiest thing to do is create a local shell script called
     export VCLOUD\_NETWORK1\_IP="ip-on-primary-network"
     export VCLOUD\_NETWORK2\_IP="ip-on-secondary-network"
     export VCLOUD\_TEST\_STORAGE\_PROFILE="storage-profile-name"
-    export VCLOUD\_TEST\_STORAGE\_PROFILE_HREF="url-of-named-storage-profile"
 
 Then run this before you run the integration test.
 
