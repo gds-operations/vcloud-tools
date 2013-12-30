@@ -130,7 +130,12 @@ module Vcloud
 
         q = Query.new('orgVdcStorageProfile', :filter => "name==#{storage_profile_name};vdcName==#{vdc_name}")
         sp_results = q.get_all_results
-        sp_results.first[:href]
+
+        if sp_results.empty? or !sp_results.first.has_key?(:href)
+          raise "storage profile not found"
+        else
+          return sp_results.first[:href]
+        end
       end
 
       def id_prefix

@@ -211,6 +211,43 @@ module Vcloud
           @fog_interface.should_receive(:put_vm).with('vm-1234', 'test-vapp-1', { :StorageProfile => generated_storage_profile} ).and_return(true)
           @vm.update_storage_profile(storage_profile).should == true
         end
+
+        it "should raise an error if storage profile is not found" do
+          storage_profile = {
+            name: 'storage_profile_name',
+          }
+          vdc_results = [
+            { :vdcName => 'vdc-test-1' }
+          ]
+          mock_vdc_query = double(:query, :get_all_results => vdc_results)
+
+          storage_profile_results = []
+          mock_sp_query = double(:query, :get_all_results => storage_profile_results)
+
+          Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==test-vm-1").and_return(mock_vdc_query)
+          Vcloud::Query.should_receive(:new).with('orgVdcStorageProfile', :filter => "name==storage_profile_name;vdcName==vdc-test-1").and_return(mock_sp_query)
+
+          expect{ @vm.update_storage_profile(storage_profile) }.to raise_error("storage profile not found" )
+        end
+
+        it "should raise an error if storage profile id is in unexpected format" do
+          storage_profile = {
+            name: 'storage_profile_name',
+          }
+          vdc_results = [
+            { :vdcName => 'vdc-test-1' }
+          ]
+          mock_vdc_query = double(:query, :get_all_results => vdc_results)
+
+          storage_profile_results = [ { :id => 'test-href'  }]
+          mock_sp_query = double(:query, :get_all_results => storage_profile_results)
+
+          Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==test-vm-1").and_return(mock_vdc_query)
+          Vcloud::Query.should_receive(:new).with('orgVdcStorageProfile', :filter => "name==storage_profile_name;vdcName==vdc-test-1").and_return(mock_sp_query)
+
+          expect{ @vm.update_storage_profile(storage_profile) }.to raise_error("storage profile not found" )
+        end
+
       end
 
     end
