@@ -82,6 +82,23 @@ VM. The easiest thing to do is create a local shell script called
 
 Then run this before you run the integration test.
 
+### Specific integration tests
+
+#### Storage profile tests
+
+There is an integration test to check storage profile behaviour, but it requires a lot of set-up so it is not called by the rake task. If you wish to run it you need access to an environment that has two VDCs, each one containing a storage profile with the same name.
+
+You will need to set the following environment variables:
+
+      export VDC\_NAME\_1="Name of the first vDC"
+      export VDC\_NAME\_2="Name of the second vDC"
+      export VCLOUD\_CATALOG\_NAME="Catalog name" # Can be the same as above settings if appropriate
+      export VCLOUD\_TEMPLATE\_NAME="Template name" # Can be the same as above setting if appropriate
+      export VCLOUD\_STORAGE\_PROFILE\_NAME="Storage profile name" # This needs to exist in both vDCs
+      export VDC\_1\_STORAGE\_PROFILE\_HREF="Href of the named storage profile in vDC 1"
+      export VDC\_2\_STORAGE\_PROFILE\_HREF="Href of the named storage profile in vDC 2"
+
+To run this test: `rspec spec/integration/launcher/storage_profile_integration_test.rb`
 
 [vcloudwalker]: https://github.com/alphagov/vcloud-walker
 [edgegateway]: docs/edgegateway.md
