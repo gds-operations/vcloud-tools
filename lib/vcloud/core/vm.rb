@@ -113,9 +113,8 @@ module Vcloud
       end
 
       def update_storage_profile storage_profile
-        storage_profile_name = storage_profile[:name]
-        storage_profile_href = get_storage_profile_href_by_name(storage_profile_name, @vapp.name)
-        @fog_interface.put_vm(id, name, {:StorageProfile => { name: storage_profile_name, href: storage_profile_href } })
+        storage_profile_href = get_storage_profile_href_by_name(storage_profile, @vapp.name)
+        @fog_interface.put_vm(id, name, {:StorageProfile => { name: storage_profile, href: storage_profile_href } })
       end
 
       private

@@ -191,9 +191,7 @@ module Vcloud
 
       context "update storage profiles" do
         it "should update the storage profile" do
-          storage_profile = {
-            name: 'storage_profile_name',
-          }
+          storage_profile = 'storage_profile_name'
           vdc_results = [
             { :vdcName => 'vdc-test-1' }
           ]
@@ -213,9 +211,7 @@ module Vcloud
         end
 
         it "should raise an error if storage profile is not found" do
-          storage_profile = {
-            name: 'storage_profile_name',
-          }
+          storage_profile = 'storage_profile_name'
           vdc_results = [
             { :vdcName => 'vdc-test-1' }
           ]
@@ -231,9 +227,7 @@ module Vcloud
         end
 
         it "should raise an error if storage profile id is in unexpected format" do
-          storage_profile = {
-            name: 'storage_profile_name',
-          }
+          storage_profile = 'storage_profile_name'
           vdc_results = [
             { :vdcName => 'vdc-test-1' }
           ]
