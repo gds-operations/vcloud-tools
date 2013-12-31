@@ -22,6 +22,11 @@ describe Vcloud::Launch do
       @vapp_id_3 = @vapp_query_result_3[:href].split('/').last
       @vapp_3 = @fog_interface.get_vapp @vapp_id_3
       @vm_3 = @vapp_3[:Children][:Vm].first
+
+      @vapp_query_result_4 = @fog_interface.get_vapp_by_name_and_vdc_name(@test_data[:vapp_name_4], @test_data[:vdc_name_1])
+      @vapp_id_4 = @vapp_query_result_4[:href].split('/').last
+      @vapp_4 = @fog_interface.get_vapp @vapp_id_4
+      @vm_4 = @vapp_4[:Children][:Vm].first
     end
 
     it "vdc 1 should have a storage profile without the href being specified" do
@@ -45,12 +50,18 @@ describe Vcloud::Launch do
         @vm_3[:StorageProfile][:href].should == @test_data[:default_storage_profile_href]
     end
 
+    it "when a storage profile specified does not exist, vm uses the default" do
+        @vm_4[:StorageProfile][:name].should == @test_data[:default_storage_profile_name]
+        @vm_4[:StorageProfile][:href].should == @test_data[:default_storage_profile_href]
+    end
+
     after(:all) do
       unless ENV['VCLOUD_TOOLS_RSPEC_NO_DELETE_VAPP']
         File.delete @config_yaml
         @fog_interface.delete_vapp(@vapp_id_1).should == true
         @fog_interface.delete_vapp(@vapp_id_2).should == true
         @fog_interface.delete_vapp(@vapp_id_3).should == true
+        @fog_interface.delete_vapp(@vapp_id_4).should == true
       end
     end
 
@@ -73,6 +84,7 @@ def define_test_data
       vapp_name_1: "vdc-1-sp-#{Time.now.strftime('%s')}",
       vapp_name_2: "vdc-2-sp-#{Time.now.strftime('%s')}",
       vapp_name_3: "vdc-3-sp-#{Time.now.strftime('%s')}",
+      vapp_name_4: "vdc-4-sp-#{Time.now.strftime('%s')}",
       vdc_name_1: ENV['VDC_NAME_1'],
       vdc_name_2: ENV['VDC_NAME_2'],
       catalog: ENV['VCLOUD_CATALOG_NAME'],
@@ -82,6 +94,7 @@ def define_test_data
       vdc_2_sp_href: ENV['VDC_2_STORAGE_PROFILE_HREF'],
       default_storage_profile_name: ENV['DEFAULT_STORAGE_PROFILE_NAME'],
       default_storage_profile_href: ENV['DEFAULT_STORAGE_PROFILE_HREF'],
+      nonsense_storage_profile: "nonsense-storage-profile-name",
       bootstrap_script: File.join(File.dirname(__FILE__), "data/basic_preamble_test.erb"),
   }
 end
