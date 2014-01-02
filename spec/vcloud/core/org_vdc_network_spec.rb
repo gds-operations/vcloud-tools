@@ -43,7 +43,8 @@ module Vcloud
 
         it "should raise error if id is not in correct format" do
           bogus_id = '123123-bogus-id-123445'
-          expect{ OrgVdcNetwork.new(bogus_id) }.to raise_error("orgVdcNetwork id : #{bogus_id} is not in correct format" )
+          expect{ OrgVdcNetwork.new(bogus_id) }.
+            to raise_error("orgVdcNetwork id : #{bogus_id} is not in correct format" )
         end
 
       end
@@ -58,7 +59,12 @@ module Vcloud
       context "#provision" do
 
         before(:each) do
-          @mock_vdc = double(:vdc, :id => @vdc_id, :href => "/#{@vdc_id}", :name => @vdc_name)
+          @mock_vdc = double(
+            :vdc,
+            :id => @vdc_id,
+            :href => "/#{@vdc_id}",
+            :name => @vdc_name
+          )
           Vdc.stub(:get_by_name).and_return(@mock_vdc)
         end
 
@@ -74,22 +80,26 @@ module Vcloud
 
           it "should fail if :name is not set" do
             @config.delete(:name)
-            expect { Vcloud::Core::OrgVdcNetwork.provision(@config) }.to raise_exception(RuntimeError)
+            expect { Vcloud::Core::OrgVdcNetwork.provision(@config) }.
+              to raise_exception(RuntimeError)
           end
 
           it "should fail if :vdc_name is not set" do
             @config.delete(:vdc_name)
-            expect { Vcloud::Core::OrgVdcNetwork.provision(@config) }.to raise_exception(RuntimeError)
+            expect { Vcloud::Core::OrgVdcNetwork.provision(@config) }.
+              to raise_exception(RuntimeError)
           end
 
           it "should fail if :fence_mode is not set" do
             @config.delete(:fence_mode)
-            expect { Vcloud::Core::OrgVdcNetwork.provision(@config) }.to raise_exception(RuntimeError)
+            expect { Vcloud::Core::OrgVdcNetwork.provision(@config) }.
+              to raise_exception(RuntimeError)
           end
 
           it "should fail if :fence_mode is not 'isolated' or 'natRouted'" do
             @config[:fence_mode] = 'testfail'
-            expect { Vcloud::Core::OrgVdcNetwork.provision(@config) }.to raise_exception(RuntimeError)
+            expect { Vcloud::Core::OrgVdcNetwork.provision(@config) }.
+              to raise_exception(RuntimeError)
           end
 
         end
@@ -142,7 +152,10 @@ module Vcloud
                     :IsInherited => false,
                     :IsEnabled => true,
                     :IpRanges => [{
-                      :IpRange => {:StartAddress => '10.53.53.100', :EndAddress => '10.53.53.110' },
+                      :IpRange => {
+                        :StartAddress => '10.53.53.100',
+                        :EndAddress => '10.53.53.110'
+                      },
                     }],
                   }
                 }
@@ -169,8 +182,18 @@ module Vcloud
                     :IsInherited => false,
                     :IsEnabled => true,
                     :IpRanges => [
-                      { :IpRange => {:StartAddress => '10.53.53.100', :EndAddress => '10.53.53.110' }},
-                      { :IpRange => {:StartAddress => '10.53.53.120', :EndAddress => '10.53.53.130' }},
+                      { :IpRange =>
+                        {
+                          :StartAddress => '10.53.53.100',
+                          :EndAddress => '10.53.53.110'
+                        }
+                      },
+                      { :IpRange =>
+                        {
+                          :StartAddress => '10.53.53.120',
+                          :EndAddress => '10.53.53.130'
+                        }
+                      },
                     ]
                   }
                 }
@@ -196,7 +219,8 @@ module Vcloud
           end
 
           it "should fail if an edge_gateway is not supplied" do
-            expect{ Vcloud::Core::OrgVdcNetwork.provision(@config) }.to raise_exception(RuntimeError)
+            expect{ Vcloud::Core::OrgVdcNetwork.provision(@config) }.
+              to raise_exception(RuntimeError)
           end
 
           it "should handle lack of ip_ranges on natRouted networks" do
