@@ -63,7 +63,6 @@ describe Vcloud::Core::OrgVdcNetwork do
     end
 
     after(:all) do
-      pp @net.vcloud_attributes
       unless ENV['VCLOUD_TOOLS_RSPEC_NO_DELETE_ORG_VDC_NETWORK']
         Vcloud::Fog::ServiceInterface.new.delete_network(@net.id) if @net
       end
@@ -130,7 +129,6 @@ describe Vcloud::Core::OrgVdcNetwork do
     end
 
     after(:all) do
-      pp @net.vcloud_attributes
       unless ENV['VCLOUD_TOOLS_RSPEC_NO_DELETE_ORG_VDC_NETWORK']
         Vcloud::Fog::ServiceInterface.new.delete_network(@net.id) if @net
       end
@@ -138,15 +136,16 @@ describe Vcloud::Core::OrgVdcNetwork do
 
   end
 
+  def define_test_data
+    [ 'VCLOUD_VDC_NAME', 'VCLOUD_EDGE_GATEWAY' ].each do |n|
+      raise "Need #{n} set" unless ENV[n]
+    end
+    {
+      :name => "orgVdcNetwork-vcloud-tools-tests #{Time.now.strftime('%s')}",
+      :vdc_name => ENV['VCLOUD_VDC_NAME'],
+      :edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY'],
+    }
+  end
+
 end
 
-def define_test_data
-  [ 'VCLOUD_VDC_NAME', 'VCLOUD_EDGE_GATEWAY' ].each do |n|
-    raise "Need #{n} set" unless ENV[n]
-  end
-  {
-    :name => "orgVdcNetwork-vcloud-tools-tests #{Time.now.strftime('%s')}",
-    :vdc_name => ENV['VCLOUD_VDC_NAME'],
-    :edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY'],
-  }
-end
