@@ -16,7 +16,7 @@ module Vcloud
         raise "Must specify a vdc_name" unless vdc_name = config[:vdc_name]
 
         unless config[:fence_mode] == 'isolated' || config[:fence_mode] == 'natRouted'
-          raise "fence_mode #{config[:fence_mode]} not supported"
+          raise "fence_mode #{config[:fence_mode]} not supported. Must be 'isolated' or 'natRouted'"
         end
 
         config[:is_shared] = false unless config[:is_shared]
