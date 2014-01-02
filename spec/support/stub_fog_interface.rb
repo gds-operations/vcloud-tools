@@ -27,6 +27,13 @@ class StubFogInterface
     { :name => 'test-vapp-1' }
   end
 
+  def get_edge_gateway(id)
+    { 
+      :name => 'test-edgegw-1',
+      :href => "/#{id}",
+    }
+  end
+
   def vdc(name)
     { }
   end

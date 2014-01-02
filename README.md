@@ -80,8 +80,9 @@ VM. The easiest thing to do is create a local shell script called
     export VCLOUD\_NETWORK2\_IP="ip-on-secondary-network"
     export VCLOUD\_TEST\_STORAGE\_PROFILE="storage-profile-name"
     export VCLOUD\_TEST\_STORAGE\_PROFILE_HREF="url-of-named-storage-profile"
+    export VCLOUD\_EDGE\_GATEWAY="name-of-edge-gateway-in-vdc"
 
-Then run this before you run the integration test.
+Then run this before you run the integration tests.
 
 
 [vcloudwalker]: https://github.com/alphagov/vcloud-walker
