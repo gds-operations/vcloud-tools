@@ -4,9 +4,9 @@ Usage:
 
     bundle exec vcloud-launch {config_file}
 
-Example configuration files can be located in:
-
-    spec/data/*.yaml
+Example configuration files:
+- You can find input yaml with complete data setup [here][example_yaml]
+- You can find input yaml with minimum data setup [here][minimum_input]
 
 Supports:
 
@@ -36,3 +36,5 @@ Limitations:
   the size, or speak to your provider to up the limit. 2048 bytes seems to be a 
   practical default maximum, though YMMV.
 
+[example_yaml]: ../spec/integration/launcher/data/happy_path.yaml.erb
+[minimum_input]: ../spec/integration/launcher/data/minimum_data_setup.yaml.erb

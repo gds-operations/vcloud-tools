@@ -125,45 +125,62 @@ describe Vcloud::Launch do
 
   end
 
-end
 
-def extract_memory(vm)
-  vm[:'ovf:VirtualHardwareSection'][:'ovf:Item'].detect { |i| i[:'rasd:ResourceType'] == '4' }[:'rasd:VirtualQuantity']
-end
+  def extract_memory(vm)
+    vm[:'ovf:VirtualHardwareSection'][:'ovf:Item'].detect { |i| i[:'rasd:ResourceType'] == '4' }[:'rasd:VirtualQuantity']
+  end
 
-def extract_cpu(vm)
-  vm[:'ovf:VirtualHardwareSection'][:'ovf:Item'].detect { |i| i[:'rasd:ResourceType'] == '3' }[:'rasd:VirtualQuantity']
-end
+  def extract_cpu(vm)
+    vm[:'ovf:VirtualHardwareSection'][:'ovf:Item'].detect { |i| i[:'rasd:ResourceType'] == '3' }[:'rasd:VirtualQuantity']
+  end
 
-def extract_disks(vm)
-  vm[:'ovf:VirtualHardwareSection'][:'ovf:Item'].collect { |d|
-    {:name => d[:"rasd:ElementName"], :size => d[:"rasd:HostResource"][:ns12_capacity]} if d[:'rasd:ResourceType'] == '17'
-  }.compact
-end
+  def extract_disks(vm)
+    vm[:'ovf:VirtualHardwareSection'][:'ovf:Item'].collect { |d|
+      {:name => d[:"rasd:ElementName"], :size => d[:"rasd:HostResource"][:ns12_capacity]} if d[:'rasd:ResourceType'] == '17'
+    }.compact
+  end
 
 
-def generate_input_yaml_config test_namespace, input_erb_config
-  input_erb_config = input_erb_config
-  e = ERB.new(File.open(input_erb_config).read)
-  output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{Time.now.strftime('%s')}.yaml")
-  File.open(output_yaml_config, 'w') { |f|
-    f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
-  }
-  output_yaml_config
-end
+  def generate_input_yaml_config test_namespace, input_erb_config
+    input_erb_config = input_erb_config
+    e = ERB.new(File.open(input_erb_config).read)
+    output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{Time.now.strftime('%s')}.yaml")
+    File.open(output_yaml_config, 'w') { |f|
+      f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
+    }
+    output_yaml_config
+  end
 
-def define_test_data
-  {
-      vapp_name: "vapp-vcloud-tools-tests-#{Time.now.strftime('%s')}",
-      vdc_name: ENV['VCLOUD_VDC_NAME'],
-      catalog: ENV['VCLOUD_CATALOG_NAME'],
-      vapp_template: ENV['VCLOUD_TEMPLATE_NAME'],
-      network1: ENV['VCLOUD_NETWORK1_NAME'],
-      network2: ENV['VCLOUD_NETWORK2_NAME'],
-      network1_ip: ENV['VCLOUD_NETWORK1_IP'],
-      network2_ip: ENV['VCLOUD_NETWORK2_IP'],
-      storage_profile: ENV['VCLOUD_STORAGE_PROFILE_NAME'],
-      bootstrap_script: File.join(File.dirname(__FILE__), "data/basic_preamble_test.erb"),
-      date_metadata: DateTime.parse('2013-10-23 15:34:00 +0000')
-  }
+  def define_test_data
+    {
+        vapp_name: "vapp-vcloud-tools-tests-#{Time.now.strftime('%s')}",
+        vdc_name: ENV['VCLOUD_VDC_NAME'],
+        catalog: ENV['VCLOUD_CATALOG_NAME'],
+        vapp_template: ENV['VCLOUD_TEMPLATE_NAME'],
+        network1: ENV['VCLOUD_NETWORK1_NAME'],
+        network2: ENV['VCLOUD_NETWORK2_NAME'],
+        network1_ip: ENV['VCLOUD_NETWORK1_IP'],
+        network2_ip: ENV['VCLOUD_NETWORK2_IP'],
+        storage_profile: ENV['VCLOUD_STORAGE_PROFILE_NAME'],
+        storage_profile_href: ENV['VCLOUD_TEST_STORAGE_PROFILE_HREF'], # https://vcloud.examples.net/api/vdcStorageProfile/1
+        bootstrap_script: File.join(File.dirname(__FILE__), "data/basic_preamble_test.erb"),
+        date_metadata: DateTime.parse('2013-10-23 15:34:00 +0000')
+    }
+  end
+
+  def define_test_data
+    {
+        vapp_name: "vapp-vcloud-tools-tests-#{Time.now.strftime('%s')}",
+        vdc_name: ENV['VCLOUD_VDC_NAME'],
+        catalog: ENV['VCLOUD_CATALOG_NAME'],
+        vapp_template: ENV['VCLOUD_TEMPLATE_NAME'],
+        network1: ENV['VCLOUD_NETWORK1_NAME'],
+        network2: ENV['VCLOUD_NETWORK2_NAME'],
+        network1_ip: ENV['VCLOUD_NETWORK1_IP'],
+        network2_ip: ENV['VCLOUD_NETWORK2_IP'],
+        storage_profile: ENV['VCLOUD_STORAGE_PROFILE_NAME'],
+        bootstrap_script: File.join(File.dirname(__FILE__), "data/basic_preamble_test.erb"),
+        date_metadata: DateTime.parse('2013-10-23 15:34:00 +0000')
+    }
+  end
 end
