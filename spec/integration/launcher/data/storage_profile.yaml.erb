@@ -5,10 +5,10 @@ vapps:
     catalog: <%= catalog %>
     catalog_item: <%= vapp_template %>
     vm:
-      hardware_config:
+      hardware_config: &hardware_config
         memory: 4096
         cpu: 2
-      bootstrap:
+      bootstrap: &bootstrap
         script_path: <%= bootstrap_script %>
         vars:
           message: hello world
@@ -19,12 +19,9 @@ vapps:
     catalog_item: <%= vapp_template %>
     vm:
       hardware_config:
-        memory: 4096
-        cpu: 2
+        <<: *hardware_config
       bootstrap:
-        script_path: <%= bootstrap_script %>
-        vars:
-          message: hello world
+        <<: *bootstrap
       storage_profile: <%= storage_profile %>
   - name: <%= vapp_name_3 %>
     vdc_name: <%= vdc_name_1 %>
@@ -32,26 +29,20 @@ vapps:
     catalog_item: <%= vapp_template %>
     vm:
       hardware_config:
-        memory: 4096
-        cpu: 2
+        <<: *hardware_config
       metadata:
         storage_profile_test_vm: true
       bootstrap:
-        script_path: <%= bootstrap_script %>
-        vars:
-          message: hello world
+        <<: *bootstrap
   - name: <%= vapp_name_4 %>
     vdc_name: <%= vdc_name_1 %>
     catalog: <%= catalog %>
     catalog_item: <%= vapp_template %>
     vm:
       hardware_config:
-        memory: 4096
-        cpu: 2
+        <<: *hardware_config
       metadata:
         storage_profile_test_vm: true
       bootstrap:
-        script_path: <%= bootstrap_script %>
-        vars:
-          message: hello world
+        <<: *bootstrap
       storage_profile: <%= nonsense_storage_profile %>
