@@ -3,6 +3,10 @@ require 'spec_helper'
 module Vcloud
   describe VmOrchestrator do
 
+    before(:each) do
+      @vm_id = "vm-12345678-1234-1234-1234-123456712312"
+    end
+
     it "orchestrate customization" do
       vm_config = {
           :hardware_config => {
@@ -31,10 +35,10 @@ module Vcloud
               :href => 'https://vcloud.example.net/api/vdcStorageProfile/000aea1e-a5e9-4dd1-a028-40db8c98d237'
           }
       }
-      fog_vm = { :href => '/vm-123aea1e-a5e9-4dd1-a028-40db8c98d237' }
+      fog_vm = { :href => "/#{@vm_id}" }
       vapp = double(:vapp, :name => 'web-app1')
-      vm = double(:vm, :vapp_name => 'web-app1', :vapp => vapp, :name => 'test-vm-1')
-      Core::Vm.should_receive(:new).and_return(vm)
+      vm = double(:vm, :id => @vm_id, :vapp_name => 'web-app1', :vapp => vapp, :name => 'test-vm-1')
+      Core::Vm.should_receive(:new).with(@vm_id, vapp).and_return(vm)
 
       vm.should_receive(:update_name).with('web-app1')
       vm.should_receive(:configure_network_interfaces).with(vm_config[:network_connections])
