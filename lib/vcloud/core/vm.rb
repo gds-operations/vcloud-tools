@@ -1,6 +1,6 @@
 module Vcloud
   module Core
-    class Vm < Entity
+    class Vm
       extend ComputeMetadata
 
       attr_reader :id
