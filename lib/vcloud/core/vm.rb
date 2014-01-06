@@ -10,7 +10,6 @@ module Vcloud
           raise "#{self.class.id_prefix} id : #{id} is not in correct format"
         end
         @id = id
-        @fog_interface = Vcloud::Fog::ServiceInterface.new
         @vapp = vapp
       end
 
@@ -22,7 +21,7 @@ module Vcloud
         return if new_memory.nil?
         return if new_memory.to_i < 64
         unless memory.to_i == new_memory.to_i
-          @fog_interface.put_memory(id, new_memory)
+          Vcloud::Fog::ServiceInterface.new.put_memory(id, new_memory)
         end
       end
 
@@ -57,15 +56,15 @@ module Vcloud
         return if new_cpu_count.nil?
         return if new_cpu_count.to_i == 0
         unless cpu.to_i == new_cpu_count.to_i
-          @fog_interface.put_cpu(id, new_cpu_count)
+          Vcloud::Fog::ServiceInterface.new.put_cpu(id, new_cpu_count)
         end
       end
 
       def update_metadata(metadata)
         return if metadata.nil?
         metadata.each do |k, v|
-          @fog_interface.put_vapp_metadata_value(@vapp.id, k, v)
-          @fog_interface.put_vapp_metadata_value(id, k, v)
+          Vcloud::Fog::ServiceInterface.new.put_vapp_metadata_value(@vapp.id, k, v)
+          Vcloud::Fog::ServiceInterface.new.put_vapp_metadata_value(id, k, v)
         end
       end
 
@@ -94,7 +93,7 @@ module Vcloud
           connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
           connection
         end
-        @fog_interface.put_network_connection_system_section_vapp(id, section)
+        Vcloud::Fog::ServiceInterface.new.put_network_connection_system_section_vapp(id, section)
       end
 
       def configure_guest_customization_section(name, bootstrap_config, extra_disks)
@@ -108,7 +107,7 @@ module Vcloud
               preamble_vars,
           )
         end
-        @fog_interface.put_guest_customization_section(id, name, interpolated_preamble)
+        Vcloud::Fog::ServiceInterface.new.put_guest_customization_section(id, name, interpolated_preamble)
       end
 
       def generate_preamble(script_path, script_post_processor, vars)
@@ -124,7 +123,12 @@ module Vcloud
 
       def update_storage_profile storage_profile
         storage_profile_href = get_storage_profile_href_by_name(storage_profile, @vapp.name)
-        @fog_interface.put_vm(id, name, {:StorageProfile => { name: storage_profile, href: storage_profile_href } })
+        Vcloud::Fog::ServiceInterface.new.put_vm(id, name, {
+          :StorageProfile => {
+            name: storage_profile,
+            href: storage_profile_href
+          }
+        })
       end
 
       private
