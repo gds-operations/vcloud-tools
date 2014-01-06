@@ -3,12 +3,16 @@ module Vcloud
     class Vm < Entity
       extend ComputeMetadata
 
-      attr_reader :vcloud_attributes
+      attr_reader :id
 
-      def initialize(vcloud_attributes, vapp)
-        @vcloud_attributes = vcloud_attributes
+      def initialize(id, vapp)
+        @id = id
         @fog_interface = Vcloud::Fog::ServiceInterface.new
         @vapp = vapp
+      end
+
+      def vcloud_attributes
+        Vcloud::Fog::ServiceInterface.new.get_vapp(id)
       end
 
       def update_memory_size_in_mb(new_memory)
@@ -30,8 +34,11 @@ module Vcloud
       end
 
       def name
-        fsi = Vcloud::Fog::ServiceInterface.new
-        fsi.get_vapp(id)[:name]
+        vcloud_attributes[:name]
+      end
+
+      def href
+        vcloud_attributes[:href]
       end
 
       def update_name(new_name)
@@ -60,7 +67,7 @@ module Vcloud
       end
 
       def add_extra_disks(extra_disks)
-        vm = Vcloud::Fog::ModelInterface.new.get_vm_by_href(@vcloud_attributes[:href])
+        vm = Vcloud::Fog::ModelInterface.new.get_vm_by_href(href)
         if extra_disks
           extra_disks.each do |extra_disk|
             Vcloud.logger.info("adding a disk of size #{extra_disk[:size]}MB into VM #{id}")
@@ -119,7 +126,7 @@ module Vcloud
 
       private
       def virtual_hardware_section
-        @vcloud_attributes[:'ovf:VirtualHardwareSection'][:'ovf:Item']
+        vcloud_attributes[:'ovf:VirtualHardwareSection'][:'ovf:Item']
       end
 
       def get_storage_profile_href_by_name(storage_profile_name, vapp_name)
@@ -142,5 +149,6 @@ module Vcloud
       end
 
     end
+
   end
 end
