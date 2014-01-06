@@ -20,7 +20,8 @@ module Vcloud
         @mock_vm_cpu_count = 1
         @fog_interface = StubFogInterface.new
         @mock_vapp = double(:vappm, :name => @vapp_name, :id => @vapp_id)
-        @mock_vm = {
+        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@fog_interface)
+        @fog_interface.stub(:get_vapp).with(@vm_id).and_return({
             :name => "#{@vapp_name}",
             :href => "vm-href/#{@vm_id}",
             :'ovf:VirtualHardwareSection' => {
@@ -35,9 +36,8 @@ module Vcloud
                     }
                 ]
             }
-        }
-        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@fog_interface)
-        @vm =  Vm.new(@mock_vm, @mock_vapp)
+        })
+        @vm =  Vm.new(@vm_id, @mock_vapp)
       end
 
       context "update memory in VM" do
