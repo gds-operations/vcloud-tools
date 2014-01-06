@@ -41,6 +41,45 @@ module Vcloud
         @vm =  Vm.new(@vm_id, @mock_vapp)
       end
 
+      context "Class public interface" do
+      end
+
+      context "Instance public interface" do
+        subject { Vm.new(@vm_id, @mock_vapp) }
+        it { should respond_to(:id) }
+        it { should respond_to(:vcloud_attributes) }
+        it { should respond_to(:name) }
+        it { should respond_to(:href) }
+        it { should respond_to(:vapp_name) }
+        it { should respond_to(:update_name) }
+        it { should respond_to(:update_cpu_count) }
+        it { should respond_to(:update_metadata) }
+        it { should respond_to(:update_storage_profile) }
+        it { should respond_to(:add_extra_disks) }
+        it { should respond_to(:configure_network_interfaces) }
+        it { should respond_to(:configure_guest_customization_section) }
+        it { should respond_to(:generate_preamble) }
+      end
+
+      context "#initialize" do
+
+        it "should be constructable from just an id reference & Vapp object" do
+          obj = Vm.new(@vm_id, @mock_vapp)
+          expect(obj.class).to be(Vcloud::Core::Vm)
+        end
+
+        it "should store the id specified" do
+          obj = Vm.new(@vm_id, @mock_vapp)
+          expect(obj.id) == @vm_id
+        end
+
+        it "should raise error if id is not in correct format" do
+          bogus_id = '12314124-ede5-4d07-bad5-000000111111'
+          expect{ Vm.new(bogus_id, @mock_vapp) }.to raise_error("vm id : #{bogus_id} is not in correct format" )
+        end
+
+      end
+
       context "update memory in VM" do
         it "should not allow memory size < 64MB" do
           @fog_interface.should_not_receive(:put_memory)

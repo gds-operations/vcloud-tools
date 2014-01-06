@@ -6,6 +6,9 @@ module Vcloud
       attr_reader :id
 
       def initialize(id, vapp)
+        unless id =~ /^#{self.class.id_prefix}-[-0-9a-f]+$/
+          raise "#{self.class.id_prefix} id : #{id} is not in correct format"
+        end
         @id = id
         @fog_interface = Vcloud::Fog::ServiceInterface.new
         @vapp = vapp
@@ -144,7 +147,7 @@ module Vcloud
         end
       end
 
-      def id_prefix
+      def self.id_prefix
         'vm'
       end
 
