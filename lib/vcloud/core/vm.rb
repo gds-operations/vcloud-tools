@@ -113,12 +113,8 @@ module Vcloud
       end
 
       def update_storage_profile storage_profile
-        if valid_storage_profile?(storage_profile)
-          @fog_interface.put_vm(id, name, {:StorageProfile => storage_profile})
-        else
-          Vcloud.logger.info("bad storage profile: #{storage_profile}")
-          false
-        end
+        storage_profile_href = get_storage_profile_href_by_name(storage_profile, @vapp.name)
+        @fog_interface.put_vm(id, name, {:StorageProfile => { name: storage_profile, href: storage_profile_href } })
       end
 
       private
@@ -126,12 +122,23 @@ module Vcloud
         @vcloud_attributes[:'ovf:VirtualHardwareSection'][:'ovf:Item']
       end
 
-      def id_prefix
-        'vm'
+      def get_storage_profile_href_by_name(storage_profile_name, vapp_name)
+        q = Query.new('vApp', :filter => "name==#{vapp_name}")
+        vdc_results = q.get_all_results
+        vdc_name = vdc_results.first[:vdcName]
+
+        q = Query.new('orgVdcStorageProfile', :filter => "name==#{storage_profile_name};vdcName==#{vdc_name}")
+        sp_results = q.get_all_results
+
+        if sp_results.empty? or !sp_results.first.has_key?(:href)
+          raise "storage profile not found"
+        else
+          return sp_results.first[:href]
+        end
       end
 
-      def valid_storage_profile?(storage_profile)
-        storage_profile.key?(:name) && storage_profile.key?(:href)
+      def id_prefix
+        'vm'
       end
 
     end

@@ -1,0 +1,48 @@
+---
+vapps:
+  - name: <%= vapp_name_1 %>
+    vdc_name: <%= vdc_name_1 %>
+    catalog: <%= catalog %>
+    catalog_item: <%= vapp_template %>
+    vm:
+      hardware_config: &hardware_config
+        memory: 4096
+        cpu: 2
+      bootstrap: &bootstrap
+        script_path: <%= bootstrap_script %>
+        vars:
+          message: hello world
+      storage_profile: <%= storage_profile %>
+  - name: <%= vapp_name_2 %>
+    vdc_name: <%= vdc_name_2 %>
+    catalog: <%= catalog %>
+    catalog_item: <%= vapp_template %>
+    vm:
+      hardware_config:
+        <<: *hardware_config
+      bootstrap:
+        <<: *bootstrap
+      storage_profile: <%= storage_profile %>
+  - name: <%= vapp_name_3 %>
+    vdc_name: <%= vdc_name_1 %>
+    catalog: <%= catalog %>
+    catalog_item: <%= vapp_template %>
+    vm:
+      hardware_config:
+        <<: *hardware_config
+      metadata:
+        storage_profile_test_vm: true
+      bootstrap:
+        <<: *bootstrap
+  - name: <%= vapp_name_4 %>
+    vdc_name: <%= vdc_name_1 %>
+    catalog: <%= catalog %>
+    catalog_item: <%= vapp_template %>
+    vm:
+      hardware_config:
+        <<: *hardware_config
+      metadata:
+        storage_profile_test_vm: true
+      bootstrap:
+        <<: *bootstrap
+      storage_profile: <%= nonsense_storage_profile %>
