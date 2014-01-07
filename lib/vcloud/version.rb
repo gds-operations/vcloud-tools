@@ -1,3 +1,3 @@
 module Vcloud
-  VERSION = '1.0.0'
+  VERSION = '0.7.0'
 end
