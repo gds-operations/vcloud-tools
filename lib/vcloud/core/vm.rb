@@ -62,9 +62,10 @@ module Vcloud
 
       def update_metadata(metadata)
         return if metadata.nil?
+        fsi = Vcloud::Fog::ServiceInterface.new
         metadata.each do |k, v|
-          Vcloud::Fog::ServiceInterface.new.put_vapp_metadata_value(@vapp.id, k, v)
-          Vcloud::Fog::ServiceInterface.new.put_vapp_metadata_value(id, k, v)
+          fsi.put_vapp_metadata_value(@vapp.id, k, v)
+          fsi.put_vapp_metadata_value(id, k, v)
         end
       end
 
