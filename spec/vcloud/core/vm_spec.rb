@@ -7,7 +7,8 @@ module Vcloud
       before(:each) do
         @vm_id = 'vm-1234'
         @vapp_id = 'vapp-4321'
-        @vapp_name = 'test-vm-1'
+        @vapp_name = 'test-vapp-1'
+        @vm_name = 'test-vm-1'
         @data_dir = File.join(File.dirname(__FILE__), "../data")
         @mock_vm_memory_size = 1024
         @mock_metadata = {
@@ -20,8 +21,9 @@ module Vcloud
         @mock_vm_cpu_count = 1
         @fog_interface = StubFogInterface.new
         @mock_vapp = double(:vappm, :name => @vapp_name, :id => @vapp_id)
-        @mock_vm = {
-            :name => "#{@vapp_name}",
+        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@fog_interface)
+        @fog_interface.stub(:get_vapp).with(@vm_id).and_return({
+            :name => "#{@vm_name}",
             :href => "vm-href/#{@vm_id}",
             :'ovf:VirtualHardwareSection' => {
                 :'ovf:Item' => [
@@ -35,9 +37,47 @@ module Vcloud
                     }
                 ]
             }
-        }
-        Vcloud::Fog::ServiceInterface.stub(:new).and_return(@fog_interface)
-        @vm =  Vm.new(@mock_vm, @mock_vapp)
+        })
+        @vm =  Vm.new(@vm_id, @mock_vapp)
+      end
+
+      context "Class public interface" do
+      end
+
+      context "Instance public interface" do
+        subject { Vm.new(@vm_id, @mock_vapp) }
+        it { should respond_to(:id) }
+        it { should respond_to(:vcloud_attributes) }
+        it { should respond_to(:name) }
+        it { should respond_to(:href) }
+        it { should respond_to(:vapp_name) }
+        it { should respond_to(:update_name) }
+        it { should respond_to(:update_cpu_count) }
+        it { should respond_to(:update_metadata) }
+        it { should respond_to(:update_storage_profile) }
+        it { should respond_to(:add_extra_disks) }
+        it { should respond_to(:configure_network_interfaces) }
+        it { should respond_to(:configure_guest_customization_section) }
+        it { should respond_to(:generate_preamble) }
+      end
+
+      context "#initialize" do
+
+        it "should be constructable from just an id reference & Vapp object" do
+          obj = Vm.new(@vm_id, @mock_vapp)
+          expect(obj.class).to be(Vcloud::Core::Vm)
+        end
+
+        it "should store the id specified" do
+          obj = Vm.new(@vm_id, @mock_vapp)
+          expect(obj.id) == @vm_id
+        end
+
+        it "should raise error if id is not in correct format" do
+          bogus_id = '12314124-ede5-4d07-bad5-000000111111'
+          expect{ Vm.new(bogus_id, @mock_vapp) }.to raise_error("vm id : #{bogus_id} is not in correct format" )
+        end
+
       end
 
       context "update memory in VM" do
@@ -202,11 +242,11 @@ module Vcloud
           ]
           mock_sp_query = double(:query, :get_all_results => storage_profile_results)
 
-          Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==test-vm-1").and_return(mock_vdc_query)
+          Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==#{@vapp_name}").and_return(mock_vdc_query)
           Vcloud::Query.should_receive(:new).with('orgVdcStorageProfile', :filter => "name==storage_profile_name;vdcName==vdc-test-1").and_return(mock_sp_query)
 
           generated_storage_profile = { name: 'storage_profile_name', href: 'test-href' }
-          @fog_interface.should_receive(:put_vm).with('vm-1234', 'test-vapp-1', { :StorageProfile => generated_storage_profile} ).and_return(true)
+          @fog_interface.should_receive(:put_vm).with(@vm_id, @vm_name, { :StorageProfile => generated_storage_profile} ).and_return(true)
           @vm.update_storage_profile(storage_profile).should == true
         end
 
@@ -220,7 +260,7 @@ module Vcloud
           storage_profile_results = []
           mock_sp_query = double(:query, :get_all_results => storage_profile_results)
 
-          Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==test-vm-1").and_return(mock_vdc_query)
+          Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==#{@vapp_name}").and_return(mock_vdc_query)
           Vcloud::Query.should_receive(:new).with('orgVdcStorageProfile', :filter => "name==storage_profile_name;vdcName==vdc-test-1").and_return(mock_sp_query)
 
           expect{ @vm.update_storage_profile(storage_profile) }.to raise_error("storage profile not found" )
@@ -236,7 +276,7 @@ module Vcloud
           storage_profile_results = [ { :id => 'test-href'  }]
           mock_sp_query = double(:query, :get_all_results => storage_profile_results)
 
-          Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==test-vm-1").and_return(mock_vdc_query)
+          Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==#{@vapp_name}").and_return(mock_vdc_query)
           Vcloud::Query.should_receive(:new).with('orgVdcStorageProfile', :filter => "name==storage_profile_name;vdcName==vdc-test-1").and_return(mock_sp_query)
 
           expect{ @vm.update_storage_profile(storage_profile) }.to raise_error("storage profile not found" )

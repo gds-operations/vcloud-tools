@@ -1,21 +1,27 @@
 module Vcloud
   module Core
-    class Vm < Entity
+    class Vm
       extend ComputeMetadata
 
-      attr_reader :vcloud_attributes
+      attr_reader :id
 
-      def initialize(vcloud_attributes, vapp)
-        @vcloud_attributes = vcloud_attributes
-        @fog_interface = Vcloud::Fog::ServiceInterface.new
+      def initialize(id, vapp)
+        unless id =~ /^#{self.class.id_prefix}-[-0-9a-f]+$/
+          raise "#{self.class.id_prefix} id : #{id} is not in correct format"
+        end
+        @id = id
         @vapp = vapp
+      end
+
+      def vcloud_attributes
+        Vcloud::Fog::ServiceInterface.new.get_vapp(id)
       end
 
       def update_memory_size_in_mb(new_memory)
         return if new_memory.nil?
         return if new_memory.to_i < 64
         unless memory.to_i == new_memory.to_i
-          @fog_interface.put_memory(id, new_memory)
+          Vcloud::Fog::ServiceInterface.new.put_memory(id, new_memory)
         end
       end
 
@@ -30,8 +36,11 @@ module Vcloud
       end
 
       def name
-        fsi = Vcloud::Fog::ServiceInterface.new
-        fsi.get_vapp(id)[:name]
+        vcloud_attributes[:name]
+      end
+
+      def href
+        vcloud_attributes[:href]
       end
 
       def update_name(new_name)
@@ -47,20 +56,21 @@ module Vcloud
         return if new_cpu_count.nil?
         return if new_cpu_count.to_i == 0
         unless cpu.to_i == new_cpu_count.to_i
-          @fog_interface.put_cpu(id, new_cpu_count)
+          Vcloud::Fog::ServiceInterface.new.put_cpu(id, new_cpu_count)
         end
       end
 
       def update_metadata(metadata)
         return if metadata.nil?
+        fsi = Vcloud::Fog::ServiceInterface.new
         metadata.each do |k, v|
-          @fog_interface.put_vapp_metadata_value(@vapp.id, k, v)
-          @fog_interface.put_vapp_metadata_value(id, k, v)
+          fsi.put_vapp_metadata_value(@vapp.id, k, v)
+          fsi.put_vapp_metadata_value(id, k, v)
         end
       end
 
       def add_extra_disks(extra_disks)
-        vm = Vcloud::Fog::ModelInterface.new.get_vm_by_href(@vcloud_attributes[:href])
+        vm = Vcloud::Fog::ModelInterface.new.get_vm_by_href(href)
         if extra_disks
           extra_disks.each do |extra_disk|
             Vcloud.logger.info("adding a disk of size #{extra_disk[:size]}MB into VM #{id}")
@@ -84,7 +94,7 @@ module Vcloud
           connection[:IpAddressAllocationMode] = ip_address ? 'MANUAL' : 'DHCP'
           connection
         end
-        @fog_interface.put_network_connection_system_section_vapp(id, section)
+        Vcloud::Fog::ServiceInterface.new.put_network_connection_system_section_vapp(id, section)
       end
 
       def configure_guest_customization_section(name, bootstrap_config, extra_disks)
@@ -98,7 +108,7 @@ module Vcloud
               preamble_vars,
           )
         end
-        @fog_interface.put_guest_customization_section(id, name, interpolated_preamble)
+        Vcloud::Fog::ServiceInterface.new.put_guest_customization_section(id, name, interpolated_preamble)
       end
 
       def generate_preamble(script_path, script_post_processor, vars)
@@ -114,12 +124,17 @@ module Vcloud
 
       def update_storage_profile storage_profile
         storage_profile_href = get_storage_profile_href_by_name(storage_profile, @vapp.name)
-        @fog_interface.put_vm(id, name, {:StorageProfile => { name: storage_profile, href: storage_profile_href } })
+        Vcloud::Fog::ServiceInterface.new.put_vm(id, name, {
+          :StorageProfile => {
+            name: storage_profile,
+            href: storage_profile_href
+          }
+        })
       end
 
       private
       def virtual_hardware_section
-        @vcloud_attributes[:'ovf:VirtualHardwareSection'][:'ovf:Item']
+        vcloud_attributes[:'ovf:VirtualHardwareSection'][:'ovf:Item']
       end
 
       def get_storage_profile_href_by_name(storage_profile_name, vapp_name)
@@ -137,10 +152,11 @@ module Vcloud
         end
       end
 
-      def id_prefix
+      def self.id_prefix
         'vm'
       end
 
     end
+
   end
 end
