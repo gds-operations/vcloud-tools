@@ -3,7 +3,7 @@ module Vcloud
 
     def self.provision(vapp_config)
       name, vdc_name = vapp_config[:name], vapp_config[:vdc_name]
-      begin
+
         if vapp = Vcloud::Core::Vapp.get_by_name_and_vdc_name(name, vdc_name)
           Vcloud.logger.info("Found existing vApp #{name} in vDC '#{vdc_name}'. Skipping.")
         else
@@ -13,12 +13,7 @@ module Vcloud
           network_names = extract_vm_networks(vapp_config)
           vapp = Vcloud::Core::Vapp.instantiate(name, network_names, template_id, vdc_name)
           Vcloud::VmOrchestrator.new(vapp.fog_vms.first, vapp).customize(vapp_config[:vm]) if vapp_config[:vm]
-          vapp
         end
-
-      rescue RuntimeError => e
-        Vcloud.logger.error("Could not provision vApp: #{e.message}")
-      end
       vapp
     end
 
