@@ -13,6 +13,6 @@ Feature: "vcloud-launch" works as a useful command-line tool
       |--verbose|
       |--debug|
       |--no_power_on|
-      |--continue-on-error|
+      |--continue_on_error|
     And the banner should document that this app's arguments are:
       |org_config_file|
