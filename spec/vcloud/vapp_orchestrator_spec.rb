@@ -51,14 +51,6 @@ module Vcloud
         new_vapp.should == mock_vapp
       end
 
-      it "should log the error and swallow the exception if there is no template" do
-        Core::Vapp.should_receive(:get_by_name_and_vdc_name).with('test-vapp-1', 'test-vdc-1').and_return(nil)
-        Core::VappTemplate.should_receive(:get).with('org-1-catalog', 'org-1-template').and_raise('Could not find template vApp')
-
-        Vcloud.logger.should_receive(:error).with("Could not provision vApp: Could not find template vApp")
-        VappOrchestrator.provision @config
-      end
-
     end
   end
 end

@@ -20,6 +20,7 @@ class App
   on("--verbose", "Verbose output")
   on("--debug",   "Debugging output")
   on("--no_power_on",  "Do not power on vApps (default is to power on)")
+  on("--continue_on_error",  "Continue on error ( default is false) ")
 
   arg :org_config_file
 
