@@ -77,7 +77,7 @@ configuration = {
         ],
         :Member => [
           {
-            :IpAddress => "192.168.254.100",
+            :IpAddress => "192.0.2.0",
             :Weight => 1,
             :ServicePort => [
               {:Protocol => "HTTP", :Port => 80, :HealthCheckPort => 80}
@@ -92,7 +92,7 @@ configuration = {
         :Name => "app1",
         :Description => "app1",
         :Interface => {:name => "Default", :href => "https://vmware.api.net/api/admin/network/2ad93597-7b54-43dd-9eb1-631dd337e5a7"},
-        :IpAddress => '192.168.2.2',
+        :IpAddress => '192.0.2.0',
         :ServiceProfile => [
           {:IsEnabled => "true", :Protocol => "HTTP", :Port => 80, :Persistence => {:Method => ""}},
           {:IsEnabled => "true", :Protocol => "HTTPS", :Port => 443, :Persistence => {:Method => ""}}
@@ -105,7 +105,50 @@ configuration = {
 }
 ```
 
-nat => https://gist.github.com/snehaso/e5ae5767fe1ac2e4e98d
+Nat:
+```ruby
+configuration = {
+  :NatService => {
+    :IsEnabled => true,
+    :nat_type => 'ipTranslation',
+    :Policy => 'allowTrafficIn',
+    :NatRule => [
+      {
+        :Description => 'a snat rule',
+        :RuleType => 'SNAT',
+        :IsEnabled => true,
+        :Id => '65538',
+        :GatewayNatRule => {
+          :Interface => {
+            :name => 'nft00001',
+            :href => 'https://vmware.api.net/api/admin/network/44265cc3-6d63-4ea9-ac72-4905b5aa6111'
+            },
+          :OriginalIp => "192.0.2.0",
+          :TranslatedIp => "203.0.113.10"
+        }
+      },
+      {
+        :Description => 'a dnat rule',
+        :RuleType => 'DNAT',
+        :IsEnabled => true,
+        :Id => '65539',
+        :GatewayNatRule =>
+        {
+          :Interface => {
+            :name => 'nft00001',
+            :href => 'https://vmware.api.net/api/admin/network/44265cc3-6d63-4ea9-ac72-4905b5aa6111'
+           },
+          :Protocol => 'tcp',
+          :OriginalIp => "203.0.113.10",
+          :OriginalPort => 22,
+          :TranslatedIp => "192.0.2.0",
+          :TranslatedPort => 22
+        },
+      }
+    ]
+  }
+ }
+```
 
 ###Debug
 
