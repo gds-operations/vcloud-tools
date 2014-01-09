@@ -18,7 +18,7 @@ module Vcloud
         begin
           vapp = ::Vcloud::VappOrchestrator.provision(vapp_config)
           #methadone sends option starting with 'no' as false.
-          vapp.power_on unless cli_options["no-power-on"] == false
+          vapp.power_on unless cli_options["dont-power-on"]
           Vcloud.logger.info("Done! Provisioned vApp #{vapp_config[:name]} successfully.")
           Vcloud.logger.info("=" * 70)
         rescue RuntimeError => e
