@@ -11,7 +11,7 @@ describe Vcloud::Launch do
       @minimum_data_yaml = generate_input_yaml_config(test_data_1, minimum_data_erb)
       @fog_interface = Vcloud::Fog::ServiceInterface.new
 
-      Vcloud::Launch.new.run(@minimum_data_yaml, {:no_power_on => true})
+      Vcloud::Launch.new.run(@minimum_data_yaml, {"no_power_on" => false})
 
       vapp_query_result = @fog_interface.get_vapp_by_name_and_vdc_name(test_data_1[:vapp_name], test_data_1[:vdc_name])
       @provisioned_vapp_id = vapp_query_result[:href].split('/').last

@@ -17,13 +17,14 @@ module Vcloud
         Vcloud.logger.info("Provisioning vApp #{vapp_config[:name]}.")
         begin
           vapp = ::Vcloud::VappOrchestrator.provision(vapp_config)
-          vapp.power_on unless cli_options[:no_power_on]
+          #methadone sends option starting with 'no' as false.
+          vapp.power_on unless cli_options["no-power-on"] == false
           Vcloud.logger.info("Done! Provisioned vApp #{vapp_config[:name]} successfully.")
           Vcloud.logger.info("=" * 70)
         rescue RuntimeError => e
           Vcloud.logger.error("Failure : Could not provision vApp: #{e.message}")
           Vcloud.logger.info("=" * 70)
-          break unless cli_options[:continue_on_error]
+          break unless cli_options["continue-on-error"]
         end
 
       end

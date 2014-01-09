@@ -41,7 +41,7 @@ module Vcloud
       expect(VappOrchestrator).to receive(:provision).with(@fake_failing_app).and_raise(RuntimeError.new('failed to find vdc'))
       expect(VappOrchestrator).to receive(:provision).with(@successful_app_2).and_return(double(:vapp, :power_on => true))
 
-      cli_options = {:continue_on_error => true}
+      cli_options = {"continue-on-error" => true}
       Launch.new.run('input_config_yaml', cli_options)
     end
   end
