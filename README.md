@@ -30,10 +30,24 @@ For example:
 
     test:
       vcloud_director_username: 'username@org_name'
-      vcloud_director_host: 'my-vcloud-director-api.example.com'
       vcloud_director_password: 'password'
+      vcloud_director_host: 'host.api.example.com'
 
-Unfortunately current usage of fog requires the password in this file.
+Unfortunately current usage of fog requires the password in this file. Multiple sets of credentials can be specified in the fog file, using the following format:
+
+    test:
+      vcloud_director_username: 'username@org_name'
+      vcloud_director_password: 'password'
+      vcloud_director_host: 'host.api.example.com'
+
+    test2:
+      vcloud_director_username: 'username@org_name'
+      vcloud_director_password: 'password'
+      vcloud_director_host: 'host.api.vendor.net'
+
+You can then pass the `FOG_CREDENTIAL` argument at the end of your command. For instance:
+
+    FOG_CREDENTIAL=test2 bundle exec vcloud_walk:organization
 
 ## Other settings
 
