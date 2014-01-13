@@ -47,7 +47,7 @@ Unfortunately current usage of fog requires the password in this file. Multiple 
 
 You can then pass the `FOG_CREDENTIAL` environment variable at the start of your command. The value of the `FOG_CREDENTIAL` environment variable is the name of the credential set in your fog file which you wish to use.  For instance:
 
-    FOG_CREDENTIAL=test2 bundle exec vcloud-query -o yaml vApp
+    FOG_CREDENTIAL=test2 bundle exec vcloud-launch node.yaml
 
 ## Other settings
 
