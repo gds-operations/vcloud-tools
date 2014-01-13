@@ -7,42 +7,22 @@ require 'open3'
 require 'pp'
 require 'vcloud'
 
-vapp_name = ARGV.shift
-vdc_name  = ARGV.shift
+# delete a vApp by name or id
+# NB: This will only work on Stopped (aka undeployed) vApps at present
+#     Potentially we could add a --force option to also do
+#     a shutdown/stop/undeploy operation additionally, so we can delete running
+#     vApps.
 
-fi = Vcloud::FogInterface.new
+vapp_name_or_id = ARGV.shift
 
-begin
-  vdc = fi.vdc_object_by_name(vdc_name)
-rescue
-  p "Could not retreive vDC '#{vdc_name}'"
-  exit 1
-end
- 
-begin
-  vapp = fi.get_vapp_by_vdc_and_name(vdc, vapp_name)
-rescue
-  p "Could not retreive vApp '#{vapp_name}'"
-  exit 1
-end
-
-# This does not work, as it does not STOP the vApp :(
-#begin
-#  puts "Powering off vApp #{vapp_name} (#{vapp.id})"
-#  fi.power_off_vapp vapp.id
-#rescue
-#end
-#
-#begin
-#  puts "Shutdown vApp #{vapp_name} (#{vapp.id})"
-#  fi.shutdown_vapp vapp.id
-#rescue
-#end
-
-puts "Deleting vApp #{vapp_name} (#{vapp.id})"
-if ( fi.delete_vapp vapp.id )
-  puts "Success!"
+if vapp_name_or_id =~ /^vapp-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
+  # id
+  vapp = Vcloud::Core::Vapp.new(vapp_name_or_id)
 else
-  puts "FAILED!"
+  # name
+  vapp = Vcloud::Core::Vapp.get_by_name(vapp_name_or_id)
 end
+
+puts "Deleting vApp #{vapp.name} (#{vapp.id})"
+vapp.delete
 
