@@ -63,8 +63,8 @@ describe Vcloud::Launch do
 
     context "customize vm" do
       it "change cpu for given vm" do
-        extract_memory(@vm).should == '4096'
-        extract_cpu(@vm).should == '2'
+        extract_memory(@vm).should == '8192'
+        extract_cpu(@vm).should == '4'
       end
 
       it "should have added the right number of metadata values" do
