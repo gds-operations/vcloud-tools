@@ -25,6 +25,7 @@ module Vcloud
         it { should respond_to(:fog_vms) }
         it { should respond_to(:networks) }
         it { should respond_to(:power_on) }
+        it { should respond_to(:delete) }
       end
 
       context "#initialize" do
@@ -73,6 +74,33 @@ module Vcloud
           mock_query = double(:query, :get_all_results => q_results)
           Vcloud::Query.should_receive(:new).with('vApp', :filter => "name==vapp-test-1").and_return(mock_query)
           expect{ Vapp.get_by_name('vapp-test-1') }.to raise_exception(RuntimeError)
+        end
+
+      end
+
+      context "#delete" do
+
+        it "should not delete a running vApp" do
+          vapp = Vapp.new(@vapp_id)
+          @stub_attrs = {
+              :name => @vapp_name,
+              :href => "/#{@vapp_id}",
+              :status => 4,
+          }
+          StubFogInterface.any_instance.stub(:get_vapp).and_return(@stub_attrs)
+          expect { vapp.delete }.to raise_error("Cannot delete a running vApp")
+        end
+
+        it "should delete a not-running vApp" do
+          vapp = Vapp.new(@vapp_id)
+          @stub_attrs = {
+              :name => @vapp_name,
+              :href => "/#{@vapp_id}",
+              :status => 8,
+          }
+          StubFogInterface.any_instance.stub(:get_vapp).and_return(@stub_attrs)
+          @mock_fog_interface.should_receive(:delete_vapp).with(@vapp_id)
+          vapp.delete
         end
 
       end

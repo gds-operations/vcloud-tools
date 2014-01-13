@@ -83,6 +83,11 @@ module Vcloud
         running?
       end
 
+      def delete
+        raise "Cannot delete a running vApp" if running?
+        Vcloud::Fog::ServiceInterface.new.delete_vapp(id)
+      end
+
       private
       def running?
         raise "Cannot call running? on a missing vApp." unless id
