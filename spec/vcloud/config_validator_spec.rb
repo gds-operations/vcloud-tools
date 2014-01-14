@@ -111,5 +111,98 @@ module Vcloud
 
     end
 
+    context "array of hashes validations" do
+
+      it "should validate an array of hashes" do
+        data = [
+          { name: "santa", address: "north pole" },
+          { name: "mole",  address: "1 hole street" },
+        ]
+        schema = {
+          type: "Array",
+          each_element_is: {
+            type: "Hash",
+            internals: {
+              name: { type: 'String' },
+              address: { type: 'String' },
+            }
+          }
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
+      it "should correctly error on an invalid an array of hashes" do
+        data = [
+          { name: "santa", address: [] },
+          { name: 43,  address: "1 hole street" },
+        ]
+        schema = {
+          type: "Array",
+          each_element_is: {
+            type: "Hash",
+            internals: {
+              name: { type: 'String' },
+              address: { type: 'String' },
+            }
+          }
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq([
+          "address: [] is not a string",
+          "name: 43 is not a string",
+        ])
+      end
+
+    end
+
+    context "hash of arrays validations" do
+
+      it "should validate a hash of arrays" do
+        data = {
+          boys_names: [ 'bob', 'andrew', 'charlie', 'dave' ],
+          girls_names: [ 'alice', 'beth', 'carol', 'davina' ],
+        }
+        schema = {
+          type: "Hash",
+          internals: {
+            boys_names: {
+              type: "Array",
+              each_element_is: { type: 'String' }
+            },
+            girls_names: {
+              type: "Array",
+              each_element_is: { type: 'String' }
+            }
+          }
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
+      it "should correctly error on an invalid hash of arrays" do
+        data = {
+          boys_names: [ 'bob', 'andrew', 'charlie', 'dave' ],
+          girls_names: [ 'alice', 'beth', 'carol', 'davina' ],
+        }
+        schema = {
+          type: "Hash",
+          internals: {
+            boys_names: {
+              type: "Array",
+              each_element_is: { type: 'String' },
+            },
+            girls_names: {
+              type: "Array",
+              each_element_is: { type: 'String' },
+            }
+          },
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
+    end
+
   end
 end
