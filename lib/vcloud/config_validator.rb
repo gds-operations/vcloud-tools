@@ -18,7 +18,7 @@ module Vcloud
     def validate
       raise "Nil schema" unless schema
       raise "Invalid schema" unless schema.key?(:type)
-      type = @schema[:type].downcase
+      type = @schema[:type].to_s.downcase
       self.send("validate_#{type}".to_sym)
     end
 
