@@ -74,5 +74,42 @@ module Vcloud
 
     end
 
+    context "array validations" do
+
+      it "should validate a basic array" do
+        data = [ "santa", "north pole" ]
+        schema = {
+          type: "Array",
+          each_element_is: { type: "String" }
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
+      it "should validate a bogus array" do
+        data = [ 42, 43 ]
+        schema = {
+          type: "Array",
+          each_element_is: { type: "String" }
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_false
+      end
+
+      it "should return correct errors validating a bogus array" do
+        data = [ 42, 43 ]
+        schema = {
+          type: "Array",
+          each_element_is: { type: "String" }
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq([
+          "base: 42 is not a string",
+          "base: 43 is not a string",
+        ])
+      end
+
+    end
+
   end
 end

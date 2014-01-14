@@ -36,13 +36,29 @@ module Vcloud
 
     def validate_hash
       unless data.is_a? Hash
-        @errors[key] = "#{data} is not a hash"
+        @errors = "#{data} is not a hash"
         return
       end
       if schema.key?(:internals)
         internals = schema[:internals]
         internals.each do |k,v|
           sub_validator = ConfigValidator.validate(k, data[k], internals[k])
+          unless sub_validator.valid?
+            @errors = errors + sub_validator.errors
+          end
+        end
+      end
+    end
+
+    def validate_array
+      unless data.is_a? Array
+        @errors = "#{data} is not an array"
+        return
+      end
+      if schema.key?(:each_element_is)
+        element_schema = schema[:each_element_is]
+        data.each do |element|
+          sub_validator = ConfigValidator.validate(key, element, element_schema)
           unless sub_validator.valid?
             @errors = errors + sub_validator.errors
           end
