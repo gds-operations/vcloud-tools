@@ -31,14 +31,21 @@ module Vcloud
     def validate_string
       unless @data.is_a? String
         errors << "#{key}: #{@data} is not a string"
+        return
+      end
+      return unless check_emptyness_ok
+      unless schema.key?(:allowed_empty) && schema[:allowed_empty]
+        errors << "#{key}: cannot be empty string" if data.empty?
+        return
       end
     end
 
     def validate_hash
       unless data.is_a? Hash
-        @errors = "#{data} is not a hash"
+        @errors = "#{key}: is not a hash"
         return
       end
+      return unless check_emptyness_ok
       if schema.key?(:internals)
         internals = schema[:internals]
         internals.each do |k,v|
@@ -52,9 +59,10 @@ module Vcloud
 
     def validate_array
       unless data.is_a? Array
-        @errors = "#{data} is not an array"
+        @errors = "#{key} is not an array"
         return
       end
+      return unless check_emptyness_ok
       if schema.key?(:each_element_is)
         element_schema = schema[:each_element_is]
         data.each do |element|
@@ -64,6 +72,16 @@ module Vcloud
           end
         end
       end
+    end
+
+    def check_emptyness_ok
+      unless schema.key?(:allowed_empty) && schema[:allowed_empty]
+        if data.empty? 
+          @errors << "#{key}: cannot be empty"
+          return false
+        end
+      end
+      true
     end
 
   end

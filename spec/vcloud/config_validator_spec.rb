@@ -51,6 +51,27 @@ module Vcloud
         expect(v.errors).to eq([ 'base: 42 is not a string'] )
       end
 
+      it "should return error with empty string (by default)" do
+        data = ""
+        schema = { type: 'string' }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq([ 'base: cannot be empty'] )
+      end
+
+      it "should return error with empty string with allowed_empty: false)" do
+        data = ""
+        schema = { type: 'string', allowed_empty: false }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq([ 'base: cannot be empty'] )
+      end
+
+      it "should validate ok with empty string with allowed_empty: true)" do
+        data = ""
+        schema = { type: 'string', allowed_empty: true }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
     end
 
     context "hash validations" do
@@ -97,6 +118,27 @@ module Vcloud
         ])
       end
 
+      it "should return error with empty hash (by default)" do
+        data = {}
+        schema = { type: 'hash' }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq([ 'base: cannot be empty'] )
+      end
+
+      it "should return error with empty hash with allowed_empty: false)" do
+        data = {}
+        schema = { type: 'hash', allowed_empty: false }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq([ 'base: cannot be empty'] )
+      end
+
+      it "should validate ok with empty hash with allowed_empty: true)" do
+        data = {}
+        schema = { type: 'hash', allowed_empty: true }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
     end
 
     context "array validations" do
@@ -132,6 +174,27 @@ module Vcloud
           "base: 42 is not a string",
           "base: 43 is not a string",
         ])
+      end
+
+      it "should return error with empty array (by default)" do
+        data = []
+        schema = { type: 'array' }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq([ 'base: cannot be empty'] )
+      end
+
+      it "should return error with empty hash with allowed_empty: false)" do
+        data = []
+        schema = { type: 'array', allowed_empty: false }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq([ 'base: cannot be empty'] )
+      end
+
+      it "should validate ok with empty hash with allowed_empty: true)" do
+        data = []
+        schema = { type: 'array', allowed_empty: true }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
       end
 
     end
