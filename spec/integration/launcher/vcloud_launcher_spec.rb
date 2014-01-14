@@ -11,7 +11,7 @@ describe Vcloud::Launch do
       @minimum_data_yaml = generate_input_yaml_config(test_data_1, minimum_data_erb)
       @fog_interface = Vcloud::Fog::ServiceInterface.new
 
-      Vcloud::Launch.new.run(@minimum_data_yaml, {:no_power_on => true})
+      Vcloud::Launch.new.run(@minimum_data_yaml, {"dont-power-on" => true})
 
       vapp_query_result = @fog_interface.get_vapp_by_name_and_vdc_name(test_data_1[:vapp_name], test_data_1[:vdc_name])
       @provisioned_vapp_id = vapp_query_result[:href].split('/').last
@@ -35,7 +35,7 @@ describe Vcloud::Launch do
       @test_data = define_test_data
       @config_yaml = generate_input_yaml_config(@test_data, File.join(File.dirname(__FILE__), 'data/happy_path.yaml.erb'))
       @fog_interface = Vcloud::Fog::ServiceInterface.new
-      Vcloud::Launch.new.run(@config_yaml, {:no_power_on => true})
+      Vcloud::Launch.new.run(@config_yaml, { "dont-power-on" => true })
 
       @vapp_query_result = @fog_interface.get_vapp_by_name_and_vdc_name(@test_data[:vapp_name], @test_data[:vdc_name])
       @vapp_id = @vapp_query_result[:href].split('/').last
@@ -63,8 +63,8 @@ describe Vcloud::Launch do
 
     context "customize vm" do
       it "change cpu for given vm" do
-        extract_memory(@vm).should == '4096'
-        extract_cpu(@vm).should == '2'
+        extract_memory(@vm).should == '8192'
+        extract_cpu(@vm).should == '4'
       end
 
       it "should have added the right number of metadata values" do
