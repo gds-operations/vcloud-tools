@@ -146,7 +146,8 @@ module Vcloud
         schema = {
           type: 'hash',
           internals: {
-            optional_param: { type: 'string', required: false }
+            name: { type: 'string' },
+            optional_param: { type: 'string', required: false },
           }
         }
         v = ConfigValidator.validate(:base, data, schema)
@@ -160,11 +161,48 @@ module Vcloud
         schema = {
           type: 'hash',
           internals: {
-            not_optional_param: { type: 'string', required: true }
+            name: { type: 'string' },
+            not_optional_param: { type: 'string', required: true },
           }
         }
         v = ConfigValidator.validate(:base, data, schema)
         expect(v.errors).to eq(["base: missing 'not_optional_param' parameter"])
+      end
+
+      it "should return error if a bogus parameter is specified" do
+        data = {
+          name: 'hello',
+          bogus_parameter: [ 'wibble' ],
+          bogus_parameter2: 'hello',
+        }
+        schema = {
+          type: 'hash',
+          internals: {
+            name: { type: 'string' },
+          },
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq([
+          "base: parameter 'bogus_parameter' is invalid",
+          "base: parameter 'bogus_parameter2' is invalid",
+        ])
+      end
+
+      it "should validate ok if a bogus parameter is specified, when :permit_unknown_parameters is true" do
+        data = {
+          name: 'hello',
+          bogus_parameter: [ 'wibble' ],
+          bogus_parameter2: 'hello',
+        }
+        schema = {
+          type: 'hash',
+          permit_unknown_parameters: true,
+          internals: {
+            name: { type: 'string' },
+          },
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
       end
 
     end

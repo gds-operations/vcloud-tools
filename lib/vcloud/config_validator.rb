@@ -42,6 +42,7 @@ module Vcloud
         return
       end
       return unless check_emptyness_ok
+      check_for_unknown_parameters
       if schema.key?(:internals)
         internals = schema[:internals]
         internals.each do |param_key,param_schema|
@@ -93,6 +94,19 @@ module Vcloud
       )
       unless sub_validator.valid?
         @errors = errors + sub_validator.errors
+      end
+    end
+
+    def check_for_unknown_parameters
+      unless internals = schema[:internals]
+        # if there are no parameters specified, then assume all are ok.
+        return true
+      end
+      if schema[:permit_unknown_parameters]
+        return true
+      end
+      data.keys.each do |k|
+        @errors << "#{key}: parameter '#{k}' is invalid" unless internals[k]
       end
     end
 
