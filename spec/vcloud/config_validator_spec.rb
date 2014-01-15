@@ -139,6 +139,34 @@ module Vcloud
         expect(v.valid?).to be_true
       end
 
+      it "should validate ok with a missing parameter, when marked :required => false" do
+        data = {
+          name: 'hello'
+        }
+        schema = {
+          type: 'hash',
+          internals: {
+            optional_param: { type: 'string', required: false }
+          }
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
+      it "should return error with a missing :required => true param" do
+        data = {
+          name: 'hello'
+        }
+        schema = {
+          type: 'hash',
+          internals: {
+            not_optional_param: { type: 'string', required: true }
+          }
+        }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq(["base: missing 'not_optional_param' parameter"])
+      end
+
     end
 
     context "array validations" do

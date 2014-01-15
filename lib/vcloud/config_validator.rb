@@ -44,11 +44,8 @@ module Vcloud
       return unless check_emptyness_ok
       if schema.key?(:internals)
         internals = schema[:internals]
-        internals.each do |k,v|
-          sub_validator = ConfigValidator.validate(k, data[k], internals[k])
-          unless sub_validator.valid?
-            @errors = errors + sub_validator.errors
-          end
+        internals.each do |param_key,param_schema|
+          check_hash_parameter(param_key, param_schema)
         end
       end
     end
@@ -78,6 +75,25 @@ module Vcloud
         end
       end
       true
+    end
+
+    def check_hash_parameter(sub_key, sub_schema)
+      if sub_schema.key?(:required) && sub_schema[:required] == false
+        # short circuit out if we do not have the key, but it's not required.
+        return true unless data.key?(sub_key)
+      end
+      unless data.key?(sub_key)
+        @errors << "#{key}: missing '#{sub_key}' parameter"
+        return false
+      end
+      sub_validator = ConfigValidator.validate(
+        sub_key,
+        data[sub_key],
+        sub_schema
+      )
+      unless sub_validator.valid?
+        @errors = errors + sub_validator.errors
+      end
     end
 
   end
