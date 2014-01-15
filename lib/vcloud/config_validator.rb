@@ -34,6 +34,7 @@ module Vcloud
         return
       end
       return unless check_emptyness_ok
+      return unless check_matcher_matches
     end
 
     def validate_string_or_number
@@ -98,6 +99,16 @@ module Vcloud
           @errors << "#{key}: cannot be empty #{type}"
           return false
         end
+      end
+      true
+    end
+
+    def check_matcher_matches
+      return unless regex = schema[:matcher]
+      raise "#{key}: #{regex} is not a Regexp" unless regex.is_a? Regexp
+      unless data =~ regex
+        @errors << "#{key}: #{data} does not match"
+        return false
       end
       true
     end

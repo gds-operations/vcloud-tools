@@ -72,6 +72,20 @@ module Vcloud
         expect(v.valid?).to be_true
       end
 
+      it "should validate ok with a :matcher regex specified" do
+        data = "name-1234"
+        schema = { type: 'string', matcher: /^name-\d+$/ }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
+      it "should return errror with a :matcher regex not matching" do
+        data = "name-123a"
+        schema = { type: 'string', matcher: /^name-\d+$/ }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq(['base: name-123a does not match'])
+      end
+
     end
 
     context "hash validations" do
