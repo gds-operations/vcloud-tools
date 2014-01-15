@@ -38,7 +38,7 @@ module Vcloud
 
     def validate_hash
       unless data.is_a? Hash
-        @errors = "#{key}: is not a hash"
+        @errors << "#{key}: is not a hash"
         return
       end
       return unless check_emptyness_ok
@@ -53,7 +53,7 @@ module Vcloud
 
     def validate_array
       unless data.is_a? Array
-        @errors = "#{key} is not an array"
+        @errors << "#{key} is not an array"
         return
       end
       return unless check_emptyness_ok
