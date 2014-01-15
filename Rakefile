@@ -18,6 +18,7 @@ end
 
 CUKE_RESULTS = 'results.html'
 CLEAN << CUKE_RESULTS
+
 Cucumber::Rake::Task.new(:features) do |t|
   t.cucumber_opts = "features --format html -o #{CUKE_RESULTS} --format pretty --no-source -x"
   t.fork = false
@@ -31,8 +32,13 @@ RSpec::Core::RakeTask.new(:spec) do |task|
   task.pattern = FileList['spec/vcloud/**/*_spec.rb']
 end
 
-RSpec::Core::RakeTask.new(:integration_test) do |task|
-  task.pattern = FileList['spec/integration/**/*_spec.rb']
+RSpec::Core::RakeTask.new('integration:ci') do |t|
+  t.rspec_opts = %w(--tag ~skip_in_ci)
+  t.pattern = FileList['spec/integration/**/*_spec.rb']
+end
+
+RSpec::Core::RakeTask.new('integration:all') do |t|
+  t.pattern = FileList['spec/integration/**/*_spec.rb']
 end
 
 task :default => [:spec,:features]
