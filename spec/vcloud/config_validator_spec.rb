@@ -55,14 +55,14 @@ module Vcloud
         data = ""
         schema = { type: 'string' }
         v = ConfigValidator.validate(:base, data, schema)
-        expect(v.errors).to eq([ 'base: cannot be empty'] )
+        expect(v.errors).to eq([ 'base: cannot be empty string'] )
       end
 
       it "should return error with empty string with allowed_empty: false)" do
         data = ""
         schema = { type: 'string', allowed_empty: false }
         v = ConfigValidator.validate(:base, data, schema)
-        expect(v.errors).to eq([ 'base: cannot be empty'] )
+        expect(v.errors).to eq([ 'base: cannot be empty string'] )
       end
 
       it "should validate ok with empty string with allowed_empty: true)" do
@@ -122,14 +122,14 @@ module Vcloud
         data = {}
         schema = { type: 'hash' }
         v = ConfigValidator.validate(:base, data, schema)
-        expect(v.errors).to eq([ 'base: cannot be empty'] )
+        expect(v.errors).to eq([ 'base: cannot be empty hash'] )
       end
 
       it "should return error with empty hash with allowed_empty: false)" do
         data = {}
         schema = { type: 'hash', allowed_empty: false }
         v = ConfigValidator.validate(:base, data, schema)
-        expect(v.errors).to eq([ 'base: cannot be empty'] )
+        expect(v.errors).to eq([ 'base: cannot be empty hash'] )
       end
 
       it "should validate ok with empty hash with allowed_empty: true)" do
@@ -180,14 +180,14 @@ module Vcloud
         data = []
         schema = { type: 'array' }
         v = ConfigValidator.validate(:base, data, schema)
-        expect(v.errors).to eq([ 'base: cannot be empty'] )
+        expect(v.errors).to eq([ 'base: cannot be empty array'] )
       end
 
       it "should return error with empty hash with allowed_empty: false)" do
         data = []
         schema = { type: 'array', allowed_empty: false }
         v = ConfigValidator.validate(:base, data, schema)
-        expect(v.errors).to eq([ 'base: cannot be empty'] )
+        expect(v.errors).to eq([ 'base: cannot be empty array'] )
       end
 
       it "should validate ok with empty hash with allowed_empty: true)" do

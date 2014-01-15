@@ -1,9 +1,12 @@
 module Vcloud
   class ConfigValidator
 
-    attr_reader :key, :data, :schema, :errors
+    attr_reader :key, :data, :schema, :type, :errors
 
     def initialize(key, data, schema)
+      raise "Nil schema" unless schema
+      raise "Invalid schema" unless schema.key?(:type)
+      @type = schema[:type].to_s.downcase
       @errors = []
       @data   = data
       @schema = schema
@@ -16,9 +19,6 @@ module Vcloud
     end
 
     def validate
-      raise "Nil schema" unless schema
-      raise "Invalid schema" unless schema.key?(:type)
-      type = @schema[:type].to_s.downcase
       self.send("validate_#{type}".to_sym)
     end
 
@@ -34,10 +34,6 @@ module Vcloud
         return
       end
       return unless check_emptyness_ok
-      unless schema.key?(:allowed_empty) && schema[:allowed_empty]
-        errors << "#{key}: cannot be empty string" if data.empty?
-        return
-      end
     end
 
     def validate_hash
@@ -76,8 +72,8 @@ module Vcloud
 
     def check_emptyness_ok
       unless schema.key?(:allowed_empty) && schema[:allowed_empty]
-        if data.empty? 
-          @errors << "#{key}: cannot be empty"
+        if data.empty?
+          @errors << "#{key}: cannot be empty #{type}"
           return false
         end
       end
