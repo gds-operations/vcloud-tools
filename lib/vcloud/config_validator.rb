@@ -36,6 +36,13 @@ module Vcloud
       return unless check_emptyness_ok
     end
 
+    def validate_string_or_number
+      unless data.is_a?(String) || data.is_a?(Numeric)
+        @errors << "#{key}: #{@data} is not a string_or_number"
+        return
+      end
+    end
+
     def validate_hash
       unless data.is_a? Hash
         @errors << "#{key}: is not a hash"

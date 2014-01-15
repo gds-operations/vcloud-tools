@@ -358,5 +358,31 @@ module Vcloud
 
     end
 
+    context "string_or_number validations" do
+
+      it "should correctly validate an Integer" do
+        data = 2
+        schema = { type: 'string_or_number' }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
+      it "should correctly validate a String" do
+        data = '2'
+        schema = { type: 'string_or_number' }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
+      it "should correctly error if not a string or numeric" do
+        data = []
+        schema = { type: 'string_or_number' }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq(["base: [] is not a string_or_number"])
+      end
+
+    end
+
+
   end
 end

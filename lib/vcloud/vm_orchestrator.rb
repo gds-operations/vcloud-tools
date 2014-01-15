@@ -25,7 +25,7 @@ module Vcloud
     def self.customize_schema
       {
         type: 'hash',
-        required: true,
+        required: false,
         allowed_empty: false,
         internals: {
           network_connections: {
@@ -44,8 +44,8 @@ module Vcloud
             type: 'hash',
             required: false,
             internals: {
-              cpu: { type: 'string', required: false },
-              memory: { type: 'string', required: false },
+              cpu: { type: 'string_or_number', required: false },
+              memory: { type: 'string_or_number', required: false },
             },
           },
           extra_disks: {
