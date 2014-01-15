@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'pp'
 
-describe Vcloud::Core::OrgVdcNetwork, :skip_in_ci => true do
+describe Vcloud::Core::OrgVdcNetwork, :take_too_long => true do
 
   context "natRouted network" do
 

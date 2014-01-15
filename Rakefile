@@ -32,8 +32,8 @@ RSpec::Core::RakeTask.new(:spec) do |task|
   task.pattern = FileList['spec/vcloud/**/*_spec.rb']
 end
 
-RSpec::Core::RakeTask.new('integration:ci') do |t|
-  t.rspec_opts = %w(--tag ~skip_in_ci)
+RSpec::Core::RakeTask.new('integration:quick') do |t|
+  t.rspec_opts = %w(--tag ~take_too_long)
   t.pattern = FileList['spec/integration/**/*_spec.rb']
 end
 
