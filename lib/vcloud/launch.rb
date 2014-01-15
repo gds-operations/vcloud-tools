@@ -11,7 +11,7 @@ module Vcloud
       puts "cli_options:" if cli_options[:debug]
       pp cli_options if cli_options[:debug]
 
-      config = @config_loader.load_config(config_file)
+      config = @config_loader.load_config(config_file, config_schema)
       config[:vapps].each do |vapp_config|
         Vcloud.logger.info("\n")
         Vcloud.logger.info("Provisioning vApp #{vapp_config[:name]}.")
@@ -28,6 +28,22 @@ module Vcloud
         end
 
       end
+    end
+
+    def config_schema
+      {
+        type: 'hash',
+        allowed_empty: false,
+        permit_unknown_parameters: true,
+        internals: {
+          vapps: {
+            type: 'array',
+            required: false,
+            allowed_empty: true,
+            each_element_is: ::Vcloud::VappOrchestrator.provision_schema
+          },
+        }
+      }
     end
 
   end
