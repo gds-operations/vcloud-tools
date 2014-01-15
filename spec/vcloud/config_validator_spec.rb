@@ -383,6 +383,23 @@ module Vcloud
 
     end
 
+    context "ip_address validations" do
+
+      it "should correctly validate an IP address" do
+        data = '192.168.100.100'
+        schema = { type: 'ip_address' }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+
+      it "should correctly error on an invalid IP address" do
+        data = '256.168.100.100'
+        schema = { type: 'ip_address' }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq(['base: 256.168.100.100 is not a valid ip_address'])
+      end
+
+    end
 
   end
 end

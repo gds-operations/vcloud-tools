@@ -35,7 +35,7 @@ module Vcloud
               type: 'hash',
               internals: {
                 name: { type: 'string', required: true },
-                ip_address: { type: 'string', required: false },
+                ip_address: { type: 'ip_address', required: false },
               },
             },
           },

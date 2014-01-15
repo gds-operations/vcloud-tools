@@ -43,6 +43,23 @@ module Vcloud
       end
     end
 
+    def validate_ip_address
+      unless data.is_a?(String)
+        @errors << "#{key}: #{@data} is not a valid ip_address"
+        return
+      end
+      invalid = false
+      octets = data.split('.')
+      if octets.size == 4
+        octets.each do |octet|
+          invalid = true unless octet.to_i >= 0 && octet.to_i <= 255
+        end
+      else
+        invalid = true
+      end
+      @errors << "#{key}: #{@data} is not a valid ip_address" if invalid
+    end
+
     def validate_hash
       unless data.is_a? Hash
         @errors << "#{key}: is not a hash"
