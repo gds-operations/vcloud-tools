@@ -16,11 +16,10 @@ class App
     Launch.new.run(org_config_file, options)
   end
 
-
-  on("--verbose", "Verbose output")
-  on("--debug",   "Debugging output")
-  on("--dont-power-on",  "Do not power on vApps (default is to power on)")
-  on("--continue-on-error",  "Continue on error ( default is false) ")
+  on("-v", "--verbose", "Verbose output")
+  on("-d", "--debug", "Debugging output")
+  on("-x", "--dont-power-on", "Do not power on vApps (default is to power on)")
+  on("-c", "--continue-on-error", "Continue on error ( default is false) ")
 
   arg :org_config_file
 

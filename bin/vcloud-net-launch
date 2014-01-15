@@ -16,9 +16,9 @@ class App
     NetLaunch.new.run(net_config_file, options)
   end
 
-  on("--verbose", "Verbose output")
-  on("--debug",   "Debugging output")
-  on("--mock",    "Fog Mock mode enabled")
+  on("-v", "--verbose", "Verbose output")
+  on("-d", "--debug", "Debugging output")
+  on("-m", "--mock", "Fog Mock mode enabled")
 
   arg :net_config_file
 
