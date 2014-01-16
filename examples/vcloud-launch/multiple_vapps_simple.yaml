@@ -1,0 +1,45 @@
+# Multiple vApps can be defined. Running vcloud-launch will only instantiate
+# vApps that do not already exist, so it is possible to add additional vApps
+# to this configuration, and rerun the tool to add the new vApps.
+#
+# There is a lot of repetition however. YAML anchors can be used to 
+# reduce this - see yaml_anchors_example.yaml for more details.
+# 
+---
+vapps:
+
+- name: vapp-example-1
+  vdc_name: "Our VDC1"
+  catalog: our-catalog
+  catalog_item: our-vapp-template
+  vm:
+    hardware_config:
+      memory: '4096'
+      cpu: '2'
+    network_connections:
+    - name: Default
+      ip_address: 192.0.2.11
+
+- name: vapp-example-2
+  vdc_name: "Our VDC1"
+  catalog: our-catalog
+  catalog_item: our-vapp-template
+  vm:
+    hardware_config:
+      memory: '4096'
+      cpu: '2'
+    network_connections:
+    - name: Default
+      ip_address: 192.0.2.12
+
+- name: vapp-example-3
+  vdc_name: "Our VDC1"
+  catalog: our-catalog
+  catalog_item: our-vapp-template
+  vm:
+    hardware_config:
+      memory: '4096'
+      cpu: '2'
+    network_connections:
+    - name: Default
+      ip_address: 192.0.2.13
