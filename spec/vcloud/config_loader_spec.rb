@@ -28,6 +28,20 @@ describe Vcloud::ConfigLoader do
     valid_config['vapps'].should eq(actual_config['vapps'])
   end
 
+  context "parsing example configurations" do
+    examples_dir = File.join(
+      File.dirname(__FILE__),
+      '..', '..', 'examples'
+    )
+    Dir["#{examples_dir}/**/*.yaml"].each do |input_file|
+      it "should parse example config #{File.basename(input_file)}" do
+        loader = Vcloud::ConfigLoader.new
+        actual_config = loader.load_config(input_file)
+        expect(actual_config).to be_true
+      end
+    end
+  end
+
   def valid_config
     {
       :vapps=>[{
