@@ -42,8 +42,6 @@ class App
   end
 
   on("--mock",    "Fog Mock mode")
-  on("--verbose", "Verbose output")
-  on("--debug",   "Debugging output")
 
   arg :type, :optional
 
@@ -74,7 +72,6 @@ class App
     vcloud-query
 
   '
-
 
   version Vcloud::VERSION
 
