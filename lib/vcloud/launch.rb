@@ -8,9 +8,6 @@ module Vcloud
     end
 
     def run(config_file = nil, cli_options = {})
-      puts "cli_options:" if cli_options[:debug]
-      pp cli_options if cli_options[:debug]
-
       config = @config_loader.load_config(config_file)
       config[:vapps].each do |vapp_config|
         Vcloud.logger.info("\n")

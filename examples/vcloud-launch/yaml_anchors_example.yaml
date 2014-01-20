@@ -1,0 +1,87 @@
+# A pretty complete example of using YAML Anchors to reduce 
+# repetition when creating multiple vApps.
+# 
+# This example defines 4 vapps: 
+#  * frontend-1
+#  * frontend-2
+#  * backend-1
+#  * backend-2
+#
+---
+anchors:
+
+- &VAPP_TEMPLATE our-vapp-template
+
+- &ENVIRONMENT example
+- &VDC_NAME    example-vdc
+
+- &APP_NETWORK example-app-net
+- &MGMT_NETWORK example-mgmt-net
+
+- &BASE_VAPP
+  vdc_name: *VDC_NAME
+  catalog:  our-catalog
+  catalog_item: *VAPP_TEMPLATE
+
+- &BASE_VM
+  metadata:
+    environment:   *ENVIRONMENT
+    vapp_template: *VAPP_TEMPLATE
+  bootstrap: &BASE_VM_BOOTSTRAP
+    script_path: basic_preamble.erb
+    vars: &BASE_VM_VARS
+      environment: *ENVIRONMENT
+      vapp_template: *VAPP_TEMPLATE
+      vdc: *VDC_NAME
+
+- &SMALL_VM
+  <<: *BASE_VM
+  hardware_config: { memory: 4096, cpu: 2 }
+
+- &MEDIUM_VM
+  <<: *BASE_VM
+  hardware_config: { memory: 8192, cpu: 4 }
+
+vapps:
+
+- &frontend_vapp
+  <<: *BASE_VAPP
+  name: frontend-example-1
+  vm: &frontend_vm
+    <<: *SMALL_VM
+    bootstrap:
+      <<: *BASE_VM_BOOTSTRAP
+      vars:
+        <<: *BASE_VM_VARS
+        role: frontend
+    network_connections:
+    - { name: *APP_NETWORK,  ip_address: 192.0.2.11 }
+    - { name: *MGMT_NETWORK, ip_address: 198.51.100.11 }
+- <<: *frontend_vapp
+  name: frontend-example-2
+  vm:
+    <<: *frontend_vm
+    network_connections:
+    - { name: *APP_NETWORK,  ip_address: 192.0.2.12 }
+    - { name: *MGMT_NETWORK, ip_address: 198.51.100.12 }
+
+- &backend_vapp
+  <<: *BASE_VAPP
+  name: backend-example-1
+  vm: &backend_vm
+    <<: *MEDIUM_VM
+    bootstrap:
+      <<: *BASE_VM_BOOTSTRAP
+      vars:
+        <<: *BASE_VM_VARS
+        role: backend
+    network_connections:
+    - { name: *APP_NETWORK,  ip_address: 192.0.2.51 }
+    - { name: *MGMT_NETWORK, ip_address: 198.51.100.51 }
+- <<: *backend_vapp
+  name: backend-example-2
+  vm:
+    <<: *backend_vm
+    network_connections:
+    - { name: *APP_NETWORK,  ip_address: 192.0.2.52 }
+    - { name: *MGMT_NETWORK, ip_address: 198.51.100.52 }

@@ -1,0 +1,11 @@
+# Minimum configuration required to instantiate a vApp via vcloud-launch
+# 
+# This will instantiate 'our-vapp-template' into 'vapp-example-1', keeping
+# the settings of any contained VM as-is.
+#
+---
+vapps:
+  - name: 'vapp-example-1'
+    vdc_name: 'vDC Example [1]'
+    catalog: 'example-catalog'
+    catalog_item: 'our-vapp-template'
