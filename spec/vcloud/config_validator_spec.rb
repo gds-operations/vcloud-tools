@@ -263,14 +263,14 @@ module Vcloud
         expect(v.errors).to eq([ 'base: cannot be empty array'] )
       end
 
-      it "should return error with empty hash with allowed_empty: false)" do
+      it "should return error with empty array with allowed_empty: false)" do
         data = []
         schema = { type: 'array', allowed_empty: false }
         v = ConfigValidator.validate(:base, data, schema)
         expect(v.errors).to eq([ 'base: cannot be empty array'] )
       end
 
-      it "should validate ok with empty hash with allowed_empty: true)" do
+      it "should validate ok with empty array with allowed_empty: true)" do
         data = []
         schema = { type: 'array', allowed_empty: true }
         v = ConfigValidator.validate(:base, data, schema)
