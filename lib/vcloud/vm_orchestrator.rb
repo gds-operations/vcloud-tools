@@ -56,7 +56,7 @@ module Vcloud
               type: 'hash',
               internals: {
                 name: { type: 'string', required: false },
-                size: { type: 'string', required: false, matcher: /^\d+$/ },
+                size: { type: 'string_or_number', required: false },
               },
             },
           },
