@@ -18,15 +18,15 @@ module Vcloud
       @errors.empty?
     end
 
-    def validate
-      self.send("validate_#{type}".to_sym)
-    end
-
     def self.validate(key, data, schema)
       new(key, data, schema)
     end
 
     private
+
+    def validate
+      self.send("validate_#{type}".to_sym)
+    end
 
     def validate_string
       unless @data.is_a? String
