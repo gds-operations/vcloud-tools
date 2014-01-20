@@ -10,8 +10,6 @@ Feature: "vcloud-net-launch" works as a useful command-line tool
     And the banner should document that this app takes options
     And the following options should be documented:
       |--version|
-      |--verbose|
-      |--debug|
       |--mock|
     And the banner should document that this app's arguments are:
       |net_config_file|

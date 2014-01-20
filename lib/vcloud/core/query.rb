@@ -27,10 +27,6 @@ module Vcloud
     end
 
     def run()
-
-      puts "options:" if @options[:debug]
-      pp @options if @options[:debug]
-
       if @type.nil?
         output_potential_query_types
       else
