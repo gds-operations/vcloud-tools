@@ -1,0 +1,58 @@
+# 'Complete single vapp' vcloud-launch configuration example
+#
+# Each of the vm: subsections (hardware_config, network_connections, etc) 
+# are optional, if not specified the defaults as set in the vAppTemplate 
+# will be used.
+#
+# Specifically in this example, the instantiated VM will have:
+#
+#  * its memory reconfigured to 4096MB
+#  * its cpu count reconfigured to be 2.
+#  * The Primary NIC will be moved to FrontendNetwork, and given a manual ip
+#    of 192.0.2.10
+#  * A Secondary NIC will be created on BackendNetwork and given an IP address
+#    via DHCP (the result of not supplying an ip_address parameter)
+#  * a bootstrap 'guest customization script' is provided, which will be
+#    interpolated via ERB. 
+#  * Two additional extra_disks are supplied, sized at 10GB and 20GB respectively.
+#    These are in addition to the existing system disk in the templated VM.
+#  * 'vars' are supplied, which will be available to ERB when interpolating
+#  * This output will be run through 'script_post_processor' - generally only 
+#    needed if the interpolated  bootstrap script is 'large' (2048 bytes-ish)
+#  * metadata is supplied which will be applied to the VM and the parent vApp
+#    entities in vCloud Director. This is not available inside the VM itself :(
+#  * A storage_profile is provided. The VM will be moved to this named storage
+#    profile (which must be available in its vDC), if it is different to its 
+#    current SP.
+#
+---
+vapps:
+  - name: 'vapp-example-complete'
+    vdc_name: 'Our vDC 1'
+    catalog: 'our-catalog'
+    catalog_item: 'our-template-vapp'
+    vm:
+      hardware_config:
+        memory: 4096
+        cpu: 2
+      network_connections:
+      - name: 'FrontendNetwork'
+        ip_address: '192.0.2.10'
+      - name: 'BackendNetwork'
+      extra_disks:
+      - name: logs-disk
+        size: 10240
+      - name: data-disk
+        size: 20480
+      bootstrap:
+        script_path: 'scripts/bootstrap_preamble.erb'
+        script_post_processor: 'scripts/minify_bash.py'
+        vars:
+          message: hello world
+          role: webserver
+          environment: example
+      metadata:
+        role: webserver
+        environment: example
+      storage_profile: 'our-updated-storage-profile'
+

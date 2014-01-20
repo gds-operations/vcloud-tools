@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Vcloud::Launch do
-  context "storage profile" do
+  context "storage profile", :take_too_long => true do
     before(:all) do
       @test_data = define_test_data
       @config_yaml = generate_input_yaml_config(@test_data, File.join(File.dirname(__FILE__), 'data/storage_profile.yaml.erb'))
