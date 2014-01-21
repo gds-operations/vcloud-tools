@@ -17,6 +17,21 @@ module Vcloud
       vapp
     end
 
+    def self.provision_schema
+      {
+        type: 'hash',
+        required: true,
+        allowed_empty: false,
+        internals: {
+          name:      { type: 'string', required: true, allowed_empty: false },
+          vdc_name:  { type: 'string', required: true, allowed_empty: false },
+          catalog:   { type: 'string', required: true, allowed_empty: false },
+          catalog_item: { type: 'string', required: true, allowed_empty: false },
+          vm: Vcloud::VmOrchestrator.customize_schema,
+        }
+      }
+    end
+
     def self.extract_vm_networks(config)
       if (config[:vm] && config[:vm][:network_connections])
         config[:vm][:network_connections].collect { |h| h[:name] }

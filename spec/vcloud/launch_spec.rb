@@ -23,8 +23,8 @@ module Vcloud
           :catalog => "default",
           :catalog_item => "ubuntu-precise"
       }
-      expect(config_loader).to receive(:load_config).with('input_config_yaml')
-                               .and_return({:vapps => [@successful_app_1, @fake_failing_app, @successful_app_2]})
+      expect(config_loader).to receive(:load_config).
+        and_return({:vapps => [@successful_app_1, @fake_failing_app, @successful_app_2]})
     end
 
     it "should stop on failure by default" do

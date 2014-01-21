@@ -13,7 +13,6 @@ describe Vcloud::ConfigLoader do
     valid_config.should eq(actual_config)
   end
 
-
   it "should create a valid hash when input is YAML" do
     input_file = 'spec/vcloud/data/working.yaml'
     loader = Vcloud::ConfigLoader.new
@@ -28,18 +27,58 @@ describe Vcloud::ConfigLoader do
     valid_config['vapps'].should eq(actual_config['vapps'])
   end
 
-  context "parsing example configurations" do
+  it "should validate correctly against a schema" do
+    input_file = 'spec/vcloud/data/working_with_defaults.yaml'
+    loader = Vcloud::ConfigLoader.new
+    schema = Vcloud::Launch.new.config_schema
+    actual_config = loader.load_config(input_file, schema)
+    valid_config['vapps'].should eq(actual_config['vapps'])
+  end
+
+  it "should raise an error if checked against an invalid schema" do
+    input_file = 'spec/vcloud/data/working_with_defaults.yaml'
+    loader = Vcloud::ConfigLoader.new
+    Vcloud.logger.should_receive(:fatal).with("vapps: is not a hash")
+    expect { loader.load_config(input_file, invalid_schema) }.
+      to raise_error('Supplied configuration does not match supplied schema')
+  end
+
+  context "loading example vcloud_launch configurations" do
     examples_dir = File.join(
       File.dirname(__FILE__),
       '..', '..', 'examples'
     )
-    Dir["#{examples_dir}/**/*.yaml"].each do |input_file|
-      it "should parse example config #{File.basename(input_file)}" do
+    Dir["#{examples_dir}/vcloud-launch/*.yaml"].each do |input_file|
+      it "should load example config #{File.basename(input_file)}" do
+        loader = Vcloud::ConfigLoader.new
+        actual_config = loader.load_config(input_file, ::Vcloud::Launch::new.config_schema)
+        expect(actual_config).to be_true
+      end
+    end
+  end
+
+  context "loading example vcloud-net-launch configurations" do
+    examples_dir = File.join(
+      File.dirname(__FILE__),
+      '..', '..', 'examples'
+    )
+    Dir["#{examples_dir}/vcloud-net-launch/*.yaml"].each do |input_file|
+      it "should load example config #{File.basename(input_file)}" do
         loader = Vcloud::ConfigLoader.new
         actual_config = loader.load_config(input_file)
         expect(actual_config).to be_true
       end
     end
+  end
+
+  def invalid_schema
+    {
+      type: Hash,
+      permit_unknown_parameters: true,
+      internals: {
+        vapps: { type: Hash },
+      }
+    }
   end
 
   def valid_config
