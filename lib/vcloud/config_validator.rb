@@ -93,6 +93,16 @@ module Vcloud
       end
     end
 
+    def validate_enum
+      unless (acceptable_values = schema[:acceptable_values]) && acceptable_values.is_a?(Array)
+        raise "Must set :acceptable_values for type 'enum'"
+      end
+      unless acceptable_values.include?(data)
+        acceptable_values_string = acceptable_values.collect {|v| "'#{v}'" }.join(', ')
+        @errors << "#{key}: #{@data} is not a valid value. Acceptable values are #{acceptable_values_string}."
+      end
+    end
+
     def check_emptyness_ok
       unless schema.key?(:allowed_empty) && schema[:allowed_empty]
         if data.empty?

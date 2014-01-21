@@ -415,5 +415,27 @@ module Vcloud
 
     end
 
+    context "enum validations" do
+      it "should error if enum value is not present in list" do
+        data = 'blah'
+        schema = { type: 'enum', required: false, acceptable_values: ['allow', 'decline', 'none']}
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq(["base: blah is not a valid value. Acceptable values are 'allow', 'decline', 'none'."])
+      end
+
+      it "should raise error if enum schema does not contain acceptable_values" do
+        data = 'blah'
+        schema = { type: 'enum', required: false}
+        expect{ ConfigValidator.validate(:base, data, schema) }.to raise_error("Must set :acceptable_values for type 'enum'")
+      end
+
+      it "should validate ok if enum is acceptable" do
+        data = 'allow'
+        schema = { type: 'enum', required: false, acceptable_values: ['allow', 'decline', 'none']}
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.valid?).to be_true
+      end
+    end
+
   end
 end
