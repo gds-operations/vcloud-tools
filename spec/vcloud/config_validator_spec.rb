@@ -437,5 +437,23 @@ module Vcloud
       end
     end
 
+    context "boolean validations" do
+      it "should error if boolean value is not valid" do
+        data = 'blah'
+        schema = { type: 'boolean' }
+        v = ConfigValidator.validate(:base, data, schema)
+        expect(v.errors).to eq(["base: blah is not a valid boolean value."])
+      end
+
+      [true, false].each do |boolean_value|
+        it "should validate ok if value is #{boolean_value}" do
+          schema = { type: 'boolean' }
+          v = ConfigValidator.validate(:base, boolean_value, schema)
+          expect(v.valid?).to be_true
+        end
+      end
+
+    end
+
   end
 end

@@ -103,6 +103,12 @@ module Vcloud
       end
     end
 
+    def validate_boolean
+      unless [true, false].include?(data)
+        @errors << "#{key}: #{data} is not a valid boolean value."
+      end
+    end
+
     def check_emptyness_ok
       unless schema.key?(:allowed_empty) && schema[:allowed_empty]
         if data.empty?
