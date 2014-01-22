@@ -17,6 +17,7 @@ require 'vcloud/launch'
 require 'vcloud/net_launch'
 require 'vcloud/vm_orchestrator'
 require 'vcloud/vapp_orchestrator'
+require 'vcloud/edge_gateway/firewall_configuration_generator'
 require 'vcloud/schema/edge_gateway'
 
 module Vcloud
