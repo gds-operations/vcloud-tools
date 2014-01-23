@@ -1,0 +1,14 @@
+---
+gateway: 'Test Edgegateway'
+firewall_service:
+  policy: drop
+  log_default_action: true
+  firewall_rules_incorrect:
+  - enabled: true
+    description: 'A rule'
+    policy: allow
+    protocols: 'tcp'
+    destination_port_range: Any
+    destination_ip: Any
+    source_port_range: Any
+    source_ip: 192.0.2.2

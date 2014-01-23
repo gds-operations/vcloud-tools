@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'bundler'
   s.add_runtime_dependency 'methadone'
   s.add_runtime_dependency 'vcloud-core'
+  s.add_runtime_dependency 'hashdiff'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 2.14.1'
   s.add_development_dependency 'rspec-mocks', '~> 2.14.4'

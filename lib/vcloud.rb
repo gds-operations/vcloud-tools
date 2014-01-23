@@ -17,6 +17,9 @@ require 'vcloud/launch'
 require 'vcloud/net_launch'
 require 'vcloud/vm_orchestrator'
 require 'vcloud/vapp_orchestrator'
+require 'vcloud/edge_gateway_services'
+Dir["#{File.dirname(__FILE__)}/vcloud/edge_gateway/configuration_generator/*.rb"].each {|file| require file }
+require 'vcloud/schema/edge_gateway'
 
 module Vcloud
 
