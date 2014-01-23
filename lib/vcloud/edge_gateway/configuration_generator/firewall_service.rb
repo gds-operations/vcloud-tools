@@ -28,13 +28,19 @@ module Vcloud
             new_rule[:Policy] = rule.key?(:policy) ? rule[:policy] : "allow"
             new_rule[:Protocols] = rule.key?(:protocols) ? handle_protocols(rule[:protocols]) : {Tcp: 'true'}
             new_rule[:DestinationPortRange] = rule.key?(:destination_port_range) ? rule[:destination_port_range] : 'Any'
+            new_rule[:Port] = handle_vmware_port_deprecation_behaviour(rule[:destination_port_range])
             new_rule[:DestinationIp] = rule[:destination_ip]
             new_rule[:SourcePortRange] = rule.key?(:source_port_range) ? rule[:source_port_range] : 'Any'
+            new_rule[:SourcePort] = handle_vmware_port_deprecation_behaviour(rule[:source_port_range])
             new_rule[:SourceIp] = rule[:source_ip]
             new_rule[:EnableLogging] = rule.key?(:enable_logging) ? rule[:enable_logging].to_s : 'false'
             i += 1
             new_rule
           end
+        end
+
+        def handle_vmware_port_deprecation_behaviour(port_spec)
+          (port_spec.to_s =~ /^\d+$/) ? port_spec.to_s : '-1'
         end
 
         def handle_protocols(protocols)
