@@ -5,9 +5,8 @@ module Vcloud
 
   describe EdgeGatewayServices do
     it "raise exception if input yaml does not match with schema" do
-      config_erb = File.expand_path('data/incorrect_firewall_config.yaml.erb', File.dirname(__FILE__))
-      input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
-      expect { EdgeGatewayServices.new.update(input_config_file) }.to raise_error('Supplied configuration does not match supplied schema')
+      config_yaml = File.expand_path('data/incorrect_firewall_config.yaml', File.dirname(__FILE__))
+      expect { EdgeGatewayServices.new.update(config_yaml) }.to raise_error('Supplied configuration does not match supplied schema')
     end
 
     context "configure firewall service" do
@@ -37,6 +36,8 @@ module Vcloud
                                                         :SourcePortRange => "Any",
                                                         :SourceIp => "192.0.2.2",
                                                         :EnableLogging => "false"}])
+
+        File.delete(input_config_file)
       end
 
       after(:all) do
