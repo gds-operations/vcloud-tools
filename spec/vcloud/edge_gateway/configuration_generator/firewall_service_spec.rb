@@ -10,14 +10,14 @@ module Vcloud
             {
               title: 'disabled firewall with a disabled rule',
               input: {
-                enabled: false,
+                enabled: 'false',
                 policy: 'allow',
-                log_default_action: true,
+                log_default_action: 'true',
                 firewall_rules: [
                   {
-                    enabled: false,
+                    enabled: 'false',
                     id: '999',
-                    match_on_translate: true,
+                    match_on_translate: 'true',
                     description: "A rule",
                     policy: "allow",
                     protocols: "tcp+udp",
@@ -25,27 +25,27 @@ module Vcloud
                     destination_ip: "10.10.20.20",
                     source_port_range: "Any",
                     source_ip: "192.0.2.2",
-                    enable_logging: true,
+                    enable_logging: 'true',
                   }
                 ]
               },
               output: {
-                IsEnabled: false,
+                IsEnabled: 'false',
                 DefaultAction: "allow",
-                LogDefaultAction: true,
+                LogDefaultAction: 'true',
                 FirewallRule: [
                   {
                     Id: '999',
-                    IsEnabled: false,
+                    IsEnabled: 'false',
                     Description: "A rule",
-                    MatchOnTranslate: true,
+                    MatchOnTranslate: 'true',
                     Policy: "allow",
-                    Protocols: {Tcp: true, Udp: true},
+                    Protocols: {Tcp: 'true', Udp: 'true'},
                     DestinationPortRange: "22",
                     DestinationIp: "10.10.20.20",
                     SourcePortRange: "Any",
                     SourceIp: "192.0.2.2",
-                    EnableLogging: true,
+                    EnableLogging: 'true',
                   }
                 ]
               }
@@ -65,22 +65,22 @@ module Vcloud
 
               },
               output: {
-                IsEnabled: true,
+                IsEnabled: 'true',
                 DefaultAction: "drop",
-                LogDefaultAction: false,
+                LogDefaultAction: 'false',
                 FirewallRule: [
                   {
                     Id: '999',
-                    IsEnabled: true,
+                    IsEnabled: 'true',
                     Description: "A rule",
-                    MatchOnTranslate: false,
+                    MatchOnTranslate: 'false',
                     Policy: "allow",
-                    Protocols: {Tcp: true},
+                    Protocols: {Tcp: 'true'},
                     DestinationPortRange: "22",
                     DestinationIp: "10.10.20.20",
                     SourcePortRange: "Any",
                     SourceIp: "192.0.2.2",
-                    EnableLogging: false,
+                    EnableLogging: 'false',
                   }
                 ]
               }
@@ -104,35 +104,35 @@ module Vcloud
                 ]
               },
               output: {
-                IsEnabled: true,
+                IsEnabled: 'true',
                 DefaultAction: "drop",
-                LogDefaultAction: false,
+                LogDefaultAction: 'false',
                 FirewallRule: [
                   {
-                    Id: 1,
-                    IsEnabled: true,
+                    Id: '1',
+                    IsEnabled: 'true',
                     Description: "rule 1",
-                    MatchOnTranslate: false,
+                    MatchOnTranslate: 'false',
                     Policy: "allow",
-                    Protocols: {Tcp: true},
+                    Protocols: {Tcp: 'true'},
                     DestinationPortRange: "22",
                     DestinationIp: "10.10.20.20",
                     SourcePortRange: "Any",
                     SourceIp: "192.0.2.2",
-                    EnableLogging: false,
+                    EnableLogging: 'false',
                   },
                   {
-                    Id: 2,
-                    IsEnabled: true,
+                    Id: '2',
+                    IsEnabled: 'true',
                     Description: "rule 2",
-                    MatchOnTranslate: false,
+                    MatchOnTranslate: 'false',
                     Policy: "allow",
-                    Protocols: {Tcp: true},
+                    Protocols: {Tcp: 'true'},
                     DestinationPortRange: "22",
                     DestinationIp: "10.10.20.20",
                     SourcePortRange: "Any",
                     SourceIp: "192.0.2.2",
-                    EnableLogging: false,
+                    EnableLogging: 'false',
                   }
 
                 ]
