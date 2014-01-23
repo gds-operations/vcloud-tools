@@ -9,7 +9,7 @@ module Vcloud
       expect { EdgeGatewayServices.new.update(config_yaml) }.to raise_error('Supplied configuration does not match supplied schema')
     end
 
-    context "configure firewall service" do
+    context "#configure_edge_gateway_services" do
       before(:all) do
         reset_firewall
       end
@@ -39,9 +39,29 @@ module Vcloud
 
         File.delete(input_config_file)
       end
-
       after(:all) do
         reset_firewall
+      end
+    end
+
+    context "validate the diff against our intended configuration" do
+      it "return empty if both configs match " do
+        config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
+        input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
+        diff_output = EdgeGatewayServices.new.diff(input_config_file)
+        expect(diff_output).to eq([])
+
+        File.delete(input_config_file)
+      end
+
+      it "return show diff if local firewall config has different ip and port " do
+        config_erb = File.expand_path('data/firewall_config_1.yaml.erb', File.dirname(__FILE__))
+        input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
+        diff_output = EdgeGatewayServices.new.diff(input_config_file)
+        pp diff_output
+        expect(diff_output.size).to eq(2)
+
+        File.delete(input_config_file)
       end
     end
 
