@@ -4,12 +4,13 @@ module Vcloud
     FIREWALL_RULE = {
         type: Hash,
         internals: {
+            id: { type: 'string_or_number', required: false},
             enabled: { type: 'boolean', required: false},
             match_on_translate: { type: 'boolean', required: false},
             description: { type: 'string', required: false, allowed_empty: true},
             policy: { type: 'enum', required: false, acceptable_values: ['allow', 'drop'] },
-            source_ip: { type: 'string', required: true },
-            destination_ip: { type: 'string', required: true },
+            source_ip: { type: 'ip_address', required: true },
+            destination_ip: { type: 'ip_address', required: true },
             source_port_range: { type: 'string', required: false },
             destination_port_range: { type: 'string', required: false },
             enable_logging: { type: 'boolean', required: false },
