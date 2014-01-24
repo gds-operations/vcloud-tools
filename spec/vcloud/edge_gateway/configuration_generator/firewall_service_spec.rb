@@ -223,7 +223,7 @@ module Vcloud
 
           test_cases.each do |test_case|
             it "#{test_case[:title]}" do
-              generated_config = FirewallService.new.firewall_config test_case[:input]
+              generated_config = FirewallService.new.generate_fog_config test_case[:input]
               expect(generated_config).to eq(test_case[:output])
             end
 

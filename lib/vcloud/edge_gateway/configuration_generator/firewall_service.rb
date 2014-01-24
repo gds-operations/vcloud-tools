@@ -5,7 +5,7 @@ module Vcloud
     module ConfigurationGenerator
       class FirewallService
 
-        def firewall_config(input_config)
+        def generate_fog_config(input_config)
           if input_config
             firewall_service = {}
             firewall_service[:IsEnabled] = input_config.key?(:enabled) ? input_config[:enabled].to_s : 'true'
