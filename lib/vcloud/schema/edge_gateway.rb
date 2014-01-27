@@ -40,7 +40,8 @@ module Vcloud
         allowed_empty: false,
         internals: {
             gateway: { type: 'string' },
-            firewall_service: FIREWALL_SERVICE
+            firewall_service: FIREWALL_SERVICE,
+            nat_service: NAT_SERVICE
         }
     }
 
