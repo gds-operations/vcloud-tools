@@ -21,6 +21,7 @@ module Vcloud
     FIREWALL_SERVICE = {
         type: Hash,
         allowed_empty: true,
+        required: false,
         internals: {
             enabled: { type: 'boolean', required: false},
             policy: { type: 'enum', required: false, acceptable_values: ['allow', 'drop'] },
