@@ -20,6 +20,7 @@ module Vcloud
     NAT_SERVICE = {
       type: Hash,
       allowed_empty: true,
+      required: false,
       internals: {
         enabled: {type: 'boolean', required: false},
         nat_rules: {
