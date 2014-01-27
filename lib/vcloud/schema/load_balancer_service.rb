@@ -42,13 +42,13 @@ module Vcloud
         enabled: { type: 'boolean', required: false },
         pools: {
           type: Array,
-          required: false,
+          required: true,
           allowed_empty: true,
           each_element_is: LOAD_BALANCER_POOL_ENTRY,
         },
         virtual_servers: {
           type: Array,
-          required: false,
+          required: true,
           allowed_empty: true,
           each_element_is: LOAD_BALANCER_VIRTUAL_SERVER_ENTRY,
         },
