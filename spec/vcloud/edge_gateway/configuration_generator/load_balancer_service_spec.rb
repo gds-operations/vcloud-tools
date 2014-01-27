@@ -41,14 +41,11 @@ module Vcloud
                   description: 'describe it', #opt
                   ip_address: '192.2.0.55', #req
                   network: 'ExternalNetwork', #req
-                  pool: '', #req
+                  pool: 'web-app', #req
                   logging: 'false', #opt, default false
-                  service_profiles: [
-                    protocol: "HTTP", # req or HTTPS, TCP. one of each max.
-                    port: '80', # req
-                    enabled: true, # true if defined, false if not.
-                    persistence: '', # default off for now.
-                  ],
+                  service_profiles: {
+                    http: { enabled: true, port: '80' }
+                  },
                 }
               ]
             },
@@ -111,23 +108,40 @@ module Vcloud
                 [
                   {
                     :IsEnabled => "true",
-                    :Name => "app1",
-                    :Description => "app1",
-                    :Interface => {:name => "Default", :href => "https://vmware.api.net/api/admin/network/2ad93597-7b54-43dd-9eb1-631dd337e5a7"},
-                    :IpAddress => '192.168.2.2',
+                    :Name => "router",
+                    :Description => "describe it",
+                    :Interface => {
+                      name: "ExternalNetwork",
+                      href: "https://example.com/api/admin/network/12345678-1234-1234-1234-123456789012",
+                      type: "application/vnd.vmware.vcloud.orgVdcNetwork+xml",
+                    },
+                    :IpAddress => '192.2.0.55',
                     :ServiceProfile =>
                       [
                         {
                           :IsEnabled => "true",  #default disabled opt
                           :Protocol => "HTTP", #req
-                          :Port => 80, #req
-                          :Persistence => {:Method => ""}},  #opt default none
+                          :Port => "80", #req
+                          :Persistence => {:Method => ""}  #opt default none
+                        },
                         #none
                         #cookie, cookie_name & mode is manadatory
                         #ssl_session_id
                         #{:IsEnabled => "true", :Protocol => "HTTPS", :Port => 443, :Persistence => {:Method => ""}}
+                        {
+                          :IsEnabled => "false",  #default disabled opt
+                          :Protocol => "HTTPS", #req
+                          :Port => "", #req
+                          :Persistence => {:Method => ""}  #opt default none
+                        },
+                        {
+                          :IsEnabled => "false",  #default disabled opt
+                          :Protocol => "TCP", #req
+                          :Port => "", #req
+                          :Persistence => {:Method => ""}  #opt default none
+                        },
                       ],
-                    :Logging => false, #opt false
+                    :Logging => 'false', #opt false
                     :Pool => 'web-app' #req
                   }
                 ]
