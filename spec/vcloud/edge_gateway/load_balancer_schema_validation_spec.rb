@@ -16,11 +16,44 @@ module Vcloud
             ]
           }
         },
+        {
+          name: 'should validate a complete pool specification',
+          input: {
+            name: 'pool entry 1',
+            description: 'description of pool entry 1',
+            service: {
+              http: {
+                enabled: true,
+                port: 8080,
+                algorithm: 'ROUND_ROBIN',
+                health_check: {
+                  port: 80,
+                  protocol: 'HTTP',
+                  health_threshold: 4,
+                  unhealth_threshold: 10,
+                  interval: 10,
+                  timeout: 5,
+                },
+              },
+            },
+            members: [
+              { ip_address: "192.2.0.40",
+                weight: 2,
+                service_port: {
+                  http: {
+                    port: 8080,
+                    health_check_port: 8080,
+                  }
+                }
+              },
+            ]
+          }
+        },
       ]
 
       valid_tests.each do |test|
         it "#{test[:name]}" do
-          validator = ConfigValidator.validate(:base, test[:input], 
+          validator = ConfigValidator.validate(:base, test[:input],
               Vcloud::Schema::LOAD_BALANCER_POOL_ENTRY)
           expect(validator.errors).to eq([])
           expect(validator.valid?).to be_true
@@ -41,11 +74,26 @@ module Vcloud
             pool: "TestPool",
           }
         },
+        {
+          name: 'should validate a complete virtual_server specification',
+          input: {
+            name: 'virtual_server entry 1',
+            ip_address: "192.2.0.40",
+            network: "TestNetwork",
+            pool: "TestPool",
+            logging: true,
+            service_profiles: {
+              http: { enabled: true, port: 8080 },
+              https: { enabled: false, port: 8443 },
+              tcp: { enabled: false },
+            },
+          }
+        },
       ]
 
       valid_tests.each do |test|
         it "#{test[:name]}" do
-          validator = ConfigValidator.validate(:base, test[:input], 
+          validator = ConfigValidator.validate(:base, test[:input],
               Vcloud::Schema::LOAD_BALANCER_VIRTUAL_SERVER_ENTRY)
           expect(validator.errors).to eq([])
           expect(validator.valid?).to be_true
