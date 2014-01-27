@@ -26,6 +26,7 @@ require 'vcloud/schema/edge_gateway'
 require 'vcloud/edge_gateway/configuration_generator/id_ranges'
 require 'vcloud/edge_gateway/configuration_generator/firewall_service'
 require 'vcloud/edge_gateway/configuration_generator/nat_service'
+require 'vcloud/edge_gateway/configuration_generator/load_balancer_service'
 require 'vcloud/edge_gateway/configuration_differ'
 
 module Vcloud
