@@ -26,7 +26,7 @@ module Vcloud
     private
     def translate_yaml_input(config_file)
       config = @config_loader.load_config(config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
-      nat_service_config = EdgeGateway::ConfigurationGenerator::NatService.new.generate_fog_config(config[:nat_service])
+      nat_service_config = EdgeGateway::ConfigurationGenerator::NatService.new(config[:gateway], config[:nat_service]).generate_fog_config
       firewall_service_config = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(config[:firewall_service])
       {
         :gateway => config[:gateway],

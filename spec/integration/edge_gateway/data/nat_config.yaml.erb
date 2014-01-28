@@ -4,10 +4,10 @@ nat_service:
   nat_rules:
   - enabled: true
     description: 'A DNAT rule'
-    network: <%= network %>
+    network_id: <%= network_id %>
     rule_type: 'DNAT'
     translated_ip: 10.10.1.2
-    translated_port: '22'
+    translated_port: '3412'
     original_ip: <%= original_ip %>
-    original_port: '22'
+    original_port: '3412'
     protocol: 'tcp'

@@ -8,7 +8,7 @@ module Vcloud
         enabled: {type: 'boolean', required: false},
         rule_type: { type: 'enum', required: true, acceptable_values: ['SNAT', 'DNAT' ]},
         description: {type: 'string', required: false, allowed_empty: true},
-        network: {type: 'string', required: true},
+        network_id: {type: 'string', required: true},
         original_ip: {type: 'ip_address', required: true},
         original_port: {type: 'string', required: false},
         translated_ip: {type: 'ip_address', required: true},

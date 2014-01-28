@@ -3,17 +3,22 @@ module Vcloud
     module ConfigurationGenerator
 
       class NatService
-        def generate_fog_config input_config
-          if input_config
-            nat_service = {}
-            nat_service[:IsEnabled] = input_config.key?(:enabled) ? input_config[:enabled].to_s : 'true'
-            nat_service[:NatRule] = populate_nat_rules(input_config[:nat_rules])
-            nat_service
-          end
-          nat_service
+        def initialize edge_gateway, input_config
+          @edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(edge_gateway)
+          @input_config = input_config
         end
 
-        def populate_nat_rules(rules)
+        def generate_fog_config
+          if @input_config
+            nat_service = {}
+            nat_service[:IsEnabled] = @input_config.key?(:enabled) ? @input_config[:enabled].to_s : 'true'
+            nat_service[:NatRule] = populate_nat_rules
+            nat_service
+          end
+        end
+
+        def populate_nat_rules
+          rules = @input_config[:nat_rules]
             i = ID_RANGES::NAT_SERVICE[:min]
             rules.collect do |rule|
               new_rule = {}
@@ -29,8 +34,8 @@ module Vcloud
         end
 
         def populate_gateway_nat_rule(rule)
-          network_attrs = Vcloud::Core::OrgVdcNetwork.get_by_name(rule[:network]).vcloud_attributes
-          gateway_nat_rule = {:Interface => {:name => network_attrs[:name], :href => network_attrs[:href] }}
+          gateway_interface = @edge_gateway.get_gateway_interface_by_id(rule[:network_id])
+          gateway_nat_rule = {:Interface => gateway_interface[:Network]}
           gateway_nat_rule[:OriginalIp] = rule[:original_ip]
           gateway_nat_rule[:TranslatedIp] = rule[:translated_ip]
           gateway_nat_rule[:OriginalPort] = rule[:original_port] if rule.key?(:original_port)
