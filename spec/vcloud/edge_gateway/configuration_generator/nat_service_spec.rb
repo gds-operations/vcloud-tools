@@ -8,7 +8,7 @@ module Vcloud
 
           test_cases = [
             {
-              title: 'enabled nat service with single disabled rule',
+              title: 'should generate config for enabled nat service with single disabled rule',
               input: {
                 enabled: 'true',
                 nat_rules: [
@@ -51,7 +51,7 @@ module Vcloud
               }
             },
             {
-              title: 'auto generate rule id if not provided',
+              title: 'should auto generate rule id if not provided',
               input: {
                 enabled: 'true',
                 nat_rules: [

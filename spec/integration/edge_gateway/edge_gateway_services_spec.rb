@@ -88,7 +88,7 @@ module Vcloud
           File.delete(input_config_file)
         end
 
-        it "configure hair pit natting with orgVdcNetwork" do
+        it "configure hairpin NATting with orgVdcNetwork" do
           config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
           input_config_file = generate_input_yaml_config({edge_gateway_name: ENV['VCLOUD_EDGE_GATEWAY'],
                                                           network_id: ENV['VCLOUD_NETWORK1_ID'],
