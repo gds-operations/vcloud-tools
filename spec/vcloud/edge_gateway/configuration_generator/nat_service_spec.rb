@@ -134,12 +134,19 @@ module Vcloud
 
           test_cases.each do |test_case|
             it "#{test_case[:title]}" do
-              expect(Vcloud::Core::OrgVdcNetwork).to receive(:get_by_name).with('ane012345')
-              .and_return(double(:network, :vcloud_attributes => {
-                :name => 'ane012345',
-                :href => 'https://vmware.api.net/api/admin/network/2ad93597-7b54-43dd-9eb1-631dd337e5a7'
-              }))
-              generated_config = NatService.new.generate_fog_config test_case[:input]
+              edge_gateway = double(:edge_gateway,
+                                    :get_gateway_interface_by_id =>
+                                      {
+                                        Network:
+                                          {
+                                            :name => 'ane012345',
+                                            :href => 'https://vmware.api.net/api/admin/network/2ad93597-7b54-43dd-9eb1-631dd337e5a7'
+                                          }
+                                      }
+              )
+              expect(Vcloud::Core::EdgeGateway).to receive(:get_by_name).with('1111111-7b54-43dd-9eb1-631dd337e5a7')
+                                                   .and_return(edge_gateway)
+              generated_config = NatService.new('1111111-7b54-43dd-9eb1-631dd337e5a7', test_case[:input]).generate_fog_config
               expect(generated_config).to eq(test_case[:output])
             end
 
