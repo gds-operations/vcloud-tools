@@ -114,6 +114,18 @@ module Vcloud
 
           File.delete(input_config_file)
         end
+
+        it "should raise error if network provided in rule does not exist" do
+          config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
+          random_network_id = SecureRandom.uuid
+          input_config_file = generate_input_yaml_config({edge_gateway_name: ENV['VCLOUD_EDGE_GATEWAY'],
+                                                          network_id: random_network_id,
+                                                          original_ip: ENV['VCLOUD_NETWORK1_IP']
+                                                         }, config_erb)
+
+          expect{EdgeGatewayServices.new.update(input_config_file)}.to raise_error("unable to find gateway network interface with id #{random_network_id}")
+          File.delete(input_config_file)
+        end
       end
 
       after(:all) do
