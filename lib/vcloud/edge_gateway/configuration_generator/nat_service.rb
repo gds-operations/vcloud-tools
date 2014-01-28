@@ -14,7 +14,7 @@ module Vcloud
         end
 
         def populate_nat_rules(rules)
-            i = 65537
+            i = ID_RANGES::NAT_SERVICE[:min]
             rules.collect do |rule|
               new_rule = {}
               new_rule[:Id] = rule.key?(:id) ? rule[:id] : i.to_s
