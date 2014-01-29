@@ -135,7 +135,7 @@ module Vcloud
           test_cases.each do |test_case|
             it "#{test_case[:title]}" do
               edge_gateway = double(:edge_gateway,
-                                    :get_gateway_interface_by_id =>
+                                    :vcloud_gateway_interface_by_id =>
                                       {
                                         Network:
                                           {
