@@ -5,11 +5,19 @@ module Vcloud
   describe EdgeGatewayServices do
 
     before(:each) do
+      @edge_gateway_services = [
+        :FirewallService,
+        :NatService,
+      ]
+      @mock_no_diff_output = {}
       @parsed_config = {
-          gateway: 'TestGateway',
-          FirewallService: {},
-          NatService: {},
+        gateway: 'TestGateway',
       }
+      @edge_gateway_services.each do |service|
+        @mock_no_diff_output[service] = []
+        @parsed_config[service] = {}
+      end
+
       @edge_gw_obj = double(
         :edge_gateway,
         vcloud_attributes: {
@@ -39,16 +47,22 @@ module Vcloud
       it "should have idempotent operation (should not update config if it has not changed" do
         expect(@obj).to receive(:translate_yaml_input).and_return(@parsed_config)
         expect(Core::EdgeGateway).to receive(:get_by_name).and_return(@edge_gw_obj)
-        expect(@obj).to receive(:diff).and_return([])
+        expect(@obj).to receive(:diff).and_return(@mock_no_diff_output)
         expect(@edge_gw_obj).to receive(:update_configuration).at_most(0).times
         @obj.update("config_file")
       end
 
-      it "should update the edgeGateway if the configuration is different" do
+      it "should update the edgeGateway configuration only for services that are different" do
         expect(Core::EdgeGateway).to receive(:get_by_name).and_return(@edge_gw_obj)
         expect(@obj).to receive(:translate_yaml_input).and_return(@parsed_config)
-        expect(@obj).to receive(:diff).and_return([['+', "an addition"]])
-        expect(@edge_gw_obj).to receive(:update_configuration).with(@parsed_config)
+        expect(@obj).to receive(:diff).and_return({
+          FirewallService: [['+', "an addition"]],
+          NatService: [],
+        })
+        expect(@edge_gw_obj).to receive(:update_configuration).with({
+          gateway: 'TestGateway',
+          FirewallService: {},
+        })
         @obj.update("config_file")
       end
 

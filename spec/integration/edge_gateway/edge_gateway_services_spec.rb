@@ -14,7 +14,7 @@ module Vcloud
 
       it "should configure firewall service" do
         config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
-        input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
+        input_config_file = generate_input_yaml_config(edge_gateway_erb_input, config_erb)
         EdgeGatewayServices.new.update(input_config_file)
 
         edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(ENV['VCLOUD_EDGE_GATEWAY'])
@@ -50,20 +50,18 @@ module Vcloud
       context "validate the diff against our intended configuration" do
         it "return empty if both configs match " do
           config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
-          input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
+          input_config_file = generate_input_yaml_config(edge_gateway_erb_input, config_erb)
           diff_output = EdgeGatewayServices.new.diff(input_config_file)
-          expect(diff_output).to eq([])
-
+          expect(diff_output[:FirewallService]).to eq([])
           File.delete(input_config_file)
         end
 
         it "return show diff if local firewall config has different ip and port " do
           config_erb = File.expand_path('data/firewall_config_1.yaml.erb', File.dirname(__FILE__))
-          input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
+          input_config_file = generate_input_yaml_config(edge_gateway_erb_input, config_erb)
           diff_output = EdgeGatewayServices.new.diff(input_config_file)
           pp diff_output
-          expect(diff_output.size).to eq(2)
-
+          expect(diff_output[:FirewallService].size).to eq(2)
           File.delete(input_config_file)
         end
       end
@@ -164,5 +162,14 @@ module Vcloud
       }
       output_yaml_config
     end
+
+    def edge_gateway_erb_input
+      {
+        :edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY'],
+        :edge_gateway_ext_network_id => ENV['VCLOUD_PROVIDER_NETWORK_ID'],
+        :edge_gateway_ext_network_ip => ENV['VCLOUD_PROVIDER_NETWORK_IP'],
+      }
+    end
+
   end
 end
