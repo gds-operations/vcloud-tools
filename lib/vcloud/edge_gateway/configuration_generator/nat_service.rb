@@ -34,7 +34,7 @@ module Vcloud
         end
 
         def populate_gateway_nat_rule(rule)
-          gateway_interface = @edge_gateway.get_gateway_interface_by_id(rule[:network_id])
+          gateway_interface = @edge_gateway.vcloud_gateway_interface_by_id(rule[:network_id])
           raise "unable to find gateway network interface with id #{rule[:network_id]}" unless gateway_interface
           gateway_nat_rule = {:Interface => gateway_interface[:Network]}
           gateway_nat_rule[:OriginalIp] = rule[:original_ip]
