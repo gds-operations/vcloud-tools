@@ -2,13 +2,13 @@ require 'spec_helper'
 
 module Vcloud
   describe "nat service schema validation" do
-
+    let(:network_uuid){ SecureRandom.uuid }
     context "validate nat rule" do
       it "validate ok if only mandatory fields are provided" do
         snat_rule = {
           id: '999',
           rule_type: 'DNAT',
-          network: "allow",
+          network_id: network_uuid,
           original_ip: "192.0.2.2",
           translated_ip: "10.10.20.20",
 
@@ -24,12 +24,12 @@ module Vcloud
           @snat_rule = {
             id: '999',
             rule_type: 'DNAT',
-            network: "allow",
+            network_id: network_uuid,
             original_ip: "192.0.2.2",
             translated_ip: "10.10.20.20",
           }
         end
-        mandatory_fields = [:network, :original_ip, :translated_ip, :rule_type]
+        mandatory_fields = [:network_id, :original_ip, :translated_ip, :rule_type]
         mandatory_fields.each do |mandatory_field|
           it "should error since mandatory field #{mandatory_field} is missing" do
             @snat_rule.delete(mandatory_field)
@@ -44,7 +44,7 @@ module Vcloud
         snat_rule = {
           id: '999',
           rule_type: 'DNAT',
-          network: "allow",
+          network_id: network_uuid,
           original_ip: "192.0.2.2",
           original_port: "22",
           translated_ip: "10.10.20.20",
@@ -67,7 +67,7 @@ module Vcloud
               id: '999',
               enabled: true,
               rule_type: 'DNAT',
-              network: "allow",
+              network_id: network_uuid,
               original_ip: "192.0.2.2",
               original_port: "22",
               translated_ip: "10.10.20.20",
@@ -77,7 +77,7 @@ module Vcloud
             {
               id: '999',
               rule_type: 'SNAT',
-              network: "allow",
+              network_id: network_uuid,
               original_ip: "192.0.2.2",
               translated_ip: "10.10.20.20",
               protocol: 'tcp',

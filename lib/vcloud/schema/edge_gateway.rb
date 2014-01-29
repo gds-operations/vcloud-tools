@@ -21,6 +21,7 @@ module Vcloud
     FIREWALL_SERVICE = {
         type: Hash,
         allowed_empty: true,
+        required: false,
         internals: {
             enabled: { type: 'boolean', required: false},
             policy: { type: 'enum', required: false, acceptable_values: ['allow', 'drop'] },
@@ -39,7 +40,8 @@ module Vcloud
         allowed_empty: false,
         internals: {
             gateway: { type: 'string' },
-            firewall_service: FIREWALL_SERVICE
+            firewall_service: FIREWALL_SERVICE,
+            nat_service: NAT_SERVICE
         }
     }
 

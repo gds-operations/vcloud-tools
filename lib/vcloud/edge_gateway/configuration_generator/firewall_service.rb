@@ -18,7 +18,7 @@ module Vcloud
 
         private
         def populate_firewall_rules rules
-          i = 1
+          i = ID_RANGES::FIREWALL_SERVICE[:min]
           rules.collect do |rule|
             new_rule = {}
             new_rule[:Id] = rule.key?(:id) ? rule[:id] : i.to_s
