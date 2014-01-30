@@ -3,6 +3,9 @@ module Vcloud
 
     attr_reader :key, :data, :schema, :type, :errors
 
+    VALID_ALPHABETICAL_VALUES_FOR_IP_RANGE = %w(any external internal)
+    IP_REGEX = /^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$/
+
     def initialize(key, data, schema)
       raise "Nil schema" unless schema
       raise "Invalid schema" unless schema.key?(:type)
@@ -49,16 +52,48 @@ module Vcloud
         @errors << "#{key}: #{@data} is not a valid ip_address"
         return
       end
-      invalid = false
-      octets = data.split('.')
-      if octets.size == 4
-        octets.each do |octet|
-          invalid = true unless octet.to_i >= 0 && octet.to_i <= 255
-        end
-      else
-        invalid = true
+      @errors << "#{key}: #{@data} is not a valid ip_address" unless valid_ip_address?(data)
+    end
+
+    def validate_ip_address_range
+      unless data.is_a?(String)
+        @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."
+        return
       end
-      @errors << "#{key}: #{@data} is not a valid ip_address" if invalid
+      valid = valid_ip_address?(data) || valid_cidr? || valid_alphabetical_ip_range? || valid_ip_range?
+      @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'." unless valid
+    end
+
+    def valid_cidr?
+      parts = data.split('/')
+      network_identifying_prefix = parts.first
+      network_bits = parts.last.to_i
+      valid_ip_address?(network_identifying_prefix) && (network_bits.to_i >= 0 && network_bits.to_i <= 32)
+    end
+
+    def valid_alphabetical_ip_range?
+      VALID_ALPHABETICAL_VALUES_FOR_IP_RANGE.include?(data)
+    end
+
+    def valid_ip_address? ip_address
+      IP_REGEX =~ ip_address
+    end
+
+    def valid_ip_range?
+      range_parts = data.split('-')
+      return false if range_parts.size != 2
+      start_address = range_parts.first
+      end_address = range_parts.last
+      valid_ip_address?(start_address) &&  valid_ip_address?(end_address) &&
+        valid_start_and_end_address_combination?(end_address, start_address)
+    end
+
+    def valid_start_and_end_address_combination?(end_address, start_address)
+      start_address_octets = start_address.split('.')
+      end_address_octets = end_address.split('.')
+      start_address_octets.select.with_index do |octet, index|
+        end_address_octets[index] < octet
+      end.empty?
     end
 
     def validate_hash
