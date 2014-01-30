@@ -12,7 +12,9 @@ module Vcloud
       config = translate_yaml_input(config_file)
       edge_gateway = Core::EdgeGateway.get_by_name config[:gateway]
 
-      edge_gateway.update_configuration config
+      unless diff(config_file).empty?
+        edge_gateway.update_configuration config
+      end
     end
 
     def diff(config_file)

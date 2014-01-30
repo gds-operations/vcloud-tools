@@ -38,6 +38,15 @@ module Vcloud
         File.delete(input_config_file)
       end
 
+      it "should not configure the firewall service if updated again with the same configuration (idempotency)" do
+        obj = EdgeGatewayServices.new
+        config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
+        input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
+        expect(Core::EdgeGateway).to receive(:update_configuration).at_most(0).times
+        EdgeGatewayServices.new.update(input_config_file)
+        File.delete(input_config_file)
+      end
+
       context "validate the diff against our intended configuration" do
         it "return empty if both configs match " do
           config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
