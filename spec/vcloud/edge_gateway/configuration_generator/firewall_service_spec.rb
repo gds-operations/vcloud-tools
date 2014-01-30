@@ -4,9 +4,70 @@ module Vcloud
   module EdgeGateway
     module ConfigurationGenerator
       describe FirewallService do
+
+        context "top level firewall configuration defaults" do
+
+          before(:all) do
+            input = { } # minimum firewall configuration
+            @output = FirewallService.new.generate_fog_config input
+          end
+
+          it 'should default to FirewallService enabled' do
+            expect(@output[:IsEnabled]).to eq('true')
+          end
+
+          it 'should set the firewall action to DROP packets by default' do
+            expect(@output[:DefaultAction]).to eq('drop')
+          end
+
+          it 'should set the firewall to not log by default' do
+            expect(@output[:LogDefaultAction]).to eq('false')
+          end
+
+        end
+
+        context "firewall rule defaults" do
+
+          before(:all) do
+            input = { firewall_rules: [{
+              destination_ip: "192.2.0.88",
+              destination_port_range: "5000-5010",
+              source_ip: "Any",
+            }]} # minimum firewall configuration with a rule
+            output = FirewallService.new.generate_fog_config input
+            @rule = output[:FirewallRule].first
+          end
+
+          it 'should default to rule being enabled' do
+            expect(@rule[:IsEnabled]).to eq('true')
+          end
+
+          it 'should default to rule policy being "allow"' do
+            expect(@rule[:Policy]).to eq('allow')
+          end
+
+          it 'should default to rule protocol being TCP-only' do
+            expect(@rule[:Protocols]).to eq({Tcp: 'true'})
+          end
+
+          it 'should default to source port range being "Any"' do
+            expect(@rule[:SourcePortRange]).to eq('Any')
+          end
+
+          it 'should default to MatchOnTranslate to be false' do
+            expect(@rule[:MatchOnTranslate]).to eq('false')
+          end
+
+          it 'should have an empty default description' do
+            expect(@rule[:Description]).to eq('')
+          end
+
+        end
+
         context "firewall config generation" do
 
           test_cases = [
+
             {
               title: 'disabled firewall with a disabled rule',
               input: {
@@ -52,43 +113,7 @@ module Vcloud
                 ]
               }
             },
-            {
-              title: 'should use default values for missing fields',
-              input: {
-                firewall_rules: [
-                  {
-                    id: '999',
-                    description: "A rule",
-                    destination_port_range: "22",
-                    destination_ip: "10.10.20.20",
-                    source_ip: "192.0.2.2",
-                  }
-                ]
 
-              },
-              output: {
-                IsEnabled: 'true',
-                DefaultAction: "drop",
-                LogDefaultAction: 'false',
-                FirewallRule: [
-                  {
-                    Id: '999',
-                    IsEnabled: 'true',
-                    Description: "A rule",
-                    MatchOnTranslate: 'false',
-                    Policy: "allow",
-                    Protocols: {Tcp: 'true'},
-                    Port: '22',
-                    SourcePort: '-1',
-                    DestinationPortRange: "22",
-                    DestinationIp: "10.10.20.20",
-                    SourcePortRange: "Any",
-                    SourceIp: "192.0.2.2",
-                    EnableLogging: 'false',
-                  }
-                ]
-              }
-            },
             {
               title: 'id should be auto generated if not provided',
               input: {
