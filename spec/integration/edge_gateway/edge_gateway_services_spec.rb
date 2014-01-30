@@ -2,6 +2,35 @@ require 'spec_helper'
 
 module Vcloud
   describe EdgeGatewayServices do
+
+    required_env = {
+      'VCLOUD_EDGE_GATEWAY' => 'to name of VSE',
+      'VCLOUD_PROVIDER_NETWORK_ID' => 'to ID of VSE external network',
+      'VCLOUD_PROVIDER_NETWORK_IP' => 'to an available IP on VSE external network',
+      'VCLOUD_NETWORK1_ID' => 'to the ID of a VSE internal network',
+      'VCLOUD_NETWORK1_NAME' => 'to the name of the VSE internal network',
+      'VCLOUD_NETWORK1_IP' => 'to an ID on the VSE internal network',
+    }
+
+    error = false
+    required_env.each do |var,message|
+      unless ENV[var]
+        puts "Must set #{var} #{message}" unless ENV[var]
+        error = true
+      end
+    end
+    Kernel.exit(2) if error
+
+    before(:all) do
+      @edge_name = ENV['VCLOUD_EDGE_GATEWAY']
+      @ext_net_id = ENV['VCLOUD_PROVIDER_NETWORK_ID']
+      @ext_net_ip = ENV['VCLOUD_PROVIDER_NETWORK_IP']
+      @ext_net_name = ENV['VCLOUD_PROVIDER_NETWORK_NAME']
+      @int_net_id = ENV['VCLOUD_NETWORK1_ID']
+      @int_net_ip = ENV['VCLOUD_NETWORK1_IP']
+      @int_net_name = ENV['VCLOUD_NETWORK1_NAME']
+    end
+
     it "raise exception if input yaml does not match with schema" do
       config_yaml = File.expand_path('data/incorrect_firewall_config.yaml', File.dirname(__FILE__))
       expect { EdgeGatewayServices.new.update(config_yaml) }.to raise_error('Supplied configuration does not match supplied schema')
@@ -17,7 +46,7 @@ module Vcloud
         input_config_file = generate_input_yaml_config(edge_gateway_erb_input, config_erb)
         EdgeGatewayServices.new.update(input_config_file)
 
-        edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(ENV['VCLOUD_EDGE_GATEWAY'])
+        edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
 
         firewall_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
         expect(firewall_service.key?(:FirewallRule)).to be_true
@@ -40,7 +69,7 @@ module Vcloud
 
       it "should not configure the firewall service if updated again with the same configuration (idempotency)" do
         config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
-        input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
+        input_config_file = generate_input_yaml_config({:edge_gateway_name => @edge_name}, config_erb)
         expect(Core::EdgeGateway).to receive(:update_configuration).at_most(0).times
         EdgeGatewayServices.new.update(input_config_file)
         File.delete(input_config_file)
@@ -69,14 +98,14 @@ module Vcloud
 
         it "configure DNAT rule with provider network" do
           config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
-          input_config_file = generate_input_yaml_config({edge_gateway_name: ENV['VCLOUD_EDGE_GATEWAY'],
-                                                          network_id: ENV['VCLOUD_PROVIDER_NETWORK_ID'],
-                                                          original_ip: ENV['VCLOUD_PROVIDER_NETWORK_IP']
+          input_config_file = generate_input_yaml_config({edge_gateway_name: @edge_name,
+                                                          network_id: @ext_net_id,
+                                                          original_ip: @ext_net_ip,
                                                          }, config_erb)
 
           EdgeGatewayServices.new.update(input_config_file)
 
-          edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(ENV['VCLOUD_EDGE_GATEWAY'])
+          edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
           nat_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
           expected_rule = nat_service[:NatRule].first
           expect(expected_rule).not_to be_nil
@@ -84,8 +113,8 @@ module Vcloud
           expect(expected_rule[:Id]).to eq('65537')
           expect(expected_rule[:RuleType]).to eq('DNAT')
           expect(expected_rule[:IsEnabled]).to eq('true')
-          expect(expected_rule[:GatewayNatRule][:Interface][:href]).to include(ENV['VCLOUD_PROVIDER_NETWORK_ID'])
-          expect(expected_rule[:GatewayNatRule][:OriginalIp]).to eq(ENV['VCLOUD_PROVIDER_NETWORK_IP'])
+          expect(expected_rule[:GatewayNatRule][:Interface][:href]).to include(@ext_net_id)
+          expect(expected_rule[:GatewayNatRule][:OriginalIp]).to eq(@ext_net_ip,)
           expect(expected_rule[:GatewayNatRule][:OriginalPort]).to eq('3412')
           expect(expected_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2')
           expect(expected_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
@@ -96,14 +125,14 @@ module Vcloud
 
         it "configure hairpin NATting with orgVdcNetwork" do
           config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
-          input_config_file = generate_input_yaml_config({edge_gateway_name: ENV['VCLOUD_EDGE_GATEWAY'],
-                                                          network_id: ENV['VCLOUD_NETWORK1_ID'],
-                                                          original_ip: ENV['VCLOUD_NETWORK1_IP']
+          input_config_file = generate_input_yaml_config({edge_gateway_name: @edge_name,
+                                                          network_id: @int_net_id,
+                                                          original_ip: @int_net_ip
                                                          }, config_erb)
 
           EdgeGatewayServices.new.update(input_config_file)
 
-          edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(ENV['VCLOUD_EDGE_GATEWAY'])
+          edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
           nat_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
           expected_rule = nat_service[:NatRule].first
           expect(expected_rule).not_to be_nil
@@ -111,8 +140,8 @@ module Vcloud
           expect(expected_rule[:Id]).to eq('65537')
           expect(expected_rule[:RuleType]).to eq('DNAT')
           expect(expected_rule[:IsEnabled]).to eq('true')
-          expect(expected_rule[:GatewayNatRule][:Interface][:name]).to eq(ENV['VCLOUD_NETWORK1_NAME'])
-          expect(expected_rule[:GatewayNatRule][:OriginalIp]).to eq(ENV['VCLOUD_NETWORK1_IP'])
+          expect(expected_rule[:GatewayNatRule][:Interface][:name]).to eq(@int_net_name)
+          expect(expected_rule[:GatewayNatRule][:OriginalIp]).to eq(@int_net_ip)
           expect(expected_rule[:GatewayNatRule][:OriginalPort]).to eq('3412')
           expect(expected_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2')
           expect(expected_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
@@ -124,9 +153,9 @@ module Vcloud
         it "should raise error if network provided in rule does not exist" do
           config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
           random_network_id = SecureRandom.uuid
-          input_config_file = generate_input_yaml_config({edge_gateway_name: ENV['VCLOUD_EDGE_GATEWAY'],
+          input_config_file = generate_input_yaml_config({edge_gateway_name: @edge_name,
                                                           network_id: random_network_id,
-                                                          original_ip: ENV['VCLOUD_NETWORK1_IP']
+                                                          original_ip: @int_net_ip
                                                          }, config_erb)
 
           expect{EdgeGatewayServices.new.update(input_config_file)}.to raise_error("unable to find gateway network interface with id #{random_network_id}")
@@ -140,7 +169,7 @@ module Vcloud
     end
 
     def reset_edge_gateway
-      edge_gateway = Core::EdgeGateway.get_by_name ENV['VCLOUD_EDGE_GATEWAY']
+      edge_gateway = Core::EdgeGateway.get_by_name @edge_name
       edge_gateway.update_configuration({
                                           FirewallService: {IsEnabled: false, FirewallRule: []},
                                           NatService: {:IsEnabled => "true", :NatRule => []},
@@ -164,9 +193,9 @@ module Vcloud
 
     def edge_gateway_erb_input
       {
-        :edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY'],
-        :edge_gateway_ext_network_id => ENV['VCLOUD_PROVIDER_NETWORK_ID'],
-        :edge_gateway_ext_network_ip => ENV['VCLOUD_PROVIDER_NETWORK_IP'],
+        :edge_gateway_name => @edge_name,
+        :edge_gateway_ext_network_id => @ext_net_id,
+        :edge_gateway_ext_network_ip => @ext_net_ip,
       }
     end
 
