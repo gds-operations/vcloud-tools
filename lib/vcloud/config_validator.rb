@@ -1,3 +1,5 @@
+require 'ipaddr'
+
 module Vcloud
   class ConfigValidator
 
@@ -60,15 +62,17 @@ module Vcloud
         @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."
         return
       end
-      valid = valid_ip_address?(data) || valid_cidr? || valid_alphabetical_ip_range? || valid_ip_range?
+      valid = valid_cidr_or_ip_address? || valid_alphabetical_ip_range? || valid_ip_range?
       @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'." unless valid
     end
 
-    def valid_cidr?
-      parts = data.split('/')
-      network_identifying_prefix = parts.first
-      network_bits = parts.last.to_i
-      valid_ip_address?(network_identifying_prefix) && (network_bits.to_i >= 0 && network_bits.to_i <= 32)
+    def valid_cidr_or_ip_address?
+      begin
+        IPAddr.new(data)
+          true
+      rescue ArgumentError
+        false
+      end
     end
 
     def valid_alphabetical_ip_range?
@@ -76,7 +80,15 @@ module Vcloud
     end
 
     def valid_ip_address? ip_address
-      IP_REGEX =~ ip_address
+      begin
+        #valid formats recognized by IPAddr are : “address”, “address/prefixlen” and “address/mask”.
+        # Attribute like member_ip in case of load-balancer is an "address"
+        # and we should not accept “address/prefixlen” and “address/mask” for such fields.
+        ip = IPAddr.new(ip_address)
+        ip && !ip_address.include?('/')
+      rescue ArgumentError
+        false
+      end
     end
 
     def valid_ip_range?
