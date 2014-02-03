@@ -40,11 +40,11 @@ module Vcloud
     context "#configure_edge_gateway_services" do
       before(:all) do
         reset_edge_gateway
+        @initial_firewall_config_file = generate_input_config_file('firewall_config.yaml.erb', edge_gateway_erb_input)
       end
 
       it "should configure firewall service" do
-        input_config_file = generate_input_config_file('firewall_config.yaml.erb', edge_gateway_erb_input)
-        EdgeGatewayServices.new.update(input_config_file)
+        EdgeGatewayServices.new.update(@initial_firewall_config_file)
 
         edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
 
@@ -66,15 +66,13 @@ module Vcloud
       end
 
       it "should not configure the firewall service if updated again with the same configuration (idempotency)" do
-        input_config_file = generate_input_config_file('firewall_config.yaml.erb', edge_gateway_erb_input)
         expect(Core::EdgeGateway).to receive(:update_configuration).at_most(0).times
-        EdgeGatewayServices.new.update(input_config_file)
+        EdgeGatewayServices.new.update(@initial_firewall_config_file)
       end
 
       context "validate the diff against our intended configuration" do
         it "return empty if both configs match " do
-          input_config_file = generate_input_config_file('firewall_config.yaml.erb', edge_gateway_erb_input)
-          diff_output = EdgeGatewayServices.new.diff(input_config_file)
+          diff_output = EdgeGatewayServices.new.diff(@initial_firewall_config_file)
           expect(diff_output[:FirewallService]).to eq([])
         end
 
