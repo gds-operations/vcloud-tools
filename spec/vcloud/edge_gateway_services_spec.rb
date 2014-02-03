@@ -38,6 +38,11 @@ module Vcloud
       it { should respond_to(:update) }
     end
 
+    context "Class public interface" do
+      subject { EdgeGatewayServices }
+      it { should respond_to(:edge_gateway_services) }
+    end
+
     context "#update" do
 
       before(:each) do

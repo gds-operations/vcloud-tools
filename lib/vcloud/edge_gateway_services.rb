@@ -8,12 +8,19 @@ module Vcloud
       @config_loader = Vcloud::ConfigLoader.new
     end
 
+    def self.edge_gateway_services
+      [
+        :FirewallService,
+        :NatService,
+      ]
+    end
+
     def update(config_file = nil, options = {})
       config = translate_yaml_input(config_file)
       edge_gateway = Core::EdgeGateway.get_by_name config[:gateway]
       diff_output = diff(config_file)
       skipped_service_count = 0
-      edge_gateway_services.each do |service|
+      EdgeGatewayServices.edge_gateway_services.each do |service|
         # Skip services whose configuration has not changed, or that
         # are not specified in our source configuration.
         if diff_output[service].empty? or not config.key?(service)
@@ -21,7 +28,7 @@ module Vcloud
           config.delete(service)
         end
       end
-      if skipped_service_count == edge_gateway_services.size
+      if skipped_service_count == EdgeGatewayServices.edge_gateway_services.size
         Vcloud.logger.info("EdgeGatewayServices.update: Configuration is already up to date. Skipping.")
       else
         edge_gateway.update_configuration config
@@ -33,7 +40,7 @@ module Vcloud
       edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
       remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
       diff = {}
-      edge_gateway_services.each do |service|
+      EdgeGatewayServices.edge_gateway_services.each do |service|
         local = local_config[service]
         remote = remote_config[service]
         diff[service] = ( local == remote ) ? [] : HashDiff.diff(local, remote)
@@ -50,13 +57,6 @@ module Vcloud
       out[:FirewallService] = firewall_service_config unless firewall_service_config.nil?
       out[:NatService] = nat_service_config unless nat_service_config.nil?
       out
-    end
-
-    def edge_gateway_services
-      [
-        :FirewallService,
-        :NatService,
-      ]
     end
 
   end
