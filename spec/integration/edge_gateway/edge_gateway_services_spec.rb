@@ -43,8 +43,7 @@ module Vcloud
       end
 
       it "should configure firewall service" do
-        config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
-        input_config_file = generate_input_yaml_config(edge_gateway_erb_input, config_erb)
+        input_config_file = generate_input_config_file('firewall_config.yaml.erb', edge_gateway_erb_input)
         EdgeGatewayServices.new.update(input_config_file)
 
         edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
@@ -67,23 +66,20 @@ module Vcloud
       end
 
       it "should not configure the firewall service if updated again with the same configuration (idempotency)" do
-        config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
-        input_config_file = generate_input_yaml_config({:edge_gateway_name => @edge_name}, config_erb)
+        input_config_file = generate_input_config_file('firewall_config.yaml.erb', edge_gateway_erb_input)
         expect(Core::EdgeGateway).to receive(:update_configuration).at_most(0).times
         EdgeGatewayServices.new.update(input_config_file)
       end
 
       context "validate the diff against our intended configuration" do
         it "return empty if both configs match " do
-          config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
-          input_config_file = generate_input_yaml_config(edge_gateway_erb_input, config_erb)
+          input_config_file = generate_input_config_file('firewall_config.yaml.erb', edge_gateway_erb_input)
           diff_output = EdgeGatewayServices.new.diff(input_config_file)
           expect(diff_output[:FirewallService]).to eq([])
         end
 
         it "return show diff if local firewall config has different ip and port " do
-          config_erb = File.expand_path('data/firewall_config_1.yaml.erb', File.dirname(__FILE__))
-          input_config_file = generate_input_yaml_config(edge_gateway_erb_input, config_erb)
+          input_config_file = generate_input_config_file('firewall_config_1.yaml.erb', edge_gateway_erb_input)
           diff_output = EdgeGatewayServices.new.diff(input_config_file)
           pp diff_output
           expect(diff_output[:FirewallService].size).to eq(2)
@@ -93,11 +89,11 @@ module Vcloud
       context "configure nat service" do
 
         it "configure DNAT rule with provider network" do
-          config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
-          input_config_file = generate_input_yaml_config({edge_gateway_name: @edge_name,
-                                                          network_id: @ext_net_id,
-                                                          original_ip: @ext_net_ip,
-                                                         }, config_erb)
+          input_config_file = generate_input_config_file('nat_config.yaml.erb', {
+            edge_gateway_name: @edge_name,
+            network_id: @ext_net_id,
+            original_ip: @ext_net_ip,
+          })
 
           EdgeGatewayServices.new.update(input_config_file)
 
@@ -118,11 +114,11 @@ module Vcloud
         end
 
         it "configure hairpin NATting with orgVdcNetwork" do
-          config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
-          input_config_file = generate_input_yaml_config({edge_gateway_name: @edge_name,
-                                                          network_id: @int_net_id,
-                                                          original_ip: @int_net_ip
-                                                         }, config_erb)
+          input_config_file = generate_input_config_file('nat_config.yaml.erb', {
+            edge_gateway_name: @edge_name,
+            network_id: @int_net_id,
+            original_ip: @int_net_ip,
+          })
 
           EdgeGatewayServices.new.update(input_config_file)
 
@@ -143,14 +139,14 @@ module Vcloud
         end
 
         it "should raise error if network provided in rule does not exist" do
-          config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
           random_network_id = SecureRandom.uuid
-          input_config_file = generate_input_yaml_config({edge_gateway_name: @edge_name,
-                                                          network_id: random_network_id,
-                                                          original_ip: @int_net_ip
-                                                         }, config_erb)
-
-          expect{EdgeGatewayServices.new.update(input_config_file)}.to raise_error("unable to find gateway network interface with id #{random_network_id}")
+          input_config_file = generate_input_config_file('nat_config.yaml.erb', {
+            edge_gateway_name: @edge_name,
+            network_id: random_network_id,
+            original_ip: @int_net_ip,
+          })
+          expect{EdgeGatewayServices.new.update(input_config_file)}.
+            to raise_error("unable to find gateway network interface with id #{random_network_id}")
         end
       end
 
@@ -178,6 +174,11 @@ module Vcloud
                                             VirtualServer: []
                                           }
                                         })
+    end
+
+    def generate_input_config_file(data_file, erb_input)
+      config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
+      generate_input_yaml_config(erb_input, config_erb)
     end
 
     def generate_input_yaml_config test_namespace, input_erb_config
