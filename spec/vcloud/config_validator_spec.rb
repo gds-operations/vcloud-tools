@@ -436,7 +436,7 @@ module Vcloud
           schema = { type: 'ip_address_range' }
           v = ConfigValidator.validate(:base, data, schema)
           expect(v.valid?).to be_false
-          expect(v.errors).to eq(["base: 192.168.100.100/33 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."])
+          expect(v.errors).to eq(["base: 192.168.100.100/33 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."])
         end
 
         it "should return error if network bit value is less than 0" do
@@ -444,7 +444,7 @@ module Vcloud
           schema = { type: 'ip_address_range' }
           v = ConfigValidator.validate(:base, data, schema)
           expect(v.valid?).to be_false
-          expect(v.errors).to eq(["base: 192.168.100.100/33 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."])
+          expect(v.errors).to eq(["base: 192.168.100.100/33 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."])
         end
 
         it "should return error if network IP address is incorrect" do
@@ -452,12 +452,12 @@ module Vcloud
           schema = { type: 'ip_address_range' }
           v = ConfigValidator.validate(:base, data, schema)
           expect(v.valid?).to be_false
-          expect(v.errors).to eq(["base: 192.168.100./33 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."])
+          expect(v.errors).to eq(["base: 192.168.100./33 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."])
         end
       end
 
       context "validate alphabetical values for IP range" do
-        %w(any internal external).each do |data|
+        %w(Any internal external).each do |data|
           it "should validate OK if IP range is '#{data}'" do
             schema = { type: 'ip_address_range' }
             v = ConfigValidator.validate(:base, data, schema)
@@ -471,7 +471,7 @@ module Vcloud
           schema = { type: 'ip_address_range' }
           v = ConfigValidator.validate(:base, data, schema)
           expect(v.valid?).to be_false
-          expect(v.errors).to eq(["base: invalid_ip_range_string is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."])
+          expect(v.errors).to eq(["base: invalid_ip_range_string is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."])
         end
       end
 
@@ -489,7 +489,7 @@ module Vcloud
           schema = { type: 'ip_address_range' }
           v = ConfigValidator.validate(:base, data, schema)
           expect(v.valid?).to be_false
-          expect(v.errors).to eq(["base: 192.168.100-192.168.100.110 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."])
+          expect(v.errors).to eq(["base: 192.168.100-192.168.100.110 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."])
         end
 
         it "should error if end IP address is incorrect" do
@@ -497,7 +497,7 @@ module Vcloud
           schema = { type: 'ip_address_range' }
           v = ConfigValidator.validate(:base, data, schema)
           expect(v.valid?).to be_false
-          expect(v.errors).to eq(["base: 192.168.100.110-192.168.100 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."])
+          expect(v.errors).to eq(["base: 192.168.100.110-192.168.100 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."])
         end
 
         it "should error if the combination of start IP and end IP is incorrect" do
@@ -505,7 +505,7 @@ module Vcloud
           schema = { type: 'ip_address_range' }
           v = ConfigValidator.validate(:base, data, schema)
           expect(v.valid?).to be_false
-          expect(v.errors).to eq(["base: 200.168.100.99-192.168.100 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."])
+          expect(v.errors).to eq(["base: 200.168.100.99-192.168.100 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."])
         end
 
         it "should error if the start and end IPS are not separated by -" do
@@ -513,7 +513,7 @@ module Vcloud
           schema = { type: 'ip_address_range' }
           v = ConfigValidator.validate(:base, data, schema)
           expect(v.valid?).to be_false
-          expect(v.errors).to eq(["base: 190.168.100.99:192.168.100 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."])
+          expect(v.errors).to eq(["base: 190.168.100.99:192.168.100 is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."])
         end
       end
 

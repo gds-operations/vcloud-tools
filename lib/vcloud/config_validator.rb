@@ -5,7 +5,7 @@ module Vcloud
 
     attr_reader :key, :data, :schema, :type, :errors
 
-    VALID_ALPHABETICAL_VALUES_FOR_IP_RANGE = %w(any external internal)
+    VALID_ALPHABETICAL_VALUES_FOR_IP_RANGE = %w(Any external internal)
 
     def initialize(key, data, schema)
       raise "Nil schema" unless schema
@@ -58,11 +58,11 @@ module Vcloud
 
     def validate_ip_address_range
       unless data.is_a?(String)
-        @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'."
+        @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."
         return
       end
       valid = valid_cidr_or_ip_address? || valid_alphabetical_ip_range? || valid_ip_range?
-      @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'any','internal' and 'external'." unless valid
+      @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'." unless valid
     end
 
     def valid_cidr_or_ip_address?
