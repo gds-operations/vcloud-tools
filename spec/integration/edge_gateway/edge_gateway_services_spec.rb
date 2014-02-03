@@ -77,7 +77,7 @@ module Vcloud
         end
 
         it "return show diff if local firewall config has different ip and port " do
-          input_config_file = generate_input_config_file('firewall_config_1.yaml.erb', edge_gateway_erb_input)
+          input_config_file = generate_input_config_file('firewall_config_updated_rule.yaml.erb', edge_gateway_erb_input)
           diff_output = EdgeGatewayServices.new.diff(input_config_file)
           pp diff_output
           expect(diff_output[:FirewallService].size).to eq(2)
