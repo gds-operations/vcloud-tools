@@ -44,7 +44,7 @@ module Vcloud
         @obj = EdgeGatewayServices.new
       end
 
-      it "should have idempotent operation (should not update config if it has not changed)" do
+      it "should not attempt to update config if remote config is same as the config we want to apply" do
         expect(@obj).to receive(:translate_yaml_input).and_return(@parsed_config)
         expect(Core::EdgeGateway).to receive(:get_by_name).and_return(@edge_gw_obj)
         expect(@obj).to receive(:diff).and_return(@mock_no_diff_output)
