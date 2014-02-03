@@ -117,6 +117,34 @@ You will need to set the following environment variables:
 
 To run this test: `rspec spec/integration/launcher/storage_profile_integration_test.rb`
 
+#### Edge Gateway tests
+
+    spec/integration_tests/edge_gateway/edge_gateway_service_spec.rb
+
+This test tests a variety of update and diff operations against a live
+EdgeGateway. **Do not run this against a live EdgeGateway, as it will zero the
+configuration**
+
+The EdgeGateway needs to have at least one external 'uplink' network, and
+at least one 'internal' network. These should have IP pools assigned to them,
+with at least one available IP address.
+
+You will need to set the following env vars:
+
+    export VCLOUD_EDGE_GATEWAY="<name of edgeGateway>"
+    export VCLOUD_NETWORK1_NAME="<name of internal network>"
+    export VCLOUD_NETWORK1_IP="<ip address on internal network>"
+    export VCLOUD_NETWORK1_ID="<id of internal network>"
+    export VCLOUD_PROVIDER_NETWORK_ID="<id of uplink network>"
+    export VCLOUD_PROVIDER_NETWORK_IP="<ip address on uplink network>"
+
+The easiest way to get this information is to run vcloud-walk from
+https://github.com/alphagov/vcloud-walker:
+
+    vcloud-walk edgegateways
+
+... and look through the returned information for a suitable edgeGateway.
+
 [vcloudwalker]: https://github.com/alphagov/vcloud-walker
 [edgegateway]: docs/edgegateway.md
 [tag_search]: docs/tag_search.md
