@@ -73,15 +73,15 @@ For more details see: http://fog.io/about/getting_started.html#debugging.
 Default target: `bundle exec rake`
 Runs the unit and feature tests (pretty quick right now)
 
-Unit tests: `bundle exec rake spec`
-Runs the the fastest feedback cycle
+* Unit tests only: `bundle exec rake spec`
+* Integration tests ('quick' tests): `bundle exec rake integration:quick`
+* Integration tests (all tests - takes 20mins+): `bundle exec rake integration:all`
 
-Integration tests: `bundle exec rake integration_test`
-Not included in the above test runs
+You need access to a suitable vCloud Director organization to run the
+integration tests. It is not necessarily safe to run them against an existing
+environment, unless care is taken with the entities being tested.
 
-
-You need access to an environment as the integration test actually spins up a
-VM. The easiest thing to do is create a local shell script called
+The easiest thing to do is create a local shell script called
 `vcloud_env.sh` and set the contents:
 
     export FOG\_CREDENTIAL=test
