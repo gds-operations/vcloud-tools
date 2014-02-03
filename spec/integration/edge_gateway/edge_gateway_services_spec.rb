@@ -29,6 +29,7 @@ module Vcloud
       @int_net_id = ENV['VCLOUD_NETWORK1_ID']
       @int_net_ip = ENV['VCLOUD_NETWORK1_IP']
       @int_net_name = ENV['VCLOUD_NETWORK1_NAME']
+      @files_to_delete = []
     end
 
     it "raise exception if input yaml does not match with schema" do
@@ -63,8 +64,6 @@ module Vcloud
                                                         :SourcePortRange => "Any",
                                                         :SourceIp => "192.0.2.2",
                                                         :EnableLogging => "false"}])
-
-        File.delete(input_config_file)
       end
 
       it "should not configure the firewall service if updated again with the same configuration (idempotency)" do
@@ -72,7 +71,6 @@ module Vcloud
         input_config_file = generate_input_yaml_config({:edge_gateway_name => @edge_name}, config_erb)
         expect(Core::EdgeGateway).to receive(:update_configuration).at_most(0).times
         EdgeGatewayServices.new.update(input_config_file)
-        File.delete(input_config_file)
       end
 
       context "validate the diff against our intended configuration" do
@@ -81,7 +79,6 @@ module Vcloud
           input_config_file = generate_input_yaml_config(edge_gateway_erb_input, config_erb)
           diff_output = EdgeGatewayServices.new.diff(input_config_file)
           expect(diff_output[:FirewallService]).to eq([])
-          File.delete(input_config_file)
         end
 
         it "return show diff if local firewall config has different ip and port " do
@@ -90,7 +87,6 @@ module Vcloud
           diff_output = EdgeGatewayServices.new.diff(input_config_file)
           pp diff_output
           expect(diff_output[:FirewallService].size).to eq(2)
-          File.delete(input_config_file)
         end
       end
 
@@ -119,8 +115,6 @@ module Vcloud
           expect(expected_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2')
           expect(expected_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
           expect(expected_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
-
-          File.delete(input_config_file)
         end
 
         it "configure hairpin NATting with orgVdcNetwork" do
@@ -146,8 +140,6 @@ module Vcloud
           expect(expected_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2')
           expect(expected_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
           expect(expected_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
-
-          File.delete(input_config_file)
         end
 
         it "should raise error if network provided in rule does not exist" do
@@ -159,13 +151,20 @@ module Vcloud
                                                          }, config_erb)
 
           expect{EdgeGatewayServices.new.update(input_config_file)}.to raise_error("unable to find gateway network interface with id #{random_network_id}")
-          File.delete(input_config_file)
         end
       end
 
       after(:all) do
         reset_edge_gateway
       end
+    end
+
+    after(:all) do
+      remove_temp_config_files
+    end
+
+    def remove_temp_config_files
+      FileUtils.rm(@files_to_delete)
     end
 
     def reset_edge_gateway
@@ -188,6 +187,7 @@ module Vcloud
       File.open(output_yaml_config, 'w') { |f|
         f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
       }
+      @files_to_delete << output_yaml_config
       output_yaml_config
     end
 
