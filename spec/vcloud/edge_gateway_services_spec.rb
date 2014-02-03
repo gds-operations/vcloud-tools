@@ -5,15 +5,12 @@ module Vcloud
   describe EdgeGatewayServices do
 
     before(:each) do
-      @edge_gateway_services = [
-        :FirewallService,
-        :NatService,
-      ]
+      edge_gateway_services = EdgeGatewayServices.edge_gateway_services
       @mock_no_diff_output = {}
       @parsed_config = {
         gateway: 'TestGateway',
       }
-      @edge_gateway_services.each do |service|
+      edge_gateway_services.each do |service|
         @mock_no_diff_output[service] = []
         @parsed_config[service] = {}
       end
