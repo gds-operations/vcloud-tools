@@ -422,7 +422,7 @@ module Vcloud
 
     end
 
-    context "IP range validations" do
+    context "ip_address_range validations" do
       context "validate CIDR" do
         it "should validate OK if CIDR is correct" do
           data = '192.168.100.100/24'
