@@ -6,7 +6,6 @@ module Vcloud
     attr_reader :key, :data, :schema, :type, :errors
 
     VALID_ALPHABETICAL_VALUES_FOR_IP_RANGE = %w(any external internal)
-    IP_REGEX = /^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$/
 
     def initialize(key, data, schema)
       raise "Nil schema" unless schema
