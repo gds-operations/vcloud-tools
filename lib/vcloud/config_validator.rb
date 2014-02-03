@@ -100,11 +100,7 @@ module Vcloud
     end
 
     def valid_start_and_end_address_combination?(end_address, start_address)
-      start_address_octets = start_address.split('.')
-      end_address_octets = end_address.split('.')
-      start_address_octets.select.with_index do |octet, index|
-        end_address_octets[index] < octet
-      end.empty?
+      IPAddr.new(start_address) < IPAddr.new(end_address)
     end
 
     def validate_hash
