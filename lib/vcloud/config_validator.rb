@@ -67,8 +67,8 @@ module Vcloud
 
     def valid_cidr_or_ip_address?
       begin
-        IPAddr.new(data)
-          true
+        ip = IPAddr.new(data)
+        ip.ipv4?
       rescue ArgumentError
         false
       end
@@ -84,7 +84,7 @@ module Vcloud
         # Attribute like member_ip in case of load-balancer is an "address"
         # and we should not accept “address/prefixlen” and “address/mask” for such fields.
         ip = IPAddr.new(ip_address)
-        ip && !ip_address.include?('/')
+        ip.ipv4? && !ip_address.include?('/')
       rescue ArgumentError
         false
       end
