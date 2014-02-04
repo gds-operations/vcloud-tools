@@ -42,6 +42,13 @@ module Vcloud
       before(:all) do
         reset_edge_gateway
         @initial_firewall_config_file = generate_input_config_file('firewall_config.yaml.erb', edge_gateway_erb_input)
+        @initial_nat_config_file = generate_input_config_file(
+          'nat_config.yaml.erb', {
+              edge_gateway_name: @edge_name,
+              network_id: @ext_net_id,
+              original_ip: @ext_net_ip,
+            }
+          )
       end
 
       it "should configure an initial firewall service" do
@@ -84,13 +91,8 @@ module Vcloud
       end
 
       it "and then should configure DNAT rule with provider network" do
-        input_config_file = generate_input_config_file('nat_config.yaml.erb', {
-          edge_gateway_name: @edge_name,
-          network_id: @ext_net_id,
-          original_ip: @ext_net_ip,
-        })
 
-        EdgeGatewayServices.new.update(input_config_file)
+        EdgeGatewayServices.new.update(@initial_nat_config_file)
 
         edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
         nat_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
@@ -106,6 +108,16 @@ module Vcloud
         expect(expected_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2')
         expect(expected_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
         expect(expected_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
+      end
+
+      it "and then should not configure the NAT service if updated again with the same configuration (idempotency)" do
+        expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
+        EdgeGatewayServices.new.update(@initial_nat_config_file)
+      end
+
+      it "and so NatService diff should return empty if both configs match" do
+        diff_output = EdgeGatewayServices.new.diff(@initial_nat_config_file)
+        expect(diff_output[:NatService]).to eq([])
       end
 
       it "and then should configure hairpin NATting with orgVdcNetwork" do
@@ -131,6 +143,11 @@ module Vcloud
         expect(expected_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2')
         expect(expected_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
         expect(expected_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
+      end
+
+      it "and then NatService diff should highlight a difference" do
+        diff_output = EdgeGatewayServices.new.diff(@initial_nat_config_file)
+        expect(diff_output[:NatService].size).to eq(2)
       end
 
       it "should raise error if network provided in rule does not exist" do
