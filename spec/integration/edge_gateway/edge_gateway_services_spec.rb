@@ -34,6 +34,7 @@ module Vcloud
 
     it "raise exception if input yaml does not match with schema" do
       config_yaml = File.expand_path('data/incorrect_firewall_config.yaml', File.dirname(__FILE__))
+      expect(Vcloud.logger).to receive(:fatal)
       expect { EdgeGatewayServices.new.update(config_yaml) }.to raise_error('Supplied configuration does not match supplied schema')
     end
 
