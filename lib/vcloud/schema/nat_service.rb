@@ -9,9 +9,9 @@ module Vcloud
         rule_type: { type: 'enum', required: true, acceptable_values: ['SNAT', 'DNAT' ]},
         description: {type: 'string', required: false, allowed_empty: true},
         network_id: {type: 'string', required: true},
-        original_ip: {type: 'ip_address', required: true},
+        original_ip: {type: 'ip_address_range', required: true},
         original_port: {type: 'string', required: false},
-        translated_ip: {type: 'ip_address', required: true},
+        translated_ip: {type: 'ip_address_range', required: true},
         translated_port: {type: 'string', required: false},
         protocol: {type: 'enum', required: false, acceptable_values: ['tcp', 'udp', 'icmp', 'tcp+udp', 'any']},
       }

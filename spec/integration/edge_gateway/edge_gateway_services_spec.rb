@@ -12,31 +12,59 @@ module Vcloud
         reset_edge_gateway
       end
 
-      it "should configure firewall service" do
-        config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
-        input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
-        EdgeGatewayServices.new.update(input_config_file)
+      context 'configure firewall service' do
+        before(:all) do
+          config_erb = File.expand_path('data/firewall_config.yaml.erb', File.dirname(__FILE__))
+          @input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
+          EdgeGatewayServices.new.update(@input_config_file)
+          edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(ENV['VCLOUD_EDGE_GATEWAY'])
+          @firewall_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
+        end
 
-        edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(ENV['VCLOUD_EDGE_GATEWAY'])
+        it "should configure multiple firewall rules" do
+          expect(@firewall_service.key?(:FirewallRule)).to be_true
+          expect(@firewall_service[:FirewallRule].count).to eq(2)
+        end
 
-        firewall_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
-        expect(firewall_service.key?(:FirewallRule)).to be_true
-        expect(firewall_service[:FirewallRule]).to eq([{:Id => "1",
-                                                        :IsEnabled => "true",
-                                                        :MatchOnTranslate => "false",
-                                                        :Description => "A rule",
-                                                        :Policy => "allow",
-                                                        :Protocols => {:Tcp => "true"},
-                                                        :Port => "-1",
-                                                        :DestinationPortRange => "Any",
-                                                        :DestinationIp => "10.10.1.2",
-                                                        :SourcePort => "-1",
-                                                        :SourcePortRange => "Any",
-                                                        :SourceIp => "192.0.2.2",
-                                                        :EnableLogging => "false"}])
+        it "should configure firewall rule with destination and source ip addresses" do
+          expect(@firewall_service[:FirewallRule].first).to eq({:Id => "1",
+                                                                :IsEnabled => "true",
+                                                                :MatchOnTranslate => "false",
+                                                                :Description => "A rule",
+                                                                :Policy => "allow",
+                                                                :Protocols => {:Tcp => "true"},
+                                                                :Port => "-1",
+                                                                :DestinationPortRange => "Any",
+                                                                :DestinationIp => "10.10.1.2",
+                                                                :SourcePort => "-1",
+                                                                :SourcePortRange => "Any",
+                                                                :SourceIp => "192.0.2.2",
+                                                                :EnableLogging => "false"})
+        end
 
-        File.delete(input_config_file)
+        it "should configure firewall rule with destination and source ip ranges" do
+          expect(@firewall_service[:FirewallRule].last).to eq({:Id => "2",
+                                                               :IsEnabled => "true",
+                                                               :MatchOnTranslate => "false",
+                                                               :Description => "",
+                                                               :Policy => "allow",
+                                                               :Protocols => {:Tcp => "true"},
+                                                               :Port => "-1",
+                                                               :DestinationPortRange => "Any",
+                                                               :DestinationIp => "10.10.1.3-10.10.1.5",
+                                                               :SourcePort => "-1",
+                                                               :SourcePortRange => "Any",
+                                                               :SourceIp => "192.0.2.2/24",
+                                                               :EnableLogging => "false"})
+
+        end
+
+        after(:all) do
+          File.delete(@input_config_file)
+        end
       end
+
+
 
       context "validate the diff against our intended configuration" do
         it "return empty if both configs match " do
@@ -53,45 +81,61 @@ module Vcloud
           input_config_file = generate_input_yaml_config({:edge_gateway_name => ENV['VCLOUD_EDGE_GATEWAY']}, config_erb)
           diff_output = EdgeGatewayServices.new.diff(input_config_file)
           pp diff_output
-          expect(diff_output.size).to eq(2)
+          expect(diff_output.size).to eq(3)
 
           File.delete(input_config_file)
         end
       end
 
       context "configure nat service" do
+        context 'with provider network' do
+          before(:all) do
+            config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
+            @input_config_file = generate_input_yaml_config({edge_gateway_name: ENV['VCLOUD_EDGE_GATEWAY'],
+                                                            network_id: ENV['VCLOUD_PROVIDER_NETWORK_ID'],
+                                                            original_ip: ENV['VCLOUD_PROVIDER_NETWORK_IP']
+                                                           }, config_erb)
 
-        it "configure DNAT rule with provider network" do
-          config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
-          input_config_file = generate_input_yaml_config({edge_gateway_name: ENV['VCLOUD_EDGE_GATEWAY'],
-                                                          network_id: ENV['VCLOUD_PROVIDER_NETWORK_ID'],
-                                                          original_ip: ENV['VCLOUD_PROVIDER_NETWORK_IP']
-                                                         }, config_erb)
+            EdgeGatewayServices.new.update(@input_config_file)
 
-          EdgeGatewayServices.new.update(input_config_file)
+            edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(ENV['VCLOUD_EDGE_GATEWAY'])
+            @nat_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
+          end
 
-          edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(ENV['VCLOUD_EDGE_GATEWAY'])
-          nat_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
-          expected_rule = nat_service[:NatRule].first
-          expect(expected_rule).not_to be_nil
-          expect(expected_rule[:RuleType]).to eq('DNAT')
-          expect(expected_rule[:Id]).to eq('65537')
-          expect(expected_rule[:RuleType]).to eq('DNAT')
-          expect(expected_rule[:IsEnabled]).to eq('true')
-          expect(expected_rule[:GatewayNatRule][:Interface][:href]).to include(ENV['VCLOUD_PROVIDER_NETWORK_ID'])
-          expect(expected_rule[:GatewayNatRule][:OriginalIp]).to eq(ENV['VCLOUD_PROVIDER_NETWORK_IP'])
-          expect(expected_rule[:GatewayNatRule][:OriginalPort]).to eq('3412')
-          expect(expected_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2')
-          expect(expected_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
-          expect(expected_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
+          it "should configure DNAT rule" do
+            dnat_rule = @nat_service[:NatRule].first
+            expect(dnat_rule).not_to be_nil
+            expect(dnat_rule[:RuleType]).to eq('DNAT')
+            expect(dnat_rule[:Id]).to eq('65537')
+            expect(dnat_rule[:IsEnabled]).to eq('true')
+            expect(dnat_rule[:GatewayNatRule][:Interface][:href]).to include(ENV['VCLOUD_PROVIDER_NETWORK_ID'])
+            expect(dnat_rule[:GatewayNatRule][:OriginalIp]).to eq(ENV['VCLOUD_PROVIDER_NETWORK_IP'])
+            expect(dnat_rule[:GatewayNatRule][:OriginalPort]).to eq('3412')
+            expect(dnat_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2-10.10.1.3')
+            expect(dnat_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
+            expect(dnat_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
+          end
 
-          File.delete(input_config_file)
+          it "should configure SNAT rule" do
+            snat_rule = @nat_service[:NatRule].last
+            expect(snat_rule).not_to be_nil
+            expect(snat_rule[:RuleType]).to eq('SNAT')
+            expect(snat_rule[:Id]).to eq('65538')
+            expect(snat_rule[:IsEnabled]).to eq('true')
+            expect(snat_rule[:GatewayNatRule][:Interface][:href]).to include(ENV['VCLOUD_PROVIDER_NETWORK_ID'])
+            expect(snat_rule[:GatewayNatRule][:OriginalIp]).to eq('10.10.1.2-10.10.1.3')
+            expect(snat_rule[:GatewayNatRule][:TranslatedIp]).to eq(ENV['VCLOUD_PROVIDER_NETWORK_IP'])
+          end
+
+          after(:all) do
+            File.delete(@input_config_file)
+          end
         end
 
         it "configure hairpin NATting with orgVdcNetwork" do
-          config_erb = File.expand_path('data/nat_config.yaml.erb', File.dirname(__FILE__))
+          config_erb = File.expand_path('data/hairpin_nat_config.yaml.erb', File.dirname(__FILE__))
           input_config_file = generate_input_yaml_config({edge_gateway_name: ENV['VCLOUD_EDGE_GATEWAY'],
-                                                          network_id: ENV['VCLOUD_NETWORK1_ID'],
+                                                          org_vdc_network_id: ENV['VCLOUD_NETWORK1_ID'],
                                                           original_ip: ENV['VCLOUD_NETWORK1_IP']
                                                          }, config_erb)
 
