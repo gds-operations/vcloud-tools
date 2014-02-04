@@ -44,11 +44,11 @@ module Vcloud
         @obj = EdgeGatewayServices.new
       end
 
-      it "should have idempotent operation (should not update config if it has not changed" do
+      it "should have idempotent operation (should not update config if it has not changed)" do
         expect(@obj).to receive(:translate_yaml_input).and_return(@parsed_config)
         expect(Core::EdgeGateway).to receive(:get_by_name).and_return(@edge_gw_obj)
         expect(@obj).to receive(:diff).and_return(@mock_no_diff_output)
-        expect(@edge_gw_obj).to receive(:update_configuration).at_most(0).times
+        expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
         @obj.update("config_file")
       end
 
