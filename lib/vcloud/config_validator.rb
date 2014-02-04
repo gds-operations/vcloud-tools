@@ -1,7 +1,11 @@
+require 'ipaddr'
+
 module Vcloud
   class ConfigValidator
 
     attr_reader :key, :data, :schema, :type, :errors
+
+    VALID_ALPHABETICAL_VALUES_FOR_IP_RANGE = %w(Any external internal)
 
     def initialize(key, data, schema)
       raise "Nil schema" unless schema
@@ -49,16 +53,54 @@ module Vcloud
         @errors << "#{key}: #{@data} is not a valid ip_address"
         return
       end
-      invalid = false
-      octets = data.split('.')
-      if octets.size == 4
-        octets.each do |octet|
-          invalid = true unless octet.to_i >= 0 && octet.to_i <= 255
-        end
-      else
-        invalid = true
+      @errors << "#{key}: #{@data} is not a valid ip_address" unless valid_ip_address?(data)
+    end
+
+    def validate_ip_address_range
+      unless data.is_a?(String)
+        @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'."
+        return
       end
-      @errors << "#{key}: #{@data} is not a valid ip_address" if invalid
+      valid = valid_cidr_or_ip_address? || valid_alphabetical_ip_range? || valid_ip_range?
+      @errors << "#{key}: #{@data} is not a valid IP address range. Valid values can be IP address, CIDR, IP range, 'Any','internal' and 'external'." unless valid
+    end
+
+    def valid_cidr_or_ip_address?
+      begin
+        ip = IPAddr.new(data)
+        ip.ipv4?
+      rescue ArgumentError
+        false
+      end
+    end
+
+    def valid_alphabetical_ip_range?
+      VALID_ALPHABETICAL_VALUES_FOR_IP_RANGE.include?(data)
+    end
+
+    def valid_ip_address? ip_address
+      begin
+        #valid formats recognized by IPAddr are : “address”, “address/prefixlen” and “address/mask”.
+        # Attribute like member_ip in case of load-balancer is an "address"
+        # and we should not accept “address/prefixlen” and “address/mask” for such fields.
+        ip = IPAddr.new(ip_address)
+        ip.ipv4? && !ip_address.include?('/')
+      rescue ArgumentError
+        false
+      end
+    end
+
+    def valid_ip_range?
+      range_parts = data.split('-')
+      return false if range_parts.size != 2
+      start_address = range_parts.first
+      end_address = range_parts.last
+      valid_ip_address?(start_address) &&  valid_ip_address?(end_address) &&
+        valid_start_and_end_address_combination?(end_address, start_address)
+    end
+
+    def valid_start_and_end_address_combination?(end_address, start_address)
+      IPAddr.new(start_address) < IPAddr.new(end_address)
     end
 
     def validate_hash

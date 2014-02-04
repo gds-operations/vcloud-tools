@@ -73,15 +73,15 @@ For more details see: http://fog.io/about/getting_started.html#debugging.
 Default target: `bundle exec rake`
 Runs the unit and feature tests (pretty quick right now)
 
-Unit tests: `bundle exec rake spec`
-Runs the the fastest feedback cycle
+* Unit tests only: `bundle exec rake spec`
+* Integration tests ('quick' tests): `bundle exec rake integration:quick`
+* Integration tests (all tests - takes 20mins+): `bundle exec rake integration:all`
 
-Integration tests: `bundle exec rake integration_test`
-Not included in the above test runs
+You need access to a suitable vCloud Director organization to run the
+integration tests. It is not necessarily safe to run them against an existing
+environment, unless care is taken with the entities being tested.
 
-
-You need access to an environment as the integration test actually spins up a
-VM. The easiest thing to do is create a local shell script called
+The easiest thing to do is create a local shell script called
 `vcloud_env.sh` and set the contents:
 
     export FOG\_CREDENTIAL=test
@@ -116,6 +116,34 @@ You will need to set the following environment variables:
       export DEFAULT\_STORAGE\_PROFILE\_HREF="Href of default storage profile"
 
 To run this test: `rspec spec/integration/launcher/storage_profile_integration_test.rb`
+
+#### Edge Gateway tests
+
+    spec/integration_tests/edge_gateway/edge_gateway_service_spec.rb
+
+This test tests a variety of update and diff operations against a live
+EdgeGateway. **Do not run this against a live EdgeGateway, as it will zero the
+configuration**
+
+The EdgeGateway needs to have at least one external 'uplink' network, and
+at least one 'internal' network. These should have IP pools assigned to them,
+with at least one available IP address.
+
+You will need to set the following env vars:
+
+    export VCLOUD_EDGE_GATEWAY="<name of edgeGateway>"
+    export VCLOUD_NETWORK1_NAME="<name of internal network>"
+    export VCLOUD_NETWORK1_IP="<ip address on internal network>"
+    export VCLOUD_NETWORK1_ID="<id of internal network>"
+    export VCLOUD_PROVIDER_NETWORK_ID="<id of uplink network>"
+    export VCLOUD_PROVIDER_NETWORK_IP="<ip address on uplink network>"
+
+The easiest way to get this information is to run vcloud-walk from
+https://github.com/alphagov/vcloud-walker:
+
+    vcloud-walk edgegateways
+
+... and look through the returned information for a suitable edgeGateway.
 
 [vcloudwalker]: https://github.com/alphagov/vcloud-walker
 [edgegateway]: docs/edgegateway.md

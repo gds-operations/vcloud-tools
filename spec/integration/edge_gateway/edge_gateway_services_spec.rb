@@ -49,29 +49,57 @@ module Vcloud
               original_ip: @ext_net_ip,
             }
           )
+        @edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
+        @firewall_service = {}
       end
 
       it "should configure an initial firewall service" do
         expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
-        EdgeGatewayServices.new.update(@initial_firewall_config_file)
+        expect(EdgeGatewayServices.new.update(@initial_firewall_config_file)).to be_true
+      end
 
-        edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
+      context "ensure EdgeGateway FirewallService configuration is as expected" do
+        before(:all) do
+          @firewall_service = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
+        end
 
-        firewall_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
-        expect(firewall_service.key?(:FirewallRule)).to be_true
-        expect(firewall_service[:FirewallRule]).to eq([{:Id => "1",
-                                                        :IsEnabled => "true",
-                                                        :MatchOnTranslate => "false",
-                                                        :Description => "A rule",
-                                                        :Policy => "allow",
-                                                        :Protocols => {:Tcp => "true"},
-                                                        :Port => "-1",
-                                                        :DestinationPortRange => "Any",
-                                                        :DestinationIp => "10.10.1.2",
-                                                        :SourcePort => "-1",
-                                                        :SourcePortRange => "Any",
-                                                        :SourceIp => "192.0.2.2",
-                                                        :EnableLogging => "false"}])
+        it "should configure multiple firewall rules" do
+          expect(@firewall_service.key?(:FirewallRule)).to be_true
+          expect(@firewall_service[:FirewallRule].count).to eq(2)
+        end
+
+        it "should configure firewall rule with destination and source ip addresses" do
+          expect(@firewall_service[:FirewallRule].first).to eq({:Id => "1",
+                                                                :IsEnabled => "true",
+                                                                :MatchOnTranslate => "false",
+                                                                :Description => "A rule",
+                                                                :Policy => "allow",
+                                                                :Protocols => {:Tcp => "true"},
+                                                                :Port => "-1",
+                                                                :DestinationPortRange => "Any",
+                                                                :DestinationIp => "10.10.1.2",
+                                                                :SourcePort => "-1",
+                                                                :SourcePortRange => "Any",
+                                                                :SourceIp => "192.0.2.2",
+                                                                :EnableLogging => "false"})
+        end
+
+        it "should configure firewall rule with destination and source ip ranges" do
+          expect(@firewall_service[:FirewallRule].last).to eq({:Id => "2",
+                                                               :IsEnabled => "true",
+                                                               :MatchOnTranslate => "false",
+                                                               :Description => "",
+                                                               :Policy => "allow",
+                                                               :Protocols => {:Tcp => "true"},
+                                                               :Port => "-1",
+                                                               :DestinationPortRange => "Any",
+                                                               :DestinationIp => "10.10.1.3-10.10.1.5",
+                                                               :SourcePort => "-1",
+                                                               :SourcePortRange => "Any",
+                                                               :SourceIp => "192.0.2.2/24",
+                                                               :EnableLogging => "false"})
+        end
+
       end
 
       it "and then should not configure the firewall service if updated again with the same configuration (idempotency)" do
@@ -87,27 +115,43 @@ module Vcloud
       it "return show diff if local firewall config has different ip and port " do
         input_config_file = generate_input_config_file('firewall_config_updated_rule.yaml.erb', edge_gateway_erb_input)
         diff_output = EdgeGatewayServices.new.diff(input_config_file)
-        expect(diff_output[:FirewallService].size).to eq(2)
+        expect(diff_output[:FirewallService].size).to eq(3)
       end
 
-      it "and then should configure DNAT rule with provider network" do
+      it "and then should configure NatService" do
+        expect(EdgeGatewayServices.new.update(@initial_nat_config_file)).to be_true
+      end
 
-        EdgeGatewayServices.new.update(@initial_nat_config_file)
+      context "ensure updated EdgeGateway NatService configuration is as expected" do
+        before(:all) do
+          @nat_service = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
+        end
 
-        edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
-        nat_service = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
-        expected_rule = nat_service[:NatRule].first
-        expect(expected_rule).not_to be_nil
-        expect(expected_rule[:RuleType]).to eq('DNAT')
-        expect(expected_rule[:Id]).to eq('65537')
-        expect(expected_rule[:RuleType]).to eq('DNAT')
-        expect(expected_rule[:IsEnabled]).to eq('true')
-        expect(expected_rule[:GatewayNatRule][:Interface][:href]).to include(@ext_net_id)
-        expect(expected_rule[:GatewayNatRule][:OriginalIp]).to eq(@ext_net_ip,)
-        expect(expected_rule[:GatewayNatRule][:OriginalPort]).to eq('3412')
-        expect(expected_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2')
-        expect(expected_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
-        expect(expected_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
+        it "should configure DNAT rule" do
+          dnat_rule = @nat_service[:NatRule].first
+          expect(dnat_rule).not_to be_nil
+          expect(dnat_rule[:RuleType]).to eq('DNAT')
+          expect(dnat_rule[:Id]).to eq('65537')
+          expect(dnat_rule[:IsEnabled]).to eq('true')
+          expect(dnat_rule[:GatewayNatRule][:Interface][:href]).to include(@ext_net_id)
+          expect(dnat_rule[:GatewayNatRule][:OriginalIp]).to eq(@ext_net_ip)
+          expect(dnat_rule[:GatewayNatRule][:OriginalPort]).to eq('3412')
+          expect(dnat_rule[:GatewayNatRule][:TranslatedIp]).to eq('10.10.1.2-10.10.1.3')
+          expect(dnat_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
+          expect(dnat_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
+        end
+
+        it "should configure SNAT rule" do
+          snat_rule = @nat_service[:NatRule].last
+          expect(snat_rule).not_to be_nil
+          expect(snat_rule[:RuleType]).to eq('SNAT')
+          expect(snat_rule[:Id]).to eq('65538')
+          expect(snat_rule[:IsEnabled]).to eq('true')
+          expect(snat_rule[:GatewayNatRule][:Interface][:href]).to include(@ext_net_id)
+          expect(snat_rule[:GatewayNatRule][:OriginalIp]).to eq('10.10.1.2-10.10.1.3')
+          expect(snat_rule[:GatewayNatRule][:TranslatedIp]).to eq(@ext_net_ip)
+        end
+
       end
 
       it "and then should not configure the NAT service if updated again with the same configuration (idempotency)" do
@@ -121,9 +165,9 @@ module Vcloud
       end
 
       it "and then should configure hairpin NATting with orgVdcNetwork" do
-        input_config_file = generate_input_config_file('nat_config.yaml.erb', {
+        input_config_file = generate_input_config_file('hairpin_nat_config.yaml.erb', {
           edge_gateway_name: @edge_name,
-          network_id: @int_net_id,
+          org_vdc_network_id: @int_net_id,
           original_ip: @int_net_ip,
         })
 
@@ -147,6 +191,7 @@ module Vcloud
 
       it "and then NatService diff should highlight a difference" do
         diff_output = EdgeGatewayServices.new.diff(@initial_nat_config_file)
+        pp diff_output
         expect(diff_output[:NatService].size).to eq(2)
       end
 

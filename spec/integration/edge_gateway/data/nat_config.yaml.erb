@@ -5,8 +5,13 @@ nat_service:
   - enabled: true
     network_id: <%= network_id %>
     rule_type: 'DNAT'
-    translated_ip: 10.10.1.2
+    translated_ip: '10.10.1.2-10.10.1.3'
     translated_port: '3412'
     original_ip: <%= original_ip %>
     original_port: '3412'
     protocol: 'tcp'
+  - enabled: true
+    network_id: <%= network_id %>
+    rule_type: 'SNAT'
+    translated_ip: <%= original_ip %>
+    original_ip: '10.10.1.2-10.10.1.3'
