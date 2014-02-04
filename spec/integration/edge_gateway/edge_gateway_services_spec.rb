@@ -45,6 +45,7 @@ module Vcloud
       end
 
       it "should configure an initial firewall service" do
+        expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
         EdgeGatewayServices.new.update(@initial_firewall_config_file)
 
         edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
@@ -67,7 +68,7 @@ module Vcloud
       end
 
       it "and then should not configure the firewall service if updated again with the same configuration (idempotency)" do
-        expect(Core::EdgeGateway).to receive(:update_configuration).at_most(0).times
+        expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
         EdgeGatewayServices.new.update(@initial_firewall_config_file)
       end
 
