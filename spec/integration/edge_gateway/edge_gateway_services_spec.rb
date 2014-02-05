@@ -108,15 +108,36 @@ module Vcloud
         EdgeGatewayServices.new.update(@initial_firewall_config_file)
       end
 
-      it "and so diff should return empty if both configs match" do
-        diff_output = EdgeGatewayServices.new.diff(@initial_firewall_config_file)
-        expect(diff_output[:FirewallService]).to eq([])
+      it "and so diff should return empty if local and remote firewall configs match" do
+        edge_gateway_service = EdgeGatewayServices.new
+        local_config = edge_gateway_service.translate_yaml_input(@initial_firewall_config_file)
+        edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
+        remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
+
+        local_firewall_config = local_config[:FirewallService]
+        remote_firewall_config = remote_config[:FirewallService]
+
+        differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
+        diff_output = differ.diff
+
+        expect(diff_output).to eq([])
       end
 
-      it "return show diff if local firewall config has different ip and port " do
+      it "should highlight a difference if local firewall config has been updated" do
         input_config_file = generate_input_config_file('firewall_config_updated_rule.yaml.erb', edge_gateway_erb_input)
-        diff_output = EdgeGatewayServices.new.diff(input_config_file)
-        expect(diff_output[:FirewallService].size).to eq(3)
+
+        edge_gateway_service = EdgeGatewayServices.new
+        local_config = edge_gateway_service.translate_yaml_input(input_config_file)
+        edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
+        remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
+
+        local_firewall_config = local_config[:FirewallService]
+        remote_firewall_config = remote_config[:FirewallService]
+
+        differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
+        diff_output = differ.diff
+
+        expect(diff_output.empty?).to be_false
       end
 
       it "and then should configure NatService" do

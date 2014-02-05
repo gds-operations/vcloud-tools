@@ -8,7 +8,10 @@ firewall_service:
     description: 'A rule'
     policy: allow
     protocols: 'tcp'
-    destination_port_range: '22'
-    destination_ip: 10.10.10.20
-    source_port_range: 'Any'
+    destination_port_range: Any
+    destination_ip: 10.10.1.2
+    source_port_range: Any
     source_ip: 192.0.2.2
+  - enabled: true
+    destination_ip: '10.10.1.3-10.10.1.6'
+    source_ip: 192.0.2.2/24
