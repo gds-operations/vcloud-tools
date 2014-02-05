@@ -108,13 +108,13 @@ module Vcloud
         EdgeGatewayServices.new.update(@initial_firewall_config_file)
       end
 
+
       it "and so diff should return empty if local and remote firewall configs match" do
-        edge_gateway_service = EdgeGatewayServices.new
-        local_config = edge_gateway_service.translate_yaml_input(@initial_firewall_config_file)
+        local_config = ConfigLoader.new.load_config(@initial_firewall_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
+        local_firewall_config = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(local_config[:firewall_service])
+
         edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
         remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
-
-        local_firewall_config = local_config[:FirewallService]
         remote_firewall_config = remote_config[:FirewallService]
 
         differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
@@ -126,12 +126,11 @@ module Vcloud
       it "should highlight a difference if local firewall config has been updated" do
         input_config_file = generate_input_config_file('firewall_config_updated_rule.yaml.erb', edge_gateway_erb_input)
 
-        edge_gateway_service = EdgeGatewayServices.new
-        local_config = edge_gateway_service.translate_yaml_input(input_config_file)
+        local_config = ConfigLoader.new.load_config(input_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
+        local_firewall_config = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(local_config[:firewall_service])
+
         edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
         remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
-
-        local_firewall_config = local_config[:FirewallService]
         remote_firewall_config = remote_config[:FirewallService]
 
         differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
