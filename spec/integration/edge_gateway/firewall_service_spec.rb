@@ -32,19 +32,19 @@ module Vcloud
       @files_to_delete = []
     end
 
-    it "raise exception if input yaml does not match with schema" do
-      config_yaml = File.expand_path('data/incorrect_firewall_config.yaml', File.dirname(__FILE__))
-      expect(Vcloud.logger).to receive(:fatal)
-      expect { EdgeGatewayServices.new.update(config_yaml) }.to raise_error('Supplied configuration does not match supplied schema')
-    end
-
-    context "#configure_edge_gateway_services" do
+    context "Test FirewallService specifics of EdgeGatewayServices" do
 
       before(:all) do
         reset_edge_gateway
         @initial_firewall_config_file = generate_input_config_file('firewall_config.yaml.erb', edge_gateway_erb_input)
         @edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
         @firewall_service = {}
+      end
+
+      it "should raise exception if input yaml does not match with schema" do
+        config_yaml = File.expand_path('data/incorrect_firewall_config.yaml', File.dirname(__FILE__))
+        expect(Vcloud.logger).to receive(:fatal)
+        expect { EdgeGatewayServices.new.update(config_yaml) }.to raise_error('Supplied configuration does not match supplied schema')
       end
 
       it "should configure an initial firewall service" do
@@ -134,47 +134,44 @@ module Vcloud
 
       after(:all) do
         reset_edge_gateway unless ENV['VCLOUD_NO_RESET_VSE_AFTER']
+        remove_temp_config_files
       end
 
-    end
+      def remove_temp_config_files
+        FileUtils.rm(@files_to_delete)
+      end
 
-    after(:all) do
-      remove_temp_config_files
-    end
+      def reset_edge_gateway
+        edge_gateway = Core::EdgeGateway.get_by_name @edge_name
+        edge_gateway.update_configuration({
+          FirewallService: {IsEnabled: false, FirewallRule: []},
+        })
+      end
 
-    def remove_temp_config_files
-      FileUtils.rm(@files_to_delete)
-    end
+      def generate_input_config_file(data_file, erb_input)
+        config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
+        generate_input_yaml_config(erb_input, config_erb)
+      end
 
-    def reset_edge_gateway
-      edge_gateway = Core::EdgeGateway.get_by_name @edge_name
-      edge_gateway.update_configuration({
-        FirewallService: {IsEnabled: false, FirewallRule: []},
-      })
-    end
+      def generate_input_yaml_config test_namespace, input_erb_config
+        e = ERB.new(File.open(input_erb_config).read)
+        basename = File.basename(input_erb_config).gsub(/\.erb$/, '')
+        output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{basename}_#{Time.now.strftime('%s.%6N')}.yaml")
+        File.open(output_yaml_config, 'w') { |f|
+          f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
+        }
+        @files_to_delete << output_yaml_config
+        output_yaml_config
+      end
 
-    def generate_input_config_file(data_file, erb_input)
-      config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
-      generate_input_yaml_config(erb_input, config_erb)
-    end
+      def edge_gateway_erb_input
+        {
+          :edge_gateway_name => @edge_name,
+          :edge_gateway_ext_network_id => @ext_net_id,
+          :edge_gateway_ext_network_ip => @ext_net_ip,
+        }
+      end
 
-    def generate_input_yaml_config test_namespace, input_erb_config
-      e = ERB.new(File.open(input_erb_config).read)
-      basename = File.basename(input_erb_config).gsub(/\.erb$/, '')
-      output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{basename}_#{Time.now.strftime('%s.%6N')}.yaml")
-      File.open(output_yaml_config, 'w') { |f|
-        f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
-      }
-      @files_to_delete << output_yaml_config
-      output_yaml_config
-    end
-
-    def edge_gateway_erb_input
-      {
-        :edge_gateway_name => @edge_name,
-        :edge_gateway_ext_network_id => @ext_net_id,
-        :edge_gateway_ext_network_ip => @ext_net_ip,
-      }
     end
 
   end
