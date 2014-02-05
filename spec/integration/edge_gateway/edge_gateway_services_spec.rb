@@ -210,7 +210,7 @@ module Vcloud
       end
 
       after(:all) do
-        reset_edge_gateway
+        reset_edge_gateway unless ENV['VCLOUD_NO_RESET_VSE_AFTER']
       end
 
     end
