@@ -41,15 +41,58 @@ module Vcloud
         @firewall_service = {}
       end
 
-      it "should raise exception if input yaml does not match with schema" do
-        config_yaml = File.expand_path('data/incorrect_firewall_config.yaml', File.dirname(__FILE__))
-        expect(Vcloud.logger).to receive(:fatal)
-        expect { EdgeGatewayServices.new.update(config_yaml) }.to raise_error('Supplied configuration does not match supplied schema')
+      context "Check input schema checking is working" do
+
+        it "should raise exception if input yaml does not match with schema" do
+          config_yaml = File.expand_path('data/incorrect_firewall_config.yaml', File.dirname(__FILE__))
+          expect(Vcloud.logger).to receive(:fatal)
+          expect { EdgeGatewayServices.new.update(config_yaml) }.to raise_error('Supplied configuration does not match supplied schema')
+        end
+
       end
 
-      it "should configure an initial firewall service" do
-        expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
-        expect(EdgeGatewayServices.new.update(@initial_firewall_config_file)).to be_true
+      context "Check update is functional" do
+
+        it "should configure an initial firewall service" do
+          expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
+          expect(EdgeGatewayServices.new.update(@initial_firewall_config_file)).to be_true
+        end
+
+        it "and then should not configure the firewall service if updated again with the same configuration (idempotency)" do
+          expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
+          EdgeGatewayServices.new.update(@initial_firewall_config_file)
+        end
+
+        it "and so diff should return empty if local and remote firewall configs match" do
+          local_config = ConfigLoader.new.load_config(@initial_firewall_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
+          local_firewall_config = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(local_config[:firewall_service])
+
+          edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
+          remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
+          remote_firewall_config = remote_config[:FirewallService]
+
+          differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
+          diff_output = differ.diff
+
+          expect(diff_output).to eq([])
+        end
+
+        it "should highlight a difference if local firewall config has been updated" do
+          input_config_file = generate_input_config_file('firewall_config_updated_rule.yaml.erb', edge_gateway_erb_input)
+
+          local_config = ConfigLoader.new.load_config(input_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
+          local_firewall_config = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(local_config[:firewall_service])
+
+          edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
+          remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
+          remote_firewall_config = remote_config[:FirewallService]
+
+          differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
+          diff_output = differ.diff
+
+          expect(diff_output.empty?).to be_false
+        end
+
       end
 
       context "ensure EdgeGateway FirewallService configuration is as expected" do
@@ -96,41 +139,6 @@ module Vcloud
 
       end
 
-      it "and then should not configure the firewall service if updated again with the same configuration (idempotency)" do
-        expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
-        EdgeGatewayServices.new.update(@initial_firewall_config_file)
-      end
-
-
-      it "and so diff should return empty if local and remote firewall configs match" do
-        local_config = ConfigLoader.new.load_config(@initial_firewall_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
-        local_firewall_config = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(local_config[:firewall_service])
-
-        edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
-        remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
-        remote_firewall_config = remote_config[:FirewallService]
-
-        differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
-        diff_output = differ.diff
-
-        expect(diff_output).to eq([])
-      end
-
-      it "should highlight a difference if local firewall config has been updated" do
-        input_config_file = generate_input_config_file('firewall_config_updated_rule.yaml.erb', edge_gateway_erb_input)
-
-        local_config = ConfigLoader.new.load_config(input_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
-        local_firewall_config = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(local_config[:firewall_service])
-
-        edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
-        remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
-        remote_firewall_config = remote_config[:FirewallService]
-
-        differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
-        diff_output = differ.diff
-
-        expect(diff_output.empty?).to be_false
-      end
 
       after(:all) do
         reset_edge_gateway unless ENV['VCLOUD_NO_RESET_VSE_AFTER']
