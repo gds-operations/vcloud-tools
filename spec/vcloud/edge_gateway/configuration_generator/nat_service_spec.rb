@@ -16,7 +16,6 @@ module Vcloud
                     enabled: 'false',
                     id: '999',
                     rule_type: 'DNAT',
-                    description: "a dnat rule",
                     network: "ane012345",
                     original_ip: "192.0.2.2",
                     original_port: '22',
@@ -30,7 +29,6 @@ module Vcloud
                 :IsEnabled => 'true',
                 :NatRule => [
                   {
-                    :Description => 'a dnat rule',
                     :RuleType => 'DNAT',
                     :IsEnabled => 'false',
                     :Id => '999',
@@ -58,7 +56,6 @@ module Vcloud
                   {
                     enabled: 'false',
                     rule_type: 'DNAT',
-                    description: "a dnat rule",
                     network: "ane012345",
                     original_ip: "192.0.2.2",
                     original_port: '22',
@@ -72,7 +69,6 @@ module Vcloud
                 :IsEnabled => 'true',
                 :NatRule => [
                   {
-                    :Description => 'a dnat rule',
                     :RuleType => 'DNAT',
                     :IsEnabled => 'false',
                     :Id => '65537',
@@ -110,7 +106,6 @@ module Vcloud
                 :IsEnabled => 'true',
                 :NatRule => [
                   {
-                    :Description => '',
                     :RuleType => 'DNAT',
                     :IsEnabled => 'true',
                     :Id => '65537',

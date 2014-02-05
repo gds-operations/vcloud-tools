@@ -8,19 +8,44 @@ module Vcloud
       @config_loader = Vcloud::ConfigLoader.new
     end
 
+    def self.edge_gateway_services
+      [
+        :FirewallService,
+        :NatService,
+      ]
+    end
+
     def update(config_file = nil, options = {})
       config = translate_yaml_input(config_file)
       edge_gateway = Core::EdgeGateway.get_by_name config[:gateway]
-
-      edge_gateway.update_configuration config
+      diff_output = diff(config_file)
+      skipped_service_count = 0
+      EdgeGatewayServices.edge_gateway_services.each do |service|
+        # Skip services whose configuration has not changed, or that
+        # are not specified in our source configuration.
+        if diff_output[service].empty? or not config.key?(service)
+          skipped_service_count += 1
+          config.delete(service)
+        end
+      end
+      if skipped_service_count == EdgeGatewayServices.edge_gateway_services.size
+        Vcloud.logger.info("EdgeGatewayServices.update: Configuration is already up to date. Skipping.")
+      else
+        edge_gateway.update_configuration config
+      end
     end
 
     def diff(config_file)
       local_config = translate_yaml_input config_file
       edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
-      remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
-      return [] if local_config[:FirewallService] == remote_config
-      HashDiff.diff(local_config[:FirewallService], remote_config)
+      remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
+      diff = {}
+      EdgeGatewayServices.edge_gateway_services.each do |service|
+        local = local_config[service]
+        remote = remote_config[service]
+        diff[service] = ( local == remote ) ? [] : HashDiff.diff(local, remote)
+      end
+      diff
     end
 
     private
@@ -28,13 +53,11 @@ module Vcloud
       config = @config_loader.load_config(config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
       nat_service_config = EdgeGateway::ConfigurationGenerator::NatService.new(config[:gateway], config[:nat_service]).generate_fog_config
       firewall_service_config = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(config[:firewall_service])
-      {
-        :gateway => config[:gateway],
-        :FirewallService => firewall_service_config,
-        :NatService => nat_service_config
-      }
+      out = { gateway: config[:gateway] }
+      out[:FirewallService] = firewall_service_config unless firewall_service_config.nil?
+      out[:NatService] = nat_service_config unless nat_service_config.nil?
+      out
     end
 
   end
 end
-

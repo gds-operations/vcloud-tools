@@ -3,7 +3,6 @@ gateway: <%= edge_gateway_name %>
 nat_service:
   nat_rules:
   - enabled: true
-    description: 'A DNAT rule'
     network_id: <%= network_id %>
     rule_type: 'DNAT'
     translated_ip: '10.10.1.2-10.10.1.3'
