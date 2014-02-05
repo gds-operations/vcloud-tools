@@ -123,7 +123,7 @@ module Vcloud
         expect(diff_output).to eq([])
       end
 
-      it "return show diff if local firewall config has different ip and port " do
+      it "should highlight a difference if local firewall config has been updated" do
         input_config_file = generate_input_config_file('firewall_config_updated_rule.yaml.erb', edge_gateway_erb_input)
 
         edge_gateway_service = EdgeGatewayServices.new
@@ -137,7 +137,7 @@ module Vcloud
         differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
         diff_output = differ.diff
 
-        expect(diff_output.size).to eq(3)
+        expect(diff_output.empty?).to be_false
       end
 
       it "and then should configure NatService" do
