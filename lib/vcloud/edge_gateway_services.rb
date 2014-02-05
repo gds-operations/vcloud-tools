@@ -43,7 +43,8 @@ module Vcloud
       EdgeGatewayServices.edge_gateway_services.each do |service|
         local = local_config[service]
         remote = remote_config[service]
-        diff[service] = ( local == remote ) ? [] : HashDiff.diff(local, remote)
+        differ = EdgeGateway::ConfigurationDiffer.new(local, remote)
+        diff[service] = differ.diff
       end
       diff
     end
