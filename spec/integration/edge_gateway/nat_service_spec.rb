@@ -32,7 +32,7 @@ module Vcloud
       @files_to_delete = []
     end
 
-    context "#configure_edge_gateway_services" do
+    context "Test NatService specifics of EdgeGatewayServices" do
 
       before(:all) do
         reset_edge_gateway
@@ -46,8 +46,22 @@ module Vcloud
         @edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
       end
 
-      it "and then should configure NatService" do
-        expect(EdgeGatewayServices.new.update(@initial_nat_config_file)).to be_true
+      context "Check update is functional" do
+
+        it "should configure NatService" do
+          expect(EdgeGatewayServices.new.update(@initial_nat_config_file)).to be_true
+        end
+
+        #it "and then should not configure the NAT service if updated again with the same configuration (idempotency)" do
+        #  expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
+        #  EdgeGatewayServices.new.update(@initial_nat_config_file)
+        #end
+
+        #it "and so NatService diff should return empty if both configs match" do
+        #  diff_output = EdgeGatewayServices.new.diff(@initial_nat_config_file)
+        #  expect(diff_output[:NatService]).to eq([])
+        #end
+
       end
 
       context "ensure updated EdgeGateway NatService configuration is as expected" do
@@ -81,16 +95,6 @@ module Vcloud
         end
 
       end
-
-      #it "and then should not configure the NAT service if updated again with the same configuration (idempotency)" do
-      #  expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
-      #  EdgeGatewayServices.new.update(@initial_nat_config_file)
-      #end
-
-      #it "and so NatService diff should return empty if both configs match" do
-      #  diff_output = EdgeGatewayServices.new.diff(@initial_nat_config_file)
-      #  expect(diff_output[:NatService]).to eq([])
-      #end
 
       context "ensure hairpin NAT rules are specifiable" do
 
@@ -138,53 +142,44 @@ module Vcloud
 
       after(:all) do
         reset_edge_gateway unless ENV['VCLOUD_NO_RESET_VSE_AFTER']
+        remove_temp_config_files
       end
 
-    end
+      def remove_temp_config_files
+        FileUtils.rm(@files_to_delete)
+      end
 
-    after(:all) do
-      remove_temp_config_files
-    end
+      def reset_edge_gateway
+        edge_gateway = Core::EdgeGateway.get_by_name @edge_name
+        edge_gateway.update_configuration({
+          NatService: {:IsEnabled => "true", :NatRule => []},
+        })
+      end
 
-    def remove_temp_config_files
-      FileUtils.rm(@files_to_delete)
-    end
+      def generate_input_config_file(data_file, erb_input)
+        config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
+        generate_input_yaml_config(erb_input, config_erb)
+      end
 
-    def reset_edge_gateway
-      edge_gateway = Core::EdgeGateway.get_by_name @edge_name
-      edge_gateway.update_configuration({
-                                          FirewallService: {IsEnabled: false, FirewallRule: []},
-                                          NatService: {:IsEnabled => "true", :NatRule => []},
-                                          LoadBalancerService: {
-                                            IsEnabled: "false",
-                                            Pool: [],
-                                            VirtualServer: []
-                                          }
-                                        })
-    end
+      def generate_input_yaml_config test_namespace, input_erb_config
+        e = ERB.new(File.open(input_erb_config).read)
+        basename = File.basename(input_erb_config).gsub(/\.erb$/, '')
+        output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{basename}_#{Time.now.strftime('%s.%6N')}.yaml")
+        File.open(output_yaml_config, 'w') { |f|
+          f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
+        }
+        @files_to_delete << output_yaml_config
+        output_yaml_config
+      end
 
-    def generate_input_config_file(data_file, erb_input)
-      config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
-      generate_input_yaml_config(erb_input, config_erb)
-    end
+      def edge_gateway_erb_input
+        {
+          :edge_gateway_name => @edge_name,
+          :edge_gateway_ext_network_id => @ext_net_id,
+          :edge_gateway_ext_network_ip => @ext_net_ip,
+        }
+      end
 
-    def generate_input_yaml_config test_namespace, input_erb_config
-      e = ERB.new(File.open(input_erb_config).read)
-      basename = File.basename(input_erb_config).gsub(/\.erb$/, '')
-      output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{basename}_#{Time.now.strftime('%s.%6N')}.yaml")
-      File.open(output_yaml_config, 'w') { |f|
-        f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
-      }
-      @files_to_delete << output_yaml_config
-      output_yaml_config
-    end
-
-    def edge_gateway_erb_input
-      {
-        :edge_gateway_name => @edge_name,
-        :edge_gateway_ext_network_id => @ext_net_id,
-        :edge_gateway_ext_network_ip => @ext_net_ip,
-      }
     end
 
   end
