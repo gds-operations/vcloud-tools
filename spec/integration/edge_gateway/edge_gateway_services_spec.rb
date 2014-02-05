@@ -41,45 +41,42 @@ module Vcloud
 
       after(:all) do
         reset_edge_gateway unless ENV['VCLOUD_NO_RESET_VSE_AFTER']
+        remove_temp_config_files
       end
 
-    end
+      def remove_temp_config_files
+        FileUtils.rm(@files_to_delete)
+      end
 
-    after(:all) do
-      remove_temp_config_files
-    end
+      def reset_edge_gateway
+        edge_gateway = Core::EdgeGateway.get_by_name @edge_name
+        edge_gateway.update_configuration({
+                                            FirewallService: {IsEnabled: false, FirewallRule: []},
+                                            NatService: {:IsEnabled => "true", :NatRule => []},
+                                            LoadBalancerService: {
+                                              IsEnabled: "false",
+                                              Pool: [],
+                                              VirtualServer: []
+                                            }
+                                          })
+      end
 
-    def remove_temp_config_files
-      FileUtils.rm(@files_to_delete)
-    end
+      def generate_input_config_file(data_file, erb_input)
+        config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
+        generate_input_yaml_config(erb_input, config_erb)
+      end
 
-    def reset_edge_gateway
-      edge_gateway = Core::EdgeGateway.get_by_name @edge_name
-      edge_gateway.update_configuration({
-                                          FirewallService: {IsEnabled: false, FirewallRule: []},
-                                          NatService: {:IsEnabled => "true", :NatRule => []},
-                                          LoadBalancerService: {
-                                            IsEnabled: "false",
-                                            Pool: [],
-                                            VirtualServer: []
-                                          }
-                                        })
-    end
+      def generate_input_yaml_config test_namespace, input_erb_config
+        e = ERB.new(File.open(input_erb_config).read)
+        basename = File.basename(input_erb_config).gsub(/\.erb$/, '')
+        output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{basename}_#{Time.now.strftime('%s.%6N')}.yaml")
+        File.open(output_yaml_config, 'w') { |f|
+          f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
+        }
+        @files_to_delete << output_yaml_config
+        output_yaml_config
+      end
 
-    def generate_input_config_file(data_file, erb_input)
-      config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
-      generate_input_yaml_config(erb_input, config_erb)
-    end
-
-    def generate_input_yaml_config test_namespace, input_erb_config
-      e = ERB.new(File.open(input_erb_config).read)
-      basename = File.basename(input_erb_config).gsub(/\.erb$/, '')
-      output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{basename}_#{Time.now.strftime('%s.%6N')}.yaml")
-      File.open(output_yaml_config, 'w') { |f|
-        f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
-      }
-      @files_to_delete << output_yaml_config
-      output_yaml_config
     end
 
   end
