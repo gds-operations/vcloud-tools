@@ -18,7 +18,15 @@ module Vcloud
     def update(config_file = nil, options = {})
       config = translate_yaml_input(config_file)
       edge_gateway = Core::EdgeGateway.get_by_name config[:gateway]
-      diff_output = diff(config_file)
+      remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
+      diff_output = {}
+      EdgeGatewayServices.edge_gateway_services.each do |service|
+        local = config[service]
+        remote = remote_config[service]
+        differ = EdgeGateway::ConfigurationDiffer.new(local, remote)
+        diff_output[service] = differ.diff
+      end
+
       skipped_service_count = 0
       EdgeGatewayServices.edge_gateway_services.each do |service|
         # Skip services whose configuration has not changed, or that
