@@ -20,22 +20,20 @@ module Vcloud
       edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
       remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
       diff_output = {}
+
+      skipped_service_count = 0
       EdgeGatewayServices.edge_gateway_services.each do |service|
         local = local_config[service]
         remote = remote_config[service]
         differ = EdgeGateway::ConfigurationDiffer.new(local, remote)
         diff_output[service] = differ.diff
-      end
 
-      skipped_service_count = 0
-      EdgeGatewayServices.edge_gateway_services.each do |service|
-        # Skip services whose configuration has not changed, or that
-        # are not specified in our source configuration.
         if diff_output[service].empty? or not local_config.key?(service)
           skipped_service_count += 1
           local_config.delete(service)
         end
       end
+
       if skipped_service_count == EdgeGatewayServices.edge_gateway_services.size
         Vcloud.logger.info("EdgeGatewayServices.update: Configuration is already up to date. Skipping.")
       else
