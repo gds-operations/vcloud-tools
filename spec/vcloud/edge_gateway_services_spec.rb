@@ -31,7 +31,6 @@ module Vcloud
 
     context "Object public interface" do
       subject { EdgeGatewayServices.new() }
-      it { should respond_to(:diff) }
       it { should respond_to(:update) }
     end
 
