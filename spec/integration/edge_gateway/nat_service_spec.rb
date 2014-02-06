@@ -48,8 +48,24 @@ module Vcloud
 
       context "Check update is functional" do
 
-        it "should configure NatService" do
-          expect(EdgeGatewayServices.new.update(@initial_nat_config_file)).to be_true
+        before(:all) do
+          local_config = ConfigLoader.new.load_config(@initial_nat_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
+          @local_vcloud_config  = EdgeGateway::ConfigurationGenerator::NatService.new(@edge_name, local_config[:nat_service]).generate_fog_config
+        end
+
+        it "should be starting our tests from an empty NatService" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
+          expect(remote_vcloud_config[:NatRule].empty?).to be_true
+        end
+
+        it "should only need to make one call to Core::EdgeGateway.update_configuration" do
+          expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
+          EdgeGatewayServices.new.update(@initial_nat_config_file)
+        end
+
+        it "should have configured at least one NAT rule" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
+          expect(remote_vcloud_config[:NatRule].empty?).to be_false
         end
 
         #it "and then should not configure the NAT service if updated again with the same configuration (idempotency)" do
