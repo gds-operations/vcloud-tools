@@ -156,10 +156,6 @@ module Vcloud
 
       after(:all) do
         reset_edge_gateway unless ENV['VCLOUD_NO_RESET_VSE_AFTER']
-        remove_temp_config_files
-      end
-
-      def remove_temp_config_files
         FileUtils.rm(@files_to_delete)
       end
 
