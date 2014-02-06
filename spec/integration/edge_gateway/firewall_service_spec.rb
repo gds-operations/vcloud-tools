@@ -53,9 +53,30 @@ module Vcloud
 
       context "Check update is functional" do
 
+        before(:all) do
+          local_config = ConfigLoader.new.load_config(@initial_firewall_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
+          @local_vcloud_config  = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(local_config[:firewall_service])
+        end
+
+        it "should be starting our tests from an empty firewall" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
+          expect(remote_vcloud_config[:FirewallRule].empty?).to be_true
+        end
+
         it "should only need to make one call to Core::EdgeGateway.update_configuration" do
           expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
           EdgeGatewayServices.new.update(@initial_firewall_config_file)
+        end
+
+        it "should have configured at least one firewall rule" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
+          expect(remote_vcloud_config[:FirewallRule].empty?).to be_false
+        end
+
+        it "should have configured the same number of firewall rules as in our configuration" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
+          expect(remote_vcloud_config[:FirewallRule].size).
+            to eq(@local_vcloud_config[:FirewallRule].size)
         end
 
         it "and then should not configure the firewall service if updated again with the same configuration (idempotency)" do
