@@ -84,7 +84,7 @@ module Vcloud
           EdgeGatewayServices.new.update(@initial_firewall_config_file)
         end
 
-        it "and so diff should return empty if local and remote firewall configs match" do
+        it "ConfigurationDiffer should return empty if local and remote firewall configs match" do
           remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
           differ = EdgeGateway::ConfigurationDiffer.new(@local_vcloud_config, remote_vcloud_config)
           diff_output = differ.diff
