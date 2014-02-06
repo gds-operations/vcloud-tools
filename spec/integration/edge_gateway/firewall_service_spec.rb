@@ -114,11 +114,6 @@ module Vcloud
           @firewall_service = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
         end
 
-        it "should configure multiple firewall rules" do
-          expect(@firewall_service.key?(:FirewallRule)).to be_true
-          expect(@firewall_service[:FirewallRule].count).to eq(2)
-        end
-
         it "should configure firewall rule with destination and source ip addresses" do
           expect(@firewall_service[:FirewallRule].first).to eq({:Id => "1",
                                                                 :IsEnabled => "true",
