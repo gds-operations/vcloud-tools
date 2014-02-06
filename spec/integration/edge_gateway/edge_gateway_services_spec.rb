@@ -32,11 +32,37 @@ module Vcloud
       @files_to_delete = []
     end
 
-    context "#configure_edge_gateway_services" do
+    context "Test EdgeGatewayServices with multiple services" do
 
       before(:all) do
         reset_edge_gateway
+        @initial_config_file = generate_input_config_file('nat_and_firewall_config.yaml.erb', edge_gateway_erb_input)
         @edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(@edge_name)
+      end
+
+      context "Check update is functional" do
+
+        before(:all) do
+          local_config = ConfigLoader.new.load_config(@initial_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
+        end
+
+        it "should be starting our tests from an empty EdgeGateway" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
+          expect(remote_vcloud_config[:FirewallService][:FirewallRule].empty?).to be_true
+          expect(remote_vcloud_config[:NatService][:NatRule].empty?).to be_true
+        end
+
+        it "should only need to make one call to Core::EdgeGateway.update_configuration" do
+          expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
+          EdgeGatewayServices.new.update(@initial_config_file)
+        end
+
+        it "should now have nat and firewall rules configured" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
+          expect(remote_vcloud_config[:FirewallService][:FirewallRule].empty?).to be_false
+          expect(remote_vcloud_config[:NatService][:NatRule].empty?).to be_false
+        end
+
       end
 
       after(:all) do
@@ -75,6 +101,14 @@ module Vcloud
         }
         @files_to_delete << output_yaml_config
         output_yaml_config
+      end
+
+      def edge_gateway_erb_input
+        {
+          edge_gateway_name: @edge_name,
+          network_id: @ext_net_id,
+          original_ip: @ext_net_ip,
+        }
       end
 
     end
