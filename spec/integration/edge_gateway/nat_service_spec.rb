@@ -81,10 +81,10 @@ module Vcloud
           expect(diff_output).to eq([])
         end
 
-        #it "and then should not configure the firewall service if updated again with the same configuration (idempotency)" do
-        #  expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
-        #  EdgeGatewayServices.new.update(@initial_nat_config_file)
-        #end
+        it "and then should not configure the firewall service if updated again with the same configuration (idempotency)" do
+          expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
+          EdgeGatewayServices.new.update(@initial_nat_config_file)
+        end
 
       end
 
@@ -146,11 +146,6 @@ module Vcloud
           expect(expected_rule[:GatewayNatRule][:TranslatedPort]).to eq('3412')
           expect(expected_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
         end
-
-        #it "and then NatService diff should highlight a difference" do
-        #  diff_output = EdgeGatewayServices.new.diff(@initial_nat_config_file)
-        #  expect(diff_output[:NatService].size).to eq(2)
-        #end
 
         it "should raise error if network provided in rule does not exist" do
           random_network_id = SecureRandom.uuid
