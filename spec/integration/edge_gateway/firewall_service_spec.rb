@@ -53,9 +53,9 @@ module Vcloud
 
       context "Check update is functional" do
 
-        it "should configure an initial firewall service" do
+        it "should only need to make one call to Core::EdgeGateway.update_configuration" do
           expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
-          expect(EdgeGatewayServices.new.update(@initial_firewall_config_file)).to be_true
+          EdgeGatewayServices.new.update(@initial_firewall_config_file)
         end
 
         it "and then should not configure the firewall service if updated again with the same configuration (idempotency)" do
