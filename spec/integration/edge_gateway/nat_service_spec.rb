@@ -68,6 +68,12 @@ module Vcloud
           expect(remote_vcloud_config[:NatRule].empty?).to be_false
         end
 
+        it "should have configured the same number of nat rules as in our configuration" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
+          expect(remote_vcloud_config[:NatRule].size).
+            to eq(@local_vcloud_config[:NatRule].size)
+        end
+
         #it "and then should not configure the NAT service if updated again with the same configuration (idempotency)" do
         #  expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
         #  EdgeGatewayServices.new.update(@initial_nat_config_file)
