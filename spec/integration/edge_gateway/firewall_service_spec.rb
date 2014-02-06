@@ -85,16 +85,9 @@ module Vcloud
         end
 
         it "and so diff should return empty if local and remote firewall configs match" do
-          local_config = ConfigLoader.new.load_config(@initial_firewall_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
-          local_firewall_config = EdgeGateway::ConfigurationGenerator::FirewallService.new.generate_fog_config(local_config[:firewall_service])
-
-          edge_gateway = Core::EdgeGateway.get_by_name local_config[:gateway]
-          remote_config = edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
-          remote_firewall_config = remote_config[:FirewallService]
-
-          differ = EdgeGateway::ConfigurationDiffer.new(local_firewall_config, remote_firewall_config)
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService]
+          differ = EdgeGateway::ConfigurationDiffer.new(@local_vcloud_config, remote_vcloud_config)
           diff_output = differ.diff
-
           expect(diff_output).to eq([])
         end
 
