@@ -148,6 +148,25 @@ module Vcloud
 
       end
 
+      context "Specific FirewallService update tests" do
+
+        it "should have the same rule order as the input rule order" do
+          input_config_file = generate_input_config_file('firewall_rule_order_test.yaml.erb', edge_gateway_erb_input)
+          EdgeGatewayServices.new.update(input_config_file)
+          remote_rules = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService][:FirewallRule]
+          remote_descriptions_list = remote_rules.map {|rule| rule[:Description]}
+          expect(remote_descriptions_list).
+            to eq([
+              "First Input Rule",
+              "Second Input Rule",
+              "Third Input Rule",
+              "Fourth Input Rule",
+              "Fifth Input Rule"
+              ])
+        end
+
+      end
+
 
       after(:all) do
         reset_edge_gateway unless ENV['VCLOUD_NO_RESET_VSE_AFTER']
