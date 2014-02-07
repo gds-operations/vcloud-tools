@@ -89,18 +89,7 @@ module Vcloud
 
       def generate_input_config_file(data_file, erb_input)
         config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
-        generate_input_yaml_config(erb_input, config_erb)
-      end
-
-      def generate_input_yaml_config test_namespace, input_erb_config
-        e = ERB.new(File.open(input_erb_config).read)
-        basename = File.basename(input_erb_config).gsub(/\.erb$/, '')
-        output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{basename}_#{Time.now.strftime('%s.%6N')}.yaml")
-        File.open(output_yaml_config, 'w') { |f|
-          f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
-        }
-        @files_to_delete << output_yaml_config
-        output_yaml_config
+        ErbHelper.generate_input_yaml_config(erb_input, config_erb)
       end
 
       def edge_gateway_erb_input
