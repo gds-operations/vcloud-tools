@@ -8,7 +8,7 @@ describe Vcloud::Launch do
     it "should provision vapp with single vm" do
       test_data_1 = define_test_data
       minimum_data_erb = File.join(File.dirname(__FILE__), 'data/minimum_data_setup.yaml.erb')
-      @minimum_data_yaml = ErbHelper.generate_input_yaml_config(test_data_1, minimum_data_erb)
+      @minimum_data_yaml = ErbHelper.convert_erb_template_to_yaml(test_data_1, minimum_data_erb)
       @fog_interface = Vcloud::Fog::ServiceInterface.new
 
       Vcloud::Launch.new.run(@minimum_data_yaml, {"dont-power-on" => true})
@@ -33,7 +33,7 @@ describe Vcloud::Launch do
   context "happy path" do
     before(:all) do
       @test_data = define_test_data
-      @config_yaml = ErbHelper.generate_input_yaml_config(@test_data, File.join(File.dirname(__FILE__), 'data/happy_path.yaml.erb'))
+      @config_yaml = ErbHelper.convert_erb_template_to_yaml(@test_data, File.join(File.dirname(__FILE__), 'data/happy_path.yaml.erb'))
       @fog_interface = Vcloud::Fog::ServiceInterface.new
       Vcloud::Launch.new.run(@config_yaml, { "dont-power-on" => true })
 

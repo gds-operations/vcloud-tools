@@ -182,7 +182,7 @@ module Vcloud
 
       def generate_input_config_file(data_file, erb_input)
         config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
-        ErbHelper.generate_input_yaml_config(erb_input, config_erb)
+        ErbHelper.convert_erb_template_to_yaml(erb_input, config_erb)
       end
 
       def edge_gateway_erb_input
