@@ -5,7 +5,7 @@ module Vcloud
   describe EdgeGatewayServices do
 
     before(:each) do
-      edge_gateway_services = EdgeGatewayServices.edge_gateway_services
+      edge_gateway_services = [:FirewallService, :NatService]
       @mock_no_diff_output = {}
       @parsed_config = {
         gateway: 'TestGateway',
@@ -32,11 +32,6 @@ module Vcloud
     context "Object public interface" do
       subject { EdgeGatewayServices.new() }
       it { should respond_to(:update) }
-    end
-
-    context "Class public interface" do
-      subject { EdgeGatewayServices }
-      it { should respond_to(:edge_gateway_services) }
     end
 
     context "#update" do

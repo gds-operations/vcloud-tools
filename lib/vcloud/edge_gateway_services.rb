@@ -8,13 +8,6 @@ module Vcloud
       @config_loader = Vcloud::ConfigLoader.new
     end
 
-    def self.edge_gateway_services
-      [
-        :FirewallService,
-        :NatService,
-      ]
-    end
-
     def update(config_file = nil, options = {})
       config = @config_loader.load_config(config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
       local_config = { gateway: config[:gateway] }
