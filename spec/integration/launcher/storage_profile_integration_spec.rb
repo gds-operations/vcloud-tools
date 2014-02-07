@@ -4,7 +4,7 @@ describe Vcloud::Launch do
   context "storage profile", :take_too_long => true do
     before(:all) do
       @test_data = define_test_data
-      @config_yaml = generate_input_yaml_config(@test_data, File.join(File.dirname(__FILE__), 'data/storage_profile.yaml.erb'))
+      @config_yaml = ErbHelper.convert_erb_template_to_yaml(@test_data, File.join(File.dirname(__FILE__), 'data/storage_profile.yaml.erb'))
       @fog_interface = Vcloud::Fog::ServiceInterface.new
       Vcloud::Launch.new.run(@config_yaml, {'dont-power-on' => true})
 
@@ -80,16 +80,6 @@ describe Vcloud::Launch do
 
   end
 
-end
-
-def generate_input_yaml_config test_namespace, input_erb_config
-  input_erb_config = input_erb_config
-  e = ERB.new(File.open(input_erb_config).read)
-  output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{Time.now.strftime('%s')}.yaml")
-  File.open(output_yaml_config, 'w') { |f|
-    f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
-  }
-  output_yaml_config
 end
 
 def define_test_data
