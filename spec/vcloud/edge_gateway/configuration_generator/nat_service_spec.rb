@@ -115,7 +115,7 @@ module Vcloud
 
           test_cases = [
             {
-              title: 'should generate config for enabled nat service with single disabled rule',
+              title: 'should generate config for enabled nat service with single disabled DNAT rule',
               input: {
                 enabled: 'true',
                 nat_rules: [
@@ -155,6 +155,42 @@ module Vcloud
                 ]
               }
             },
+
+            {
+              title: 'should generate config for enabled nat service with single disabled SNAT rule',
+              input: {
+                enabled: 'true',
+                nat_rules: [
+                  {
+                    enabled: 'false',
+                    rule_type: 'SNAT',
+                    network: "ane012345",
+                    original_ip: "192.0.2.2",
+                    translated_ip: "10.10.20.20",
+                  }
+                ]
+              },
+              output: {
+                :IsEnabled => 'true',
+                :NatRule => [
+                  {
+                    :RuleType => 'SNAT',
+                    :IsEnabled => 'false',
+                    :Id => '65537',
+                    :GatewayNatRule => {
+                      :Interface =>
+                        {
+                          :name => 'ane012345',
+                          :href => 'https://vmware.api.net/api/admin/network/2ad93597-7b54-43dd-9eb1-631dd337e5a7'
+                        },
+                      :OriginalIp => "192.0.2.2",
+                      :TranslatedIp => "10.10.20.20",
+                    }
+                  }
+                ]
+              }
+            },
+
             {
               title: 'should auto generate rule id if not provided',
               input: {
@@ -195,6 +231,7 @@ module Vcloud
                 ]
               }
             },
+
             {
               title: 'should use default values for optional fields if they are missing',
               input: {
