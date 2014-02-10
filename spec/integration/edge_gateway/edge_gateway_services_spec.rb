@@ -52,15 +52,39 @@ module Vcloud
           expect(remote_vcloud_config[:NatService][:NatRule].empty?).to be_true
         end
 
-        it "should only need to make one call to Core::EdgeGateway.update_configuration" do
+        it "should only need to make one call to Core::EdgeGateway.update_configuration to update configuration" do
+          q = Query.new('edgeGateway', :filter => "name==#{@edge_name}")
+          result = q.get_all_results
+          latest_task = result.first[:task]
+
           expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
           EdgeGatewayServices.new.update(@initial_config_file)
+
+          test_result = q.get_all_results
+          test_latest_task = test_result.first[:task]
+
+          # confirm that a task has been run on the EdgeGateway
+          expect(latest_task == test_latest_task).to be_false
         end
 
         it "should now have nat and firewall rules configured" do
           remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
           expect(remote_vcloud_config[:FirewallService][:FirewallRule].empty?).to be_false
           expect(remote_vcloud_config[:NatService][:NatRule].empty?).to be_false
+        end
+
+        it "should not update the EdgeGateway again if the config hasn't changed" do
+          q = Query.new('edgeGateway', :filter => "name==#{@edge_name}")
+          result = q.get_all_results
+          latest_task = result.first[:task]
+
+          EdgeGatewayServices.new.update(@initial_config_file)
+
+          test_result = q.get_all_results
+          test_latest_task = result.first[:task]
+
+          # No task has been run on the EdgeGateway since the one before update was called
+          expect(latest_task == test_latest_task).to be_true
         end
 
       end
