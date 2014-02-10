@@ -100,6 +100,91 @@ module Vcloud
 
         end
 
+        context "Pool entry defaults" do
+
+          before(:each) do
+            input = { pools: [{
+              name: "pool-1",
+              members: [ { ip_address: '10.10.10.10' } ],
+            }]} # minimum configuration for a pool
+            output = LoadBalancerService.new(@edge_gw_name).generate_fog_config(input)
+            @rule = output[:Pool].first
+          end
+
+          it 'should default to description being empty' do
+            expect(@rule[:Description]).to eq('')
+          end
+
+          it 'should match our expected complete entry' do
+            expect(@rule).to eq({
+              :Name=>"pool-1",
+              :Description=>"",
+              :ServicePort=>[
+                {
+                  :IsEnabled=>"false",
+                  :Protocol=>"HTTP",
+                  :Algorithm=>"ROUND_ROBIN",
+                  :Port=>"",
+                  :HealthCheckPort=>"",
+                  :HealthCheck=>{
+                    :Mode=>"HTTP",
+                    :Uri=>"",
+                    :HealthThreshold=>"2",
+                    :UnhealthThreshold=>"3",
+                    :Interval=>"5",
+                    :Timeout=>"15"
+                  }
+                },
+                {
+                  :IsEnabled=>"false",
+                  :Protocol=>"HTTPS",
+                  :Algorithm=>"ROUND_ROBIN",
+                  :Port=>"",
+                  :HealthCheckPort=>"",
+                  :HealthCheck=>{
+                    :Mode=>"SSL",
+                    :Uri=>"",
+                    :HealthThreshold=>"2",
+                    :UnhealthThreshold=>"3",
+                    :Interval=>"5",
+                    :Timeout=>"15"
+                  }
+                },
+                {
+                  :IsEnabled=>"false",
+                  :Protocol=>"TCP",
+                  :Algorithm=>"ROUND_ROBIN",
+                  :Port=>"",
+                  :HealthCheckPort=>"",
+                  :HealthCheck=>{
+                    :Mode=>"TCP",
+                    :Uri=>"",
+                    :HealthThreshold=>"2",
+                    :UnhealthThreshold=>"3",
+                    :Interval=>"5",
+                    :Timeout=>"15"
+                  }
+                }],
+              :Member=>[
+                {
+                  :IpAddress=>"10.10.10.10",
+                  :Weight=>"1",
+                  :ServicePort=>[
+                    {:Protocol=>"HTTP",
+                     :Port=>"",
+                     :HealthCheckPort=>""},
+                    {:Protocol=>"HTTPS",
+                     :Port=>"",
+                     :HealthCheckPort=>""},
+                    {:Protocol=>"TCP",
+                      :Port=>"",
+                      :HealthCheckPort=>""}
+                  ]
+                }
+              ]
+            })
+          end
+        end
 
         test_cases = [
           {
