@@ -37,6 +37,29 @@ module Vcloud
             expect(@rule[:IsEnabled]).to eq('true')
           end
 
+          it 'should have a RuleType of SNAT' do
+            expect(@rule[:RuleType]).to eq('SNAT')
+          end
+
+          it 'should not include a Protocol' do
+            expect(@rule[:GatewayNatRule].key?(:Protocol)).to be_false
+          end
+
+          it 'should completely match our expected default rule' do
+            expect(@rule).to eq({
+              :Id=>"65537",
+              :IsEnabled=>"true",
+              :RuleType=>"SNAT",
+              :GatewayNatRule=>{
+                :Interface=>{
+                  :name=>"ane012345",
+                  :href=>"https://vmware.api.net/api/admin/network/2ad93597-7b54-43dd-9eb1-631dd337e5a7"
+                },
+              :OriginalIp=>"192.0.2.2",
+              :TranslatedIp=>"10.10.20.20"}
+            })
+          end
+
         end
 
         context "DNAT rule defaults" do
@@ -57,6 +80,33 @@ module Vcloud
 
           it 'should default to rule being enabled' do
             expect(@rule[:IsEnabled]).to eq('true')
+          end
+
+          it 'should have a RuleType of DNAT' do
+            expect(@rule[:RuleType]).to eq('DNAT')
+          end
+
+          it 'should include a default Protocol of tcp' do
+            expect(@rule[:GatewayNatRule][:Protocol]).to eq('tcp')
+          end
+
+          it 'should completely match our expected default rule' do
+            expect(@rule).to eq({
+              :Id=>"65537",
+              :IsEnabled=>"true",
+              :RuleType=>"DNAT",
+              :GatewayNatRule=>{
+                :Interface=>{
+                  :name=>"ane012345",
+                  :href=>"https://vmware.api.net/api/admin/network/2ad93597-7b54-43dd-9eb1-631dd337e5a7"
+                },
+                :OriginalIp=>"192.0.2.2",
+                :TranslatedIp=>"10.10.20.20",
+                :OriginalPort=>"22",
+                :TranslatedPort=>"22",
+                :Protocol=>"tcp"
+              }
+            })
           end
 
         end
