@@ -51,5 +51,28 @@ module Vcloud
 
       VmOrchestrator.new(fog_vm, vapp).customize(vm_config)
     end
+
+    it "if a storage_profile is not specified, customize continues with other customizations" do
+      fog_vm = { :href => "/#{@vm_id}" }
+      vapp = double(:vapp, :name => 'web-app1')
+      vm = double(:vm, :id => @vm_id, :vapp_name => 'web-app1', :vapp => vapp, :name => 'test-vm-1')
+      vm_config = {
+        :metadata => {:shutdown => true},
+        :network_connections => [{:name => "network1", :ip_address => "198.12.1.21"}],
+        :extra_disks => [
+          {:size => '1024', :name => 'Hard disk 2', :fs_file => 'mysql', :fs_mntops => 'mysql-something'},
+          {:size => '2048', :name => 'Hard disk 3', :fs_file => 'solr', :fs_mntops => 'solr-something'}
+        ]
+      }
+      Core::Vm.should_receive(:new).with(@vm_id, vapp).and_return(vm)
+      vm.should_receive(:update_metadata).with(:shutdown => true)
+      vm.should_receive(:update_name).with('web-app1')
+      vm.should_receive(:add_extra_disks).with(vm_config[:extra_disks])
+      vm.should_receive(:configure_network_interfaces).with(vm_config[:network_connections])
+      vm.should_receive(:configure_guest_customization_section).with('web-app1', vm_config[:bootstrap], vm_config[:extra_disks])
+
+      VmOrchestrator.new(fog_vm, vapp).customize(vm_config)
+
+    end
   end
 end
