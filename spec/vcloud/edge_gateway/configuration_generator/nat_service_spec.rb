@@ -157,6 +157,46 @@ module Vcloud
             },
 
             {
+              title: 'should handle specification of UDP based DNAT rules',
+              input: {
+                enabled: 'true',
+                nat_rules: [
+                  {
+                    rule_type: 'DNAT',
+                    network: "ane012345",
+                    original_ip: "192.0.2.25",
+                    original_port: '53',
+                    translated_port: '53',
+                    translated_ip: "10.10.20.25",
+                    protocol: 'udp',
+                  }
+                ]
+              },
+              output: {
+                :IsEnabled => 'true',
+                :NatRule => [
+                  {
+                    :RuleType => 'DNAT',
+                    :IsEnabled => 'true',
+                    :Id => '65537',
+                    :GatewayNatRule => {
+                      :Interface =>
+                        {
+                          :name => 'ane012345',
+                          :href => 'https://vmware.api.net/api/admin/network/2ad93597-7b54-43dd-9eb1-631dd337e5a7'
+                        },
+                      :Protocol => 'udp',
+                      :OriginalIp => "192.0.2.25",
+                      :OriginalPort => '53',
+                      :TranslatedIp => "10.10.20.25",
+                      :TranslatedPort => '53'
+                    }
+                  }
+                ]
+              }
+            },
+
+            {
               title: 'should generate config for enabled nat service with single disabled SNAT rule',
               input: {
                 enabled: 'true',
