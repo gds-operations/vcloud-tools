@@ -89,7 +89,9 @@ module Vcloud
 
       def generate_input_config_file(data_file, erb_input)
         config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
-        ErbHelper.convert_erb_template_to_yaml(erb_input, config_erb)
+        output_file = ErbHelper.convert_erb_template_to_yaml(erb_input, config_erb)
+        @files_to_delete << output_file
+        output_file
       end
 
       def edge_gateway_erb_input
