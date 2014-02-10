@@ -41,6 +41,66 @@ module Vcloud
 
         end
 
+        context "VirtualServer rule defaults" do
+
+          before(:each) do
+            input = { virtual_servers: [{
+              name: "virtual-server-1",
+              ip_address: '192.2.0.1',
+              network: "12345678-1234-1234-1234-123456789aa",
+              pool: "pool-1",
+            }]} # minimum configuration for a virtual_server
+            output = LoadBalancerService.new(@edge_gw_name).generate_fog_config(input)
+            @rule = output[:VirtualServer].first
+          end
+
+          it 'should default to rule being enabled' do
+            expect(@rule[:IsEnabled]).to eq('true')
+          end
+
+          it 'should default to description being empty' do
+            expect(@rule[:Description]).to eq('')
+          end
+
+          it 'should match our expected complete entry' do
+            expect(@rule).to eq({
+              :IsEnabled=>"true",
+              :Name=>"virtual-server-1",
+              :Description=>"",
+              :Interface=>{
+                :name=>"ExternalNetwork",
+                :href=>"https://example.com/api/admin/network/12345678-1234-1234-1234-123456789012",
+                :type=>"application/vnd.vmware.vcloud.orgVdcNetwork+xml"
+              },
+              :IpAddress=>"192.2.0.1",
+              :ServiceProfile=>[
+                {
+                  :IsEnabled=>"false",
+                  :Protocol=>"HTTP",
+                  :Port=>"",
+                  :Persistence=>{:Method=>""}
+                },
+                {
+                  :IsEnabled=>"false",
+                  :Protocol=>"HTTPS",
+                  :Port=>"",
+                  :Persistence=>{:Method=>""}
+                },
+                {
+                  :IsEnabled=>"false",
+                  :Protocol=>"TCP",
+                  :Port=>"",
+                  :Persistence=>{:Method=>""}
+                }
+              ],
+              :Logging=>"false",
+              :Pool=>"pool-1"
+            })
+          end
+
+        end
+
+
         test_cases = [
           {
             title: 'should expand out input config into Fog expected input',
