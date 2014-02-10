@@ -107,7 +107,8 @@ module Vcloud
           out[:Name] = attrs[:name]
           out[:Description] = attrs[:description] || ''
           out[:ServicePort] = sp_modes.map do |mode|
-            generate_pool_service_port(mode, attrs[:service][mode])
+            generate_pool_service_port(mode,
+              attrs.key?(:service) ? attrs[:service][mode] : nil)
           end
           if attrs.key?(:members)
             out[:Member] = []
