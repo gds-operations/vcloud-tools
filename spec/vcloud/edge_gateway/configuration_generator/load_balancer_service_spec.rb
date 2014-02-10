@@ -152,7 +152,22 @@ module Vcloud
 
         test_cases.each do |test_case|
           it "#{test_case[:title]}" do
-            generated_config = LoadBalancerService.new.generate_fog_config test_case[:input]
+            edge_gw_name = 'EdgeGateway1'
+            edge_gw_id = '1111111-7b54-43dd-9eb1-631dd337e5a7'
+            edge_gateway = double(:edge_gateway,
+              :vcloud_gateway_interface_by_id => {
+                Network: {
+                  :name => 'ExternalNetwork',
+                  :href => 'https://example.com/api/admin/network/12345678-1234-1234-1234-123456789012'
+                }
+              }
+            )
+            expect(Vcloud::Core::EdgeGateway).
+              to receive(:get_by_name).
+              with(edge_gw_name).
+              and_return(edge_gateway)
+            generated_config = LoadBalancerService.new(edge_gw_name).
+              generate_fog_config test_case[:input]
             expect(generated_config).to eq(test_case[:output])
           end
         end

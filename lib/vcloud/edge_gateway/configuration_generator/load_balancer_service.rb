@@ -5,6 +5,10 @@ module Vcloud
     module ConfigurationGenerator
       class LoadBalancerService
 
+        def initialize edge_gateway
+          @edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(edge_gateway)
+        end
+
         def generate_fog_config(input_config)
           return nil if input_config.nil?
           out = {}
@@ -42,16 +46,24 @@ module Vcloud
           out
         end
 
-        def generate_vs_interface_section(network_name)
+        def generate_vs_interface_section(network_id)
           out = {}
-          out[:name] = network_name
-          out[:href] = look_up_network_href(network_name)
+          out[:name] = look_up_network_name(network_id)
+          out[:href] = look_up_network_href(network_id)
           out[:type] = 'application/vnd.vmware.vcloud.orgVdcNetwork+xml'
           out
         end
 
-        def look_up_network_href(name)
-          'https://example.com/api/admin/network/12345678-1234-1234-1234-123456789012'
+        def look_up_network_name(network_id)
+          gateway_interface = @edge_gateway.vcloud_gateway_interface_by_id(network_id)
+          raise "Could not find network #{network_id}" unless gateway_interface
+          gateway_interface[:Network][:name]
+        end
+
+        def look_up_network_href(network_id)
+          gateway_interface = @edge_gateway.vcloud_gateway_interface_by_id(network_id)
+          raise "Could not find network #{network_id}" unless gateway_interface
+          gateway_interface[:Network][:href]
         end
 
         def generate_vs_service_profile_section(attrs)
