@@ -8,7 +8,7 @@ module Vcloud
       @config_loader = Vcloud::ConfigLoader.new
     end
 
-    def update(config_file = nil, options = {})
+    def update(config_file = nil)
       config = @config_loader.load_config(config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
       local_config = { gateway: config[:gateway] }
 
