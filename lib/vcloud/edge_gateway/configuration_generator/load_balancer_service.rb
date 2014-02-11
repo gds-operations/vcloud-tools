@@ -98,7 +98,9 @@ module Vcloud
 
         def generate_vs_persistence_section(protocol, attrs)
           attrs = {} if attrs.nil?
-          { Method: '' }
+          out = { Method: '' }
+          out[:Method] = attrs[:method] if attrs.key?(:method)
+          out
         end
 
         def generate_pool_entry(attrs)
