@@ -161,14 +161,16 @@ module Vcloud
           default_mode = ( protocol == :https ) ? 'SSL' : protocol.to_s.upcase
           out = {
             Mode: default_mode,
-            Uri: '',
-            HealthThreshold: '2',
-            UnhealthThreshold: '3',
-            Interval: '5',
-            Timeout: '15'
           }
+          out[:Uri] = '' if protocol == :http
+          out[:HealthThreshold] = '2'
+          out[:UnhealthThreshold] = '3'
+          out[:Interval] = '5'
+          out[:Timeout] = '15'
+
           if attrs
             out[:Mode] = attrs[:protocol] if attrs.key?(:protocol)
+            out[:Uri]  = attrs[:uri] if attrs.key?(:uri) and protocol == :http
             out[:HealthThreshold] = attrs[:health_threshold] if
                 attrs.key?(:health_threshold)
             out[:UnhealthThreshold] = attrs[:unhealth_threshold] if
