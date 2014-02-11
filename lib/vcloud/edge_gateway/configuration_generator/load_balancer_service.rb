@@ -149,7 +149,7 @@ module Vcloud
             out[:Algorithm] = attrs[:algorithm] if attrs.key?(:algorithm)
             out[:Port]      = attrs.key?(:port) ? attrs[:port].to_s : default_port(mode)
             if health_check = attrs[:health_check]
-              out[:HealthCheckPort] = health_check.key?(:port) ? health_check[:port] : ''
+              out[:HealthCheckPort] = health_check.key?(:port) ? health_check[:port].to_s : ''
               out[:HealthCheck] = generate_pool_healthcheck(mode, attrs[:health_check])
             end
           end
