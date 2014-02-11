@@ -111,14 +111,13 @@ module Vcloud
             @rule = output[:Pool].first
           end
 
-          it 'should default to description being empty' do
-            expect(@rule[:Description]).to eq('')
+          it 'should default to description being not set' do
+            expect(@rule.key?(:Description)).to be_false
           end
 
           it 'should match our expected complete entry' do
             expect(@rule).to eq({
               :Name=>"pool-1",
-              :Description=>"",
               :ServicePort=>[
                 {
                   :IsEnabled=>"false",

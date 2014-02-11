@@ -107,7 +107,7 @@ module Vcloud
           sp_modes = [ :http, :https, :tcp ]
           out = {}
           out[:Name] = attrs[:name]
-          out[:Description] = attrs[:description] || ''
+          out[:Description] = attrs[:description] if attrs.key?(:description)
           out[:ServicePort] = sp_modes.map do |mode|
             generate_pool_service_port(mode,
               attrs.key?(:service) ? attrs[:service][mode] : nil)
