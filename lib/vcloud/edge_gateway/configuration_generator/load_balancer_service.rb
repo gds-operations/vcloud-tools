@@ -124,7 +124,7 @@ module Vcloud
         def generate_pool_member_entry(attrs)
           {
             IpAddress: attrs[:ip_address],
-            Weight:    attrs[:weight] || '1',
+            Weight:    attrs.key?(:weight) ? attrs[:weight].to_s : '1',
             ServicePort: [
               { Protocol: 'HTTP',  Port: '', HealthCheckPort: '' },
               { Protocol: 'HTTPS', Port: '', HealthCheckPort: '' },
