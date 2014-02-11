@@ -162,6 +162,7 @@ module Vcloud
             Mode: default_mode,
           }
           out[:Uri] = '' if protocol == :http
+          out[:Uri] = '' if ( protocol == :https ) && attrs && ( attrs[:protocol] == 'TCP' )
           out[:HealthThreshold] = '2'
           out[:UnhealthThreshold] = '3'
           out[:Interval] = '5'
