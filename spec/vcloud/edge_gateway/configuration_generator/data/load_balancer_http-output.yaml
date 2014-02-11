@@ -1,0 +1,97 @@
+{
+  IsEnabled: "true",
+  Pool: [
+    {
+      Name: 'web-app',
+      Description: 'web-app',
+      ServicePort: [
+        {
+          IsEnabled: "true",
+          Protocol: "HTTP",
+          Algorithm: "ROUND_ROBIN",
+          Port: '80',
+          HealthCheckPort: '80',
+          HealthCheck:
+            {
+              Mode: "HTTP", Uri: '', HealthThreshold: '1', UnhealthThreshold: '6', Interval: '20', Timeout: '25'
+            }
+        },
+        {
+          IsEnabled: 'false',
+          Protocol: "HTTPS",
+          Algorithm: "ROUND_ROBIN",
+          Port: '',
+          HealthCheckPort: '',
+          HealthCheck:
+            {
+              Mode: "SSL", Uri: '', HealthThreshold: '2', UnhealthThreshold: '3', Interval: '5', Timeout: '15'
+            }
+        },
+        {
+          IsEnabled: 'false',
+          Protocol: "TCP",
+          Algorithm: "ROUND_ROBIN",
+          Port: '',
+          HealthCheckPort: '',
+          HealthCheck:
+            {
+              Mode: "TCP", Uri: '', HealthThreshold: '2', UnhealthThreshold: '3', Interval: '5', Timeout: '15'
+            }
+        }
+      ],
+      Member: [
+        {
+          IpAddress: "192.168.254.100",
+          Weight: '1',
+          ServicePort:
+            [
+              {Protocol: "HTTP",  Port: '', HealthCheckPort: ''},
+              {Protocol: "HTTPS", Port: '', HealthCheckPort: ''},
+              {Protocol: "TCP",   Port: '', HealthCheckPort: ''},
+            ]
+        }
+      ]
+    }
+  ],
+  VirtualServer: [
+      {
+        IsEnabled: "true",
+        Name: "router",
+        Description: "describe it",
+        Interface: {
+          name: "ExternalNetwork",
+          href: "https://example.com/api/admin/network/12345678-1234-1234-1234-123456789012",
+          type: "application/vnd.vmware.vcloud.orgVdcNetwork+xml",
+        },
+        IpAddress: '192.2.0.55',
+        ServiceProfile:
+          [
+            {
+              IsEnabled: "true",  #default disabled opt
+              Protocol: "HTTP", #req
+              Port: "80", #req
+              Persistence: {Method: ""}  #opt default none
+            },
+            #none
+            #cookie, cookie_name & mode is manadatory
+            #ssl_session_id
+            #{IsEnabled: "true", Protocol: "HTTPS", Port: 443, Persistence: {Method: ""}}
+            {
+              IsEnabled: "false",  #default disabled opt
+              Protocol: "HTTPS", #req
+              Port: "", #req
+              Persistence: {Method: ""}  #opt default none
+            },
+            {
+              IsEnabled: "false",  #default disabled opt
+              Protocol: "TCP", #req
+              Port: "", #req
+              Persistence: {Method: ""}  #opt default none
+            },
+          ],
+        Logging: 'false', #opt false
+        Pool: 'web-app' #req
+      }
+  ]
+
+}
