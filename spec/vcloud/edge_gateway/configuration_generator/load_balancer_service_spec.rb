@@ -77,13 +77,13 @@ module Vcloud
                 {
                   :IsEnabled=>"false",
                   :Protocol=>"HTTP",
-                  :Port=>"",
+                  :Port=>"80",
                   :Persistence=>{:Method=>""}
                 },
                 {
                   :IsEnabled=>"false",
                   :Protocol=>"HTTPS",
-                  :Port=>"",
+                  :Port=>"443",
                   :Persistence=>{:Method=>""}
                 },
                 {
@@ -124,7 +124,7 @@ module Vcloud
                   :IsEnabled=>"false",
                   :Protocol=>"HTTP",
                   :Algorithm=>"ROUND_ROBIN",
-                  :Port=>"",
+                  :Port=>"80",
                   :HealthCheckPort=>"",
                   :HealthCheck=>{
                     :Mode=>"HTTP",
@@ -139,7 +139,7 @@ module Vcloud
                   :IsEnabled=>"false",
                   :Protocol=>"HTTPS",
                   :Algorithm=>"ROUND_ROBIN",
-                  :Port=>"",
+                  :Port=>"443",
                   :HealthCheckPort=>"",
                   :HealthCheck=>{
                     :Mode=>"SSL",

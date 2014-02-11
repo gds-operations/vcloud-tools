@@ -80,7 +80,7 @@ module Vcloud
           out = {
             IsEnabled: 'false',
             Protocol: protocol.to_s.upcase,
-            Port:     '',
+            Port:     default_port(protocol),
             Persistence: generate_vs_persistence_section(protocol, nil)
           }
           if attrs
@@ -139,7 +139,7 @@ module Vcloud
             IsEnabled: 'false',
             Protocol: mode.to_s.upcase,
             Algorithm: 'ROUND_ROBIN',
-            Port:     '',
+            Port:     default_port(mode),
             HealthCheckPort: '',
             HealthCheck: generate_pool_healthcheck(mode)
           }

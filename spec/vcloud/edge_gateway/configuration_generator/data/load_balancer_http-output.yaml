@@ -20,7 +20,7 @@
           IsEnabled: 'false',
           Protocol: "HTTPS",
           Algorithm: "ROUND_ROBIN",
-          Port: '',
+          Port: '443',
           HealthCheckPort: '',
           HealthCheck:
             {
@@ -79,7 +79,7 @@
             {
               IsEnabled: "false",  #default disabled opt
               Protocol: "HTTPS", #req
-              Port: "", #req
+              Port: "443", #req
               Persistence: {Method: ""}  #opt default none
             },
             {
