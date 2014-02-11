@@ -48,9 +48,9 @@ module Vcloud
 
         def generate_vs_interface_section(network_id)
           out = {}
+          out[:type] = 'application/vnd.vmware.vcloud.orgVdcNetwork+xml'
           out[:name] = look_up_network_name(network_id)
           out[:href] = look_up_network_href(network_id)
-          out[:type] = 'application/vnd.vmware.vcloud.orgVdcNetwork+xml'
           out
         end
 

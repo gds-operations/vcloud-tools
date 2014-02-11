@@ -68,9 +68,9 @@ module Vcloud
               :Name=>"virtual-server-1",
               :Description=>"",
               :Interface=>{
+                :type=>"application/vnd.vmware.vcloud.orgVdcNetwork+xml",
                 :name=>"ExternalNetwork",
                 :href=>"https://example.com/api/admin/network/12345678-1234-1234-1234-123456789012",
-                :type=>"application/vnd.vmware.vcloud.orgVdcNetwork+xml"
               },
               :IpAddress=>"192.2.0.1",
               :ServiceProfile=>[
