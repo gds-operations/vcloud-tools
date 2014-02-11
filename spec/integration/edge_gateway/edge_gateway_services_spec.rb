@@ -52,15 +52,39 @@ module Vcloud
           expect(remote_vcloud_config[:NatService][:NatRule].empty?).to be_true
         end
 
-        it "should only need to make one call to Core::EdgeGateway.update_configuration" do
+        it "should only need to make one call to Core::EdgeGateway.update_configuration to update configuration" do
+          q = Query.new('edgeGateway', :filter => "name==#{@edge_name}")
+          result = q.get_all_results
+          latest_task = result.first[:task]
+
           expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
           EdgeGatewayServices.new.update(@initial_config_file)
+
+          test_result = q.get_all_results
+          test_latest_task = test_result.first[:task]
+
+          # confirm that a task has been run on the EdgeGateway
+          expect(latest_task == test_latest_task).to be_false
         end
 
         it "should now have nat and firewall rules configured" do
           remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration]
           expect(remote_vcloud_config[:FirewallService][:FirewallRule].empty?).to be_false
           expect(remote_vcloud_config[:NatService][:NatRule].empty?).to be_false
+        end
+
+        it "should not update the EdgeGateway again if the config hasn't changed" do
+          q = Query.new('edgeGateway', :filter => "name==#{@edge_name}")
+          result = q.get_all_results
+          latest_task = result.first[:task]
+
+          EdgeGatewayServices.new.update(@initial_config_file)
+
+          test_result = q.get_all_results
+          test_latest_task = result.first[:task]
+
+          # No task has been run on the EdgeGateway since the one before update was called
+          expect(latest_task == test_latest_task).to be_true
         end
 
       end
@@ -89,18 +113,9 @@ module Vcloud
 
       def generate_input_config_file(data_file, erb_input)
         config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
-        generate_input_yaml_config(erb_input, config_erb)
-      end
-
-      def generate_input_yaml_config test_namespace, input_erb_config
-        e = ERB.new(File.open(input_erb_config).read)
-        basename = File.basename(input_erb_config).gsub(/\.erb$/, '')
-        output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{basename}_#{Time.now.strftime('%s.%6N')}.yaml")
-        File.open(output_yaml_config, 'w') { |f|
-          f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
-        }
-        @files_to_delete << output_yaml_config
-        output_yaml_config
+        output_file = ErbHelper.convert_erb_template_to_yaml(erb_input, config_erb)
+        @files_to_delete << output_file
+        output_file
       end
 
       def edge_gateway_erb_input

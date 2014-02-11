@@ -148,6 +148,25 @@ module Vcloud
 
       end
 
+      context "Specific FirewallService update tests" do
+
+        it "should have the same rule order as the input rule order" do
+          input_config_file = generate_input_config_file('firewall_rule_order_test.yaml.erb', edge_gateway_erb_input)
+          EdgeGatewayServices.new.update(input_config_file)
+          remote_rules = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:FirewallService][:FirewallRule]
+          remote_descriptions_list = remote_rules.map {|rule| rule[:Description]}
+          expect(remote_descriptions_list).
+            to eq([
+              "First Input Rule",
+              "Second Input Rule",
+              "Third Input Rule",
+              "Fourth Input Rule",
+              "Fifth Input Rule"
+              ])
+        end
+
+      end
+
 
       after(:all) do
         reset_edge_gateway unless ENV['VCLOUD_NO_RESET_VSE_AFTER']
@@ -163,18 +182,9 @@ module Vcloud
 
       def generate_input_config_file(data_file, erb_input)
         config_erb = File.expand_path("data/#{data_file}", File.dirname(__FILE__))
-        generate_input_yaml_config(erb_input, config_erb)
-      end
-
-      def generate_input_yaml_config test_namespace, input_erb_config
-        e = ERB.new(File.open(input_erb_config).read)
-        basename = File.basename(input_erb_config).gsub(/\.erb$/, '')
-        output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{basename}_#{Time.now.strftime('%s.%6N')}.yaml")
-        File.open(output_yaml_config, 'w') { |f|
-          f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
-        }
-        @files_to_delete << output_yaml_config
-        output_yaml_config
+        output_file = ErbHelper.convert_erb_template_to_yaml(erb_input, config_erb)
+        @files_to_delete << output_file
+        output_file
       end
 
       def edge_gateway_erb_input

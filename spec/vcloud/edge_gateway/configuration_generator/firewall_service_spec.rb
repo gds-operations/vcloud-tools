@@ -167,9 +167,9 @@ module Vcloud
                     SourceIp: "192.0.2.2",
                     EnableLogging: 'false',
                   }
-
                 ]
               }
+
 
             } ,
             {
@@ -239,6 +239,123 @@ module Vcloud
                     DestinationIp: "10.10.20.20",
                     SourcePortRange: "1000",
                     SourceIp: "192.0.2.2",
+                    EnableLogging: 'false',
+                  }
+                ]
+              },
+              title: 'output rule order should be same as the input rule order',
+              input: {
+                firewall_rules: [
+                  {
+                    description: "rule 1",
+                    destination_port_range: "8081",
+                    destination_ip: "10.10.20.20",
+                    source_ip: "Any",
+                  },
+                  {
+                    description: "rule 2",
+                    destination_port_range: "8082",
+                    destination_ip: "10.10.20.20",
+                    source_ip: "Any",
+                  },
+                  {
+                    description: "rule 3",
+                    destination_port_range: "8083",
+                    destination_ip: "10.10.20.20",
+                    source_ip: "Any",
+                  },
+                  {
+                    description: "rule 4",
+                    destination_port_range: "8084",
+                    destination_ip: "10.10.20.20",
+                    source_ip: "Any",
+                  },
+                  {
+                    description: "rule 5",
+                    destination_port_range: "8085",
+                    destination_ip: "10.10.20.20",
+                    source_ip: "Any",
+                  },
+                ],
+              },
+              output: {
+                IsEnabled: 'true',
+                DefaultAction: "drop",
+                LogDefaultAction: 'false',
+                FirewallRule: [
+                  {
+                    Id: '1',
+                    IsEnabled: 'true',
+                    MatchOnTranslate: 'false',
+                    Description: "rule 1",
+                    Policy: "allow",
+                    Protocols: {Tcp: 'true'},
+                    DestinationPortRange: "8081",
+                    Port: '8081',
+                    DestinationIp: "10.10.20.20",
+                    SourcePortRange: "Any",
+                    SourcePort: '-1',
+                    SourceIp: "Any",
+                    EnableLogging: 'false',
+                  },
+                  {
+                    Id: '2',
+                    IsEnabled: 'true',
+                    MatchOnTranslate: 'false',
+                    Description: "rule 2",
+                    Policy: "allow",
+                    Protocols: {Tcp: 'true'},
+                    DestinationPortRange: "8082",
+                    Port: '8082',
+                    DestinationIp: "10.10.20.20",
+                    SourcePortRange: "Any",
+                    SourcePort: '-1',
+                    SourceIp: "Any",
+                    EnableLogging: 'false',
+                  },
+                  {
+                    Id: '3',
+                    IsEnabled: 'true',
+                    MatchOnTranslate: 'false',
+                    Description: "rule 3",
+                    Policy: "allow",
+                    Protocols: {Tcp: 'true'},
+                    DestinationPortRange: "8083",
+                    Port: '8083',
+                    DestinationIp: "10.10.20.20",
+                    SourcePortRange: "Any",
+                    SourcePort: '-1',
+                    SourceIp: "Any",
+                    EnableLogging: 'false',
+                  },
+                  {
+                    Id: '4',
+                    IsEnabled: 'true',
+                    MatchOnTranslate: 'false',
+                    Description: "rule 4",
+                    Policy: "allow",
+                    Protocols: {Tcp: 'true'},
+                    DestinationPortRange: "8084",
+                    Port: '8084',
+                    DestinationIp: "10.10.20.20",
+                    SourcePortRange: "Any",
+                    SourcePort: '-1',
+                    SourceIp: "Any",
+                    EnableLogging: 'false',
+                  },
+                  {
+                    Id: '5',
+                    IsEnabled: 'true',
+                    MatchOnTranslate: 'false',
+                    Description: "rule 5",
+                    Policy: "allow",
+                    Protocols: {Tcp: 'true'},
+                    DestinationPortRange: "8085",
+                    Port: '8085',
+                    DestinationIp: "10.10.20.20",
+                    SourcePortRange: "Any",
+                    SourcePort: '-1',
+                    SourceIp: "Any",
                     EnableLogging: 'false',
                   }
                 ]

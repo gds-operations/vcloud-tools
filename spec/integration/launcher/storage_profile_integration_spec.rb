@@ -4,7 +4,7 @@ describe Vcloud::Launch do
   context "storage profile", :take_too_long => true do
     before(:all) do
       @test_data = define_test_data
-      @config_yaml = generate_input_yaml_config(@test_data, File.join(File.dirname(__FILE__), 'data/storage_profile.yaml.erb'))
+      @config_yaml = ErbHelper.convert_erb_template_to_yaml(@test_data, File.join(File.dirname(__FILE__), 'data/storage_profile.yaml.erb'))
       @fog_interface = Vcloud::Fog::ServiceInterface.new
       Vcloud::Launch.new.run(@config_yaml, {'dont-power-on' => true})
 
@@ -50,22 +50,9 @@ describe Vcloud::Launch do
         @vm_3[:StorageProfile][:href].should == @test_data[:default_storage_profile_href]
     end
 
-    it "when a storage profile is not specified, customize continues with other customizations" do
-        @vm_3_id = @vm_3[:href].split('/').last
-        @vm_3_metadata = Vcloud::Core::Vm.get_metadata @vm_3_id
-        @vm_3_metadata[:storage_profile_test_vm].should == true
-    end
-
     it "when a storage profile specified does not exist, vm uses the default" do
         @vm_4[:StorageProfile][:name].should == @test_data[:default_storage_profile_name]
         @vm_4[:StorageProfile][:href].should == @test_data[:default_storage_profile_href]
-    end
-
-    # This is a bug - if it has failed customization it should let the user know
-    it "when storage profile specified doesn't exist, it errors and continues" do
-        @vm_4_id = @vm_4[:href].split('/').last
-        @vm_4_metadata = Vcloud::Core::Vm.get_metadata @vm_4_id
-        @vm_4_metadata[:storage_profile_test_vm].should be_nil
     end
 
     after(:all) do
@@ -80,16 +67,6 @@ describe Vcloud::Launch do
 
   end
 
-end
-
-def generate_input_yaml_config test_namespace, input_erb_config
-  input_erb_config = input_erb_config
-  e = ERB.new(File.open(input_erb_config).read)
-  output_yaml_config = File.join(File.dirname(input_erb_config), "output_#{Time.now.strftime('%s')}.yaml")
-  File.open(output_yaml_config, 'w') { |f|
-    f.write e.result(OpenStruct.new(test_namespace).instance_eval { binding })
-  }
-  output_yaml_config
 end
 
 def define_test_data
