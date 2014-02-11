@@ -41,7 +41,7 @@ module Vcloud
 
         end
 
-        context "VirtualServer rule defaults" do
+        context "When configuring a minimal VirtualServer entry" do
 
           before(:each) do
             input = { virtual_servers: [{
@@ -49,12 +49,12 @@ module Vcloud
               ip_address: '192.2.0.1',
               network: "12345678-1234-1234-1234-123456789aa",
               pool: "pool-1",
-            }]} # minimum configuration for a virtual_server
+            }]}
             output = LoadBalancerService.new(@edge_gw_name).generate_fog_config(input)
             @rule = output[:VirtualServer].first
           end
 
-          it 'should default to rule being enabled' do
+          it 'should default to the entry being enabled' do
             expect(@rule[:IsEnabled]).to eq('true')
           end
 
@@ -100,13 +100,13 @@ module Vcloud
 
         end
 
-        context "Pool entry defaults" do
+        context "When configuring a minimal Pool entry" do
 
           before(:each) do
             input = { pools: [{
               name: "pool-1",
               members: [ { ip_address: '10.10.10.10' } ],
-            }]} # minimum configuration for a pool
+            }]}
             output = LoadBalancerService.new(@edge_gw_name).generate_fog_config(input)
             @rule = output[:Pool].first
           end
