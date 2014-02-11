@@ -148,9 +148,8 @@ module Vcloud
             out[:IsEnabled] = attrs.key?(:enabled) ? attrs[:enabled].to_s : 'true'
             out[:Algorithm] = attrs[:algorithm] if attrs.key?(:algorithm)
             out[:Port]      = attrs.key?(:port) ? attrs[:port].to_s : default_port(mode)
-            if attrs.key?(:health_check)
-              out[:HealthCheckPort] = attrs[:health_check].key?(:port) ?
-                  attrs[:health_check][:port] : default_port[mode]
+            if health_check = attrs[:health_check]
+              out[:HealthCheckPort] = health_check.key?(:port) ? health_check[:port] : ''
               out[:HealthCheck] = generate_pool_healthcheck(mode, attrs[:health_check])
             end
           end
