@@ -1,0 +1,94 @@
+---
+:IsEnabled: 'true'
+:Pool:
+- :Name: test-pool-2
+  :ServicePort:
+  - :IsEnabled: 'true'
+    :Protocol: HTTP
+    :Algorithm: URI
+    :Port: '80'
+    :HealthCheckPort: '8081'
+    :HealthCheck:
+      :Mode: TCP
+      :Uri: ''
+      :HealthThreshold: '2'
+      :UnhealthThreshold: '3'
+      :Interval: '5'
+      :Timeout: '15'
+  - :IsEnabled: 'true'
+    :Protocol: HTTPS
+    :Algorithm: ROUND_ROBIN
+    :Port: '443'
+    :HealthCheckPort: '443'
+    :HealthCheck:
+      :Mode: TCP
+      :Uri: ''
+      :HealthThreshold: '2'
+      :UnhealthThreshold: '3'
+      :Interval: '5'
+      :Timeout: '15'
+  - :IsEnabled: 'true'
+    :Protocol: TCP
+    :Algorithm: LEAST_CONN
+    :Port: '8080'
+    :HealthCheckPort: ''
+    :HealthCheck:
+      :Mode: TCP
+      :HealthThreshold: '2'
+      :UnhealthThreshold: '3'
+      :Interval: '5'
+      :Timeout: '15'
+  :Member:
+  - :IpAddress: 10.10.10.20
+    :Weight: '5'
+    :ServicePort:
+    - :Protocol: HTTP
+      :Port: ''
+      :HealthCheckPort: ''
+    - :Protocol: HTTPS
+      :Port: ''
+      :HealthCheckPort: ''
+    - :Protocol: TCP
+      :Port: ''
+      :HealthCheckPort: ''
+  - :IpAddress: 10.10.10.21
+    :Weight: '1'
+    :ServicePort:
+    - :Protocol: HTTP
+      :Port: ''
+      :HealthCheckPort: ''
+    - :Protocol: HTTPS
+      :Port: ''
+      :HealthCheckPort: ''
+    - :Protocol: TCP
+      :Port: ''
+      :HealthCheckPort: ''
+:VirtualServer:
+- :IsEnabled: 'true'
+  :Name: test-vs-1
+  :Description: Description of VirtualServer
+  :Interface:
+    :type: application/vnd.vmware.vcloud.orgVdcNetwork+xml
+    :name: 'ExternalNetwork'
+    :href: https://example.com/api/admin/network/12345678-1234-1234-1234-123456789012
+  :IpAddress: 192.2.0.88
+  :ServiceProfile:
+  - :IsEnabled: 'true'
+    :Protocol: HTTP
+    :Port: '8085'
+    :Persistence:
+      :Method: COOKIE
+      :CookieName: MY_SESSION_ID
+      :CookieMode: PREFIX
+  - :IsEnabled: 'true'
+    :Protocol: HTTPS
+    :Port: '443'
+    :Persistence:
+      :Method: SSL_SESSION_ID
+  - :IsEnabled: 'true'
+    :Protocol: TCP
+    :Port: '8082'
+    :Persistence:
+      :Method: ''
+  :Logging: 'false'
+  :Pool: test-pool-2

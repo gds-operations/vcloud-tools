@@ -208,6 +208,18 @@ module Vcloud
 
         end
 
+        context "When configuring complex mixed protocol load balancer" do
+
+          it 'should expand out input config into Fog expected input' do
+            input            = read_data_file('load_balancer_mixed_complex-input.yaml')
+            expected_output  = read_data_file('load_balancer_mixed_complex-output.yaml')
+            generated_config = LoadBalancerService.new(@edge_gw_name).
+              generate_fog_config input
+            expect(generated_config).to eq(expected_output)
+          end
+
+        end
+
         def read_data_file(name)
           full_path = File.join(File.dirname(__FILE__), 'data', name)
           unsymbolized_data = YAML::load(File.open(full_path))
