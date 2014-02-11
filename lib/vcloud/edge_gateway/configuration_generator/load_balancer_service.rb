@@ -99,7 +99,13 @@ module Vcloud
         def generate_vs_persistence_section(protocol, attrs)
           attrs = {} if attrs.nil?
           out = { Method: '' }
-          out[:Method] = attrs[:method] if attrs.key?(:method)
+          if attrs.key?(:method)
+            out[:Method] = attrs[:method] if attrs.key?(:method)
+            if attrs[:method] == 'COOKIE'
+              out[:CookieName] = attrs[:cookie_name]
+              out[:CookieMode] = attrs[:cookie_mode]
+            end
+          end
           out
         end
 
