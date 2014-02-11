@@ -58,9 +58,11 @@ module Vcloud
           expect(remote_vcloud_config[:NatRule].empty?).to be_true
         end
 
-        it "should only need to make one call to Core::EdgeGateway.update_configuration" do
-          expect_any_instance_of(Core::EdgeGateway).to receive(:update_configuration).exactly(1).times.and_call_original
+        it "should only make one EdgeGateway update task, to minimise EdgeGateway reload events" do
+          task_list_before_update = get_all_edge_gateway_update_tasks_ordered_by_start_date
           EdgeGatewayServices.new.update(@initial_nat_config_file)
+          task_list_after_update = get_all_edge_gateway_update_tasks_ordered_by_start_date
+          expect(task_list_after_update.size - task_list_before_update.size).to be(1)
         end
 
         it "should have configured at least one NAT rule" do
@@ -188,6 +190,14 @@ module Vcloud
           :edge_gateway_ext_network_id => @ext_net_id,
           :edge_gateway_ext_network_ip => @ext_net_ip,
         }
+      end
+
+      def get_all_edge_gateway_update_tasks_ordered_by_start_date
+        q = Query.new('task',
+          :filter => "name==networkConfigureEdgeGatewayServices;objectName==#{@edge_name}",
+          :sortDesc => 'startDate',
+        )
+        result = q.get_all_results
       end
 
     end
