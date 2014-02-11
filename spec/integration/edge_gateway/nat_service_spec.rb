@@ -59,9 +59,10 @@ module Vcloud
         end
 
         it "should only make one EdgeGateway update task, to minimise EdgeGateway reload events" do
-          task_list_before_update = get_all_edge_gateway_update_tasks_ordered_by_start_date
+          start_time = DateTime.now()
+          task_list_before_update = get_all_edge_gateway_update_tasks_ordered_by_start_date_since_time(start_time)
           EdgeGatewayServices.new.update(@initial_nat_config_file)
-          task_list_after_update = get_all_edge_gateway_update_tasks_ordered_by_start_date
+          task_list_after_update = get_all_edge_gateway_update_tasks_ordered_by_start_date_since_time(start_time)
           expect(task_list_after_update.size - task_list_before_update.size).to be(1)
         end
 
@@ -192,12 +193,13 @@ module Vcloud
         }
       end
 
-      def get_all_edge_gateway_update_tasks_ordered_by_start_date
+      def get_all_edge_gateway_update_tasks_ordered_by_start_date_since_time(timestamp)
+        vcloud_time = timestamp.strftime('%FT%T.000Z')
         q = Query.new('task',
-          :filter => "name==networkConfigureEdgeGatewayServices;objectName==#{@edge_name}",
+          :filter => "name==networkConfigureEdgeGatewayServices;objectName==#{@edge_name};startDate=ge=#{vcloud_time}",
           :sortDesc => 'startDate',
         )
-        result = q.get_all_results
+        q.get_all_results
       end
 
     end
