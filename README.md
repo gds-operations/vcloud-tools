@@ -7,6 +7,9 @@ A collection of tools that support automation of VMWare VCloud Director
 A tool that takes a YAML configuration file describing a vDC, and provisions
 the vApps and VMs contained within.
 
+## [Vcloud Net Launch][vcloud-net-launch]
+A tool that takes a YAML configuration file describing vCloud networks and configures each of them.
+
 ## [Vcloud Walker][vcloudwalker]
 A tool that reports on the current state of an environment
 
