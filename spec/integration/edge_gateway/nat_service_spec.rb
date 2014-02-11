@@ -48,19 +48,46 @@ module Vcloud
 
       context "Check update is functional" do
 
-        it "should configure NatService" do
-          expect(EdgeGatewayServices.new.update(@initial_nat_config_file)).to be_true
+        before(:all) do
+          local_config = ConfigLoader.new.load_config(@initial_nat_config_file, Vcloud::Schema::EDGE_GATEWAY_SERVICES)
+          @local_vcloud_config  = EdgeGateway::ConfigurationGenerator::NatService.new(@edge_name, local_config[:nat_service]).generate_fog_config
         end
 
-        #it "and then should not configure the NAT service if updated again with the same configuration (idempotency)" do
-        #  expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
-        #  EdgeGatewayServices.new.update(@initial_nat_config_file)
-        #end
+        it "should be starting our tests from an empty NatService" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
+          expect(remote_vcloud_config[:NatRule].empty?).to be_true
+        end
 
-        #it "and so NatService diff should return empty if both configs match" do
-        #  diff_output = EdgeGatewayServices.new.diff(@initial_nat_config_file)
-        #  expect(diff_output[:NatService]).to eq([])
-        #end
+        it "should only make one EdgeGateway update task, to minimise EdgeGateway reload events" do
+          start_time = DateTime.now()
+          task_list_before_update = get_all_edge_gateway_update_tasks_ordered_by_start_date_since_time(start_time)
+          EdgeGatewayServices.new.update(@initial_nat_config_file)
+          task_list_after_update = get_all_edge_gateway_update_tasks_ordered_by_start_date_since_time(start_time)
+          expect(task_list_after_update.size - task_list_before_update.size).to be(1)
+        end
+
+        it "should have configured at least one NAT rule" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
+          expect(remote_vcloud_config[:NatRule].empty?).to be_false
+        end
+
+        it "should have configured the same number of nat rules as in our configuration" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
+          expect(remote_vcloud_config[:NatRule].size).
+            to eq(@local_vcloud_config[:NatRule].size)
+        end
+
+        it "ConfigurationDiffer should return empty if local and remote nat configs match" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:NatService]
+          differ = EdgeGateway::ConfigurationDiffer.new(@local_vcloud_config, remote_vcloud_config)
+          diff_output = differ.diff
+          expect(diff_output).to eq([])
+        end
+
+        it "and then should not configure the firewall service if updated again with the same configuration (idempotency)" do
+          expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
+          EdgeGatewayServices.new.update(@initial_nat_config_file)
+        end
 
       end
 
@@ -123,11 +150,6 @@ module Vcloud
           expect(expected_rule[:GatewayNatRule][:Protocol]).to eq('tcp')
         end
 
-        #it "and then NatService diff should highlight a difference" do
-        #  diff_output = EdgeGatewayServices.new.diff(@initial_nat_config_file)
-        #  expect(diff_output[:NatService].size).to eq(2)
-        #end
-
         it "should raise error if network provided in rule does not exist" do
           random_network_id = SecureRandom.uuid
           input_config_file = generate_input_config_file('nat_config.yaml.erb', {
@@ -169,6 +191,15 @@ module Vcloud
           :edge_gateway_ext_network_id => @ext_net_id,
           :edge_gateway_ext_network_ip => @ext_net_ip,
         }
+      end
+
+      def get_all_edge_gateway_update_tasks_ordered_by_start_date_since_time(timestamp)
+        vcloud_time = timestamp.strftime('%FT%T.000Z')
+        q = Query.new('task',
+          :filter => "name==networkConfigureEdgeGatewayServices;objectName==#{@edge_name};startDate=ge=#{vcloud_time}",
+          :sortDesc => 'startDate',
+        )
+        q.get_all_results
       end
 
     end

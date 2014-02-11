@@ -40,7 +40,9 @@ module Vcloud
           gateway_nat_rule[:TranslatedIp] = rule[:translated_ip]
           gateway_nat_rule[:OriginalPort] = rule[:original_port] if rule.key?(:original_port)
           gateway_nat_rule[:TranslatedPort] = rule[:translated_port] if rule.key?(:translated_port)
-          gateway_nat_rule[:Protocol] = rule.key?(:Protocol) ? rule[:Protocol] : "tcp"
+          if rule[:rule_type] == 'DNAT'
+            gateway_nat_rule[:Protocol] = rule.key?(:protocol) ? rule[:protocol] : "tcp"
+          end
           gateway_nat_rule
         end
 
