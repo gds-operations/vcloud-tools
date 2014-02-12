@@ -7,7 +7,7 @@ module Vcloud
 
         before(:each) do
           @edge_id = '1111111-7b54-43dd-9eb1-631dd337e5a7'
-          edge_gateway = double(
+          @mock_edge_gateway = double(
             :edge_gateway,
             :vcloud_gateway_interface_by_id => {
               Network: {
@@ -17,7 +17,7 @@ module Vcloud
             }
           )
           expect(Vcloud::Core::EdgeGateway).to receive(:get_by_name).with(@edge_id)
-                                               .and_return(edge_gateway)
+                                               .and_return(@mock_edge_gateway)
         end
 
         context "SNAT rule defaults" do
@@ -317,6 +317,40 @@ module Vcloud
               generated_config = NatService.new(@edge_id, test_case[:input]).generate_fog_config
               expect(generated_config).to eq(test_case[:output])
             end
+          end
+
+          it "should only make a single API call per network specified" do
+            input = {
+              nat_rules: [
+                {
+                  rule_type: 'DNAT',
+                  network: "ane012345",
+                  original_ip: "192.0.2.2",
+                  original_port: '8081',
+                  translated_port: '8081',
+                  translated_ip: "10.10.20.21",
+                },
+                {
+                  rule_type: 'DNAT',
+                  network: "ane012345",
+                  original_ip: "192.0.2.2",
+                  original_port: '8082',
+                  translated_port: '8082',
+                  translated_ip: "10.10.20.22",
+                },
+                {
+                  rule_type: 'DNAT',
+                  network: "ane012345",
+                  original_ip: "192.0.2.2",
+                  original_port: '8083',
+                  translated_port: '8083',
+                  translated_ip: "10.10.20.23",
+                },
+              ]
+            }
+            expect(@mock_edge_gateway).
+              to receive(:vcloud_gateway_interface_by_id).exactly(1).times
+            NatService.new(@edge_id, input).generate_fog_config
           end
 
         end
