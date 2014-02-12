@@ -9,10 +9,10 @@ An example configuration file is located in [examples/vcloud-net-launch][example
 
 Supports:
 
-* Configuration of multiple networks:
-* supports natRouted and isolated
+* Configuration of multiple networks
+* Supports natRouted and isolated
 * Accepts multiple ip address ranges
-* defaults
+* Defaults
   * IsShared : false
   * IpScope -> IsEnabled : true
   * IpScope -> IsInherited : false
