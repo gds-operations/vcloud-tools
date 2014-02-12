@@ -6,6 +6,7 @@ module Vcloud
         def initialize edge_gateway, input_config
           @edge_gateway = Vcloud::Core::EdgeGateway.get_by_name(edge_gateway)
           @input_config = input_config
+          @interfaces_by_id = {}
         end
 
         def generate_fog_config
@@ -33,9 +34,10 @@ module Vcloud
         end
 
         def populate_gateway_nat_rule(rule)
-          gateway_interface = @edge_gateway.vcloud_gateway_interface_by_id(rule[:network_id])
-          raise "unable to find gateway network interface with id #{rule[:network_id]}" unless gateway_interface
-          gateway_nat_rule = {:Interface => gateway_interface[:Network]}
+          raise "Must supply a :network_id parameter" unless net_id = rule[:network_id]
+          @interfaces_by_id[net_id] ||= @edge_gateway.vcloud_gateway_interface_by_id(net_id)
+          raise "unable to find gateway network interface with id #{net_id}" unless @interfaces_by_id[net_id]
+          gateway_nat_rule = {:Interface => @interfaces_by_id[net_id][:Network]}
           gateway_nat_rule[:OriginalIp] = rule[:original_ip]
           gateway_nat_rule[:TranslatedIp] = rule[:translated_ip]
           gateway_nat_rule[:OriginalPort] = rule[:original_port] if rule.key?(:original_port)
