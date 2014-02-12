@@ -25,7 +25,7 @@ module Vcloud
           before(:each) do
             input = { nat_rules: [{
               rule_type: 'SNAT',
-              network: "ane012345",
+              network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
               original_ip: "192.0.2.2",
               translated_ip: "10.10.20.20",
             }]} # minimum NAT configuration with a rule
@@ -67,7 +67,7 @@ module Vcloud
           before(:each) do
             input = { nat_rules: [{
               rule_type: 'DNAT',
-              network: "ane012345",
+              network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
               original_ip: "192.0.2.2",
               original_port: '22',
               translated_port: '22',
@@ -123,7 +123,7 @@ module Vcloud
                     enabled: 'false',
                     id: '999',
                     rule_type: 'DNAT',
-                    network: "ane012345",
+                    network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
                     original_ip: "192.0.2.2",
                     original_port: '22',
                     translated_port: '22',
@@ -163,7 +163,7 @@ module Vcloud
                 nat_rules: [
                   {
                     rule_type: 'DNAT',
-                    network: "ane012345",
+                    network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
                     original_ip: "192.0.2.25",
                     original_port: '53',
                     translated_port: '53',
@@ -204,7 +204,7 @@ module Vcloud
                   {
                     enabled: 'false',
                     rule_type: 'SNAT',
-                    network: "ane012345",
+                    network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
                     original_ip: "192.0.2.2",
                     translated_ip: "10.10.20.20",
                   }
@@ -239,7 +239,7 @@ module Vcloud
                   {
                     enabled: 'false',
                     rule_type: 'DNAT',
-                    network: "ane012345",
+                    network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
                     original_ip: "192.0.2.2",
                     original_port: '22',
                     translated_port: '22',
@@ -278,7 +278,7 @@ module Vcloud
                 nat_rules: [
                   {
                     rule_type: 'DNAT',
-                    network: "ane012345",
+                    network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
                     original_ip: "192.0.2.2",
                     original_port: '22',
                     translated_port: '22',
@@ -324,7 +324,7 @@ module Vcloud
               nat_rules: [
                 {
                   rule_type: 'DNAT',
-                  network: "ane012345",
+                  network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
                   original_ip: "192.0.2.2",
                   original_port: '8081',
                   translated_port: '8081',
@@ -332,7 +332,7 @@ module Vcloud
                 },
                 {
                   rule_type: 'DNAT',
-                  network: "ane012345",
+                  network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
                   original_ip: "192.0.2.2",
                   original_port: '8082',
                   translated_port: '8082',
@@ -340,7 +340,7 @@ module Vcloud
                 },
                 {
                   rule_type: 'DNAT',
-                  network: "ane012345",
+                  network_id: '2ad93597-7b54-43dd-9eb1-631dd337e5a7',
                   original_ip: "192.0.2.2",
                   original_port: '8083',
                   translated_port: '8083',
