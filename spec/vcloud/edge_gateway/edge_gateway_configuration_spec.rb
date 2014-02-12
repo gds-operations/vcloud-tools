@@ -60,7 +60,6 @@ module Vcloud
           proposed_firewall_config = proposed_config.config[:FirewallService]
           expect(proposed_firewall_config).to eq(expected_firewall_config)
 
-          #expect proposed config not to contain nat config
           expect(proposed_config.config.key?(:NatService)).to be_false
         end
 
@@ -101,9 +100,7 @@ module Vcloud
           }
 
           expect(proposed_config.update_required?(remote_config)).to be_false
-
-          expect(proposed_config.config.key?[:FirewallService]).to be_false
-          expect(proposed_config.config.key?[:NatService]).to be_false
+          expect(proposed_config.config.empty?).to be_true
         end
 
         it "does not require change when firewall is unchanged and nat is absent" do
@@ -120,13 +117,10 @@ module Vcloud
           }
 
           expect(proposed_config.update_required?(remote_config)).to be_false
-
-          expect(proposed_config.config.key?[:FirewallService]).to be_false
-          expect(proposed_config.config.key?[:NatService]).to be_false
+          expect(proposed_config.config.empty?).to be_true
         end
 
         it "does not require change when both are absent" do
-
           test_config = {
             :gateway=> @edge_gateway_id,
           }
@@ -139,9 +133,7 @@ module Vcloud
           }
 
           expect(proposed_config.update_required?(remote_config)).to be_false
-
-          expect(proposed_config.config.key?[:FirewallService]).to be_false
-          expect(proposed_config.config.key?[:NatService]).to be_false
+          expect(proposed_config.config.empty?).to be_true
         end
 
         it "does not require change if local configuration is in unexpected format" do
