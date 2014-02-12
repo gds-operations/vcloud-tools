@@ -42,7 +42,26 @@ module Vcloud
         end
 
         it "requires update to firewall only when firewall has changed and nat has not" do
+          test_config = {
+            :gateway=> @edge_gateway_id,
+            :nat_service=> test_nat_config,
+            :firewall_service=> test_firewall_config
+          }
 
+          proposed_config = EdgeGateway::EdgeGatewayConfiguration.new(test_config)
+
+          remote_config = {
+            :FirewallService=> different_firewall_config,
+            :NatService=> same_nat_config
+          }
+
+          expect(proposed_config.update_required?(remote_config)).to be_true
+
+          proposed_firewall_config = proposed_config.config[:FirewallService]
+          expect(proposed_firewall_config).to eq(expected_firewall_config)
+
+          #expect proposed config not to contain nat config
+          expect(proposed_config.config.key?(:NatService)).to be_false
         end
 
         it "requires update to firewall only when firewall has changed and nat is absent" do
@@ -68,16 +87,61 @@ module Vcloud
         end
 
         it "does not require change when both configs are present but have not changed" do
+          test_config = {
+            :gateway=> @edge_gateway_id,
+            :nat_service=> test_nat_config,
+            :firewall_service=> test_firewall_config
+          }
 
+          proposed_config = EdgeGateway::EdgeGatewayConfiguration.new(test_config)
+
+          remote_config = {
+            :FirewallService=> same_firewall_config,
+            :NatService=> same_nat_config
+          }
+
+          expect(proposed_config.update_required?(remote_config)).to be_false
+
+          expect(proposed_config.config.key?[:FirewallService]).to be_false
+          expect(proposed_config.config.key?[:NatService]).to be_false
         end
 
         it "does not require change when firewall is unchanged and nat is absent" do
+          test_config = {
+            :gateway=> @edge_gateway_id,
+            :firewall_service=> test_firewall_config
+          }
 
+          proposed_config = EdgeGateway::EdgeGatewayConfiguration.new(test_config)
+
+          remote_config = {
+            :FirewallService=> same_firewall_config,
+            :NatService=> different_nat_config
+          }
+
+          expect(proposed_config.update_required?(remote_config)).to be_false
+
+          expect(proposed_config.config.key?[:FirewallService]).to be_false
+          expect(proposed_config.config.key?[:NatService]).to be_false
         end
 
         it "does not require change when both are absent" do
 
+          test_config = {
+            :gateway=> @edge_gateway_id,
+          }
 
+          proposed_config = EdgeGateway::EdgeGatewayConfiguration.new(test_config)
+
+          remote_config = {
+            :FirewallService=> different_firewall_config,
+            :NatService=> different_nat_config
+          }
+
+          expect(proposed_config.update_required?(remote_config)).to be_false
+
+          expect(proposed_config.config.key?[:FirewallService]).to be_false
+          expect(proposed_config.config.key?[:NatService]).to be_false
         end
 
         it "does not require change if local configuration is in unexpected format" do
