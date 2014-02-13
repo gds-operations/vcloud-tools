@@ -37,7 +37,7 @@ module Vcloud
           ).generate_fog_config(@local_config[:load_balancer_service])
 
         unless load_balancer_service_config.nil?
-          differ = EdgeGateway::ConfigurationDiffer.new(
+          differ = EdgeGateway::LoadBalancerConfigurationDiffer.new(
                      load_balancer_service_config,
                      remote_config[:LoadBalancerService]
                    )

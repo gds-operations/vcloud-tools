@@ -86,9 +86,7 @@ module Vcloud
 
         it "ConfigurationDiffer should return empty if local and remote LoadBalancer configs match" do
           remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:LoadBalancerService]
-          pp @local_vcloud_config
-          pp remote_vcloud_config
-          differ = EdgeGateway::ConfigurationDiffer.new(@local_vcloud_config, remote_vcloud_config)
+          differ = EdgeGateway::LoadBalancerConfigurationDiffer.new(@local_vcloud_config, remote_vcloud_config)
           diff_output = differ.diff
           expect(diff_output).to eq([])
         end
