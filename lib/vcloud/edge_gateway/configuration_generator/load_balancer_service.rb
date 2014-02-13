@@ -36,19 +36,19 @@ module Vcloud
 
         def generate_virtual_server_entry(input_virtual_server)
           vcloud_virtual_server = {}
-          vcloud_virtual_server[:IsEnabled]   =
+          vcloud_virtual_server[:IsEnabled] =
             input_virtual_server.key(:enabled) ? input_virtual_server[:enabled] : 'true'
-          vcloud_virtual_server[:Name]        = input_virtual_server[:name]
+          vcloud_virtual_server[:Name] = input_virtual_server[:name]
           vcloud_virtual_server[:Description] =
             input_virtual_server[:description] || ''
-          vcloud_virtual_server[:Interface]   =
+          vcloud_virtual_server[:Interface] =
             generate_virtual_server_interface_section(input_virtual_server[:network])
-          vcloud_virtual_server[:IpAddress]   = input_virtual_server[:ip_address]
+          vcloud_virtual_server[:IpAddress] = input_virtual_server[:ip_address]
           vcloud_virtual_server[:ServiceProfile] =
             generate_virtual_server_service_profile_section(input_virtual_server[:service_profiles])
-          vcloud_virtual_server[:Logging]     =
+          vcloud_virtual_server[:Logging] =
             input_virtual_server.key(:logging) ? input_virtual_server[:logging] : 'false'
-          vcloud_virtual_server[:Pool]        = input_virtual_server[:pool]
+          vcloud_virtual_server[:Pool] = input_virtual_server[:pool]
           vcloud_virtual_server
         end
 
@@ -167,7 +167,7 @@ module Vcloud
             IsEnabled: 'false',
             Protocol: mode.to_s.upcase,
             Algorithm: 'ROUND_ROBIN',
-            Port:     default_port(mode),
+            Port: default_port(mode),
             HealthCheckPort: '',
             HealthCheck: generate_pool_healthcheck(mode)
           }
@@ -179,7 +179,7 @@ module Vcloud
             if input_pool_service_port.key?(:algorithm)
               vcloud_pool_service_port[:Algorithm] = input_pool_service_port[:algorithm]
             end
-            vcloud_pool_service_port[:Port]      =
+            vcloud_pool_service_port[:Port] =
               input_pool_service_port.key?(:port) ?
                 input_pool_service_port[:port].to_s : default_port(mode)
             if health_check = input_pool_service_port[:health_check]
