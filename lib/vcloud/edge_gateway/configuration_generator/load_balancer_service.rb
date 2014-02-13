@@ -130,15 +130,17 @@ module Vcloud
         end
 
         def generate_pool_entry(input_pool_entry)
-          sp_modes = [ :http, :https, :tcp ]
+          service_port_modes = [ :http, :https, :tcp ]
           vcloud_pool_entry = {}
           vcloud_pool_entry[:Name] = input_pool_entry[:name]
           if input_pool_entry.key?(:description)
             vcloud_pool_entry[:Description] = input_pool_entry[:description]
           end
-          vcloud_pool_entry[:ServicePort] = sp_modes.map do |mode|
-            generate_pool_service_port(mode,
-              input_pool_entry.key?(:service) ? input_pool_entry[:service][mode] : nil)
+          vcloud_pool_entry[:ServicePort] = service_port_modes.map do |mode|
+            generate_pool_service_port(
+              mode,
+              input_pool_entry.key?(:service) ? input_pool_entry[:service][mode] : nil
+            )
           end
           if input_pool_entry.key?(:members)
             vcloud_pool_entry[:Member] = []
