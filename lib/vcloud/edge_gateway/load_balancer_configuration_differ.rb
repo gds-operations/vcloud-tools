@@ -10,13 +10,15 @@ module Vcloud
         end
 
         def diff
-          ( @local == stripped_remote_config ) ? [] : HashDiff.diff(@local, @remote)
+          ( @local == stripped_remote_config ) ? [] : HashDiff.diff(@local, stripped_remote_config)
         end
 
         def stripped_remote_config
           deep_cloned_remote_config = Marshal.load( Marshal.dump(@remote) )
-          deep_cloned_remote_config[:Pool].each do |pool_entry|
-            pool_entry.delete(:Operational)
+          if deep_cloned_remote_config.key?(:Pool)
+            deep_cloned_remote_config[:Pool].each do |pool_entry|
+              pool_entry.delete(:Operational)
+            end
           end
           deep_cloned_remote_config
         end
