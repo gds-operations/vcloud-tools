@@ -1,0 +1,41 @@
+{
+  enabled: 'true', #opt
+  pools: [
+    {
+      name: 'web-app',
+      description: 'web-app',#opt
+      service: {
+        http: {
+          enabled: 'true', #opt, default true
+          algorithm: 'ROUND_ROBIN', #opt default RRB
+          port: 80, #req
+          protocol: 'HTTP', #req
+          health_check: {
+            port: '80' ,   #req
+            protocol: 'HTTP', #opt, default same as service port protocol, HTTPS => SSL
+            health_threshold: '1',  #opt default = 2
+            unhealth_threshold: '6', #opt default = 3
+            interval: '20',  #opt default 5 sec
+            timeout: '25' } #optional default 15sec
+        }
+      },
+      members: [{ ip_address: '192.168.254.100', #req
+                  weight: '1', #opt default = 1, NB: 0 == 'disabled',
+                }],
+
+    }
+  ],
+  virtual_servers: [
+    {
+      name: 'router', #req
+      description: 'describe it', #opt
+      ip_address: '192.2.0.55', #req
+      network: 'ExternalNetwork', #req
+      pool: 'web-app', #req
+      logging: 'false', #opt, default false
+      service_profiles: {
+        http: { enabled: true, port: '80' }
+      },
+    }
+  ]
+}

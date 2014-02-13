@@ -40,6 +40,7 @@ module Vcloud
           required: false,
           internals: {
             port: { type: 'string_or_number', required: false },
+            uri: { type: 'string', required: false },
             protocol: { type: 'enum', required: false,
               acceptable_values: [ 'HTTP', 'SSL', 'TCP' ] },
             health_threshold: { type: 'string_or_number', required: false },
