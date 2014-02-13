@@ -84,6 +84,20 @@ module Vcloud
             to eq(@local_vcloud_config[:VirtualServer].size)
         end
 
+        it "ConfigurationDiffer should return empty if local and remote LoadBalancer configs match" do
+          remote_vcloud_config = @edge_gateway.vcloud_attributes[:Configuration][:EdgeGatewayServiceConfiguration][:LoadBalancerService]
+          pp @local_vcloud_config
+          pp remote_vcloud_config
+          differ = EdgeGateway::ConfigurationDiffer.new(@local_vcloud_config, remote_vcloud_config)
+          diff_output = differ.diff
+          expect(diff_output).to eq([])
+        end
+
+        it "and then should not configure the LoadBalancerService if updated again with the same configuration (idempotency)" do
+          expect(Vcloud.logger).to receive(:info).with('EdgeGatewayServices.update: Configuration is already up to date. Skipping.')
+          EdgeGatewayServices.new.update(@initial_load_balancer_config_file)
+        end
+
       end
 
       after(:all) do
