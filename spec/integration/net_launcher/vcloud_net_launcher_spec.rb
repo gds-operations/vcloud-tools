@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'pp'
 require 'erb'
 
-describe Vcloud::NetLaunch do
+describe Vcloud::NetLaunch, :take_too_long => true do
 
   context 'with minimum input setup' do
 
