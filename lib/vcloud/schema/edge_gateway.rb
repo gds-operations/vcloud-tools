@@ -7,7 +7,8 @@ module Vcloud
         internals: {
             gateway: { type: 'string' },
             firewall_service: FIREWALL_SERVICE,
-            nat_service: NAT_SERVICE
+            nat_service: NAT_SERVICE,
+            load_balancer_service: LOAD_BALANCER_SERVICE,
         }
     }
 

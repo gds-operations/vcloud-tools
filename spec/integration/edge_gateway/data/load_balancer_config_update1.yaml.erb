@@ -1,0 +1,42 @@
+---
+gateway: <%= edge_gateway_name %>
+load_balancer_service:
+  enabled: true
+  pools:
+  - name: 'integration-test-pool-1'
+    description: 'A pool'
+    service:
+      http:
+        enabled: true
+        port: 8080
+        algorithm: 'ROUND_ROBIN'
+    members:
+    - ip_address: 192.0.2.55
+    - ip_address: 192.0.2.56
+  - name: 'integration-test-pool-2'
+    description: 'A pool'
+    service:
+      https:
+        enabled: true
+        port: 8443
+        algorithm: 'ROUND_ROBIN'
+    members:
+    - ip_address: 192.0.2.55
+    - ip_address: 192.0.2.56
+  virtual_servers:
+  - name: 'integration-test-vs-1'
+    description: 'A virtual server'
+    ip_address: <%= edge_gateway_ext_network_ip %>
+    network: <%= edge_gateway_ext_network_id %>
+    pool: 'integration-test-pool-1'
+    service_profiles:
+      http:
+        port: 8080
+  - name: 'integration-test-vs-2'
+    description: 'A virtual server'
+    ip_address: <%= edge_gateway_ext_network_ip %>
+    network: <%= edge_gateway_ext_network_id %>
+    pool: 'integration-test-pool-2'
+    service_profiles:
+      https:
+        port: 8443
