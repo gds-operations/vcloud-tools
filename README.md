@@ -152,5 +152,6 @@ https://github.com/alphagov/vcloud-walker:
 [edgegateway]: docs/edgegateway.md
 [tag_search]: docs/tag_search.md
 [vcloud-launch]: docs/vcloud-launch.md
+[vcloud-net-launch]: docs/vcloud-net-launch.md
 [vcloud-query]: docs/vcloud-query.md
 [fog]: http://fog.io/
