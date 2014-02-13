@@ -197,13 +197,7 @@ module Vcloud
           vcloud_pool_healthcheck_entry = {
             Mode: default_mode,
           }
-          if protocol == :http
-            vcloud_pool_healthcheck_entry[:Uri] = ''
-          elsif ( protocol == :https ) &&
-                  input_pool_healthcheck_entry &&
-                  ( input_pool_healthcheck_entry[:protocol] == 'TCP' )
-            vcloud_pool_healthcheck_entry[:Uri] = ''
-          end
+          vcloud_pool_healthcheck_entry[:Uri] = ''
           vcloud_pool_healthcheck_entry[:HealthThreshold] = '2'
           vcloud_pool_healthcheck_entry[:UnhealthThreshold] = '3'
           vcloud_pool_healthcheck_entry[:Interval] = '5'
