@@ -24,7 +24,7 @@
           HealthCheckPort: '',
           HealthCheck:
             {
-              Mode: "SSL", HealthThreshold: '2', UnhealthThreshold: '3', Interval: '5', Timeout: '15'
+              Mode: "SSL", Uri: '', HealthThreshold: '2', UnhealthThreshold: '3', Interval: '5', Timeout: '15'
             }
         },
         {
@@ -35,7 +35,7 @@
           HealthCheckPort: '',
           HealthCheck:
             {
-              Mode: "TCP", HealthThreshold: '2', UnhealthThreshold: '3', Interval: '5', Timeout: '15'
+              Mode: "TCP", Uri: '', HealthThreshold: '2', UnhealthThreshold: '3', Interval: '5', Timeout: '15'
             }
         }
       ],
