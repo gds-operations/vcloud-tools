@@ -11,13 +11,13 @@ the vApps and VMs contained within.
 A tool that takes a YAML configuration file describing vCloud networks and configures each of them.
 
 ## [Vcloud Walker][vcloudwalker]
-A tool that reports on the current state of an environment
+A gem that reports on the current state of an environment
 
-## [Vcloud Query][vcloud-query]
-A tool to expose the vCloud Query API.
+## Vcloud Query
+A tool to expose the vCloud Query API, bundled with the [vCloud Core gem][vcloud-core]
 
-## [Configure edgegateway services][edgegateway]
-Examples of fog usage to configure Edge Gateway Services
+## [vCloud Edge Gateway][edgegateway]
+A gem to configure a VMware vCloud Edge Gateway
 
 ## [Tag search][tag_search]
 A tool that will perform operations on a set of Vapps that match the given tags.
@@ -148,10 +148,10 @@ https://github.com/alphagov/vcloud-walker:
 
 ... and look through the returned information for a suitable edgeGateway.
 
-[vcloudwalker]: https://github.com/alphagov/vcloud-walker
-[edgegateway]: docs/edgegateway.md
+[vcloudwalker]: http://rubygems.org/gems/vcloud-walker
+[edgegateway]: http://rubygems.org/gems/vcloud-edge_gateway
 [tag_search]: docs/tag_search.md
 [vcloud-launch]: docs/vcloud-launch.md
 [vcloud-net-launch]: docs/vcloud-net-launch.md
-[vcloud-query]: docs/vcloud-query.md
+[vcloud-core]: http://rubygems.org/gems/vcloud-core
 [fog]: http://fog.io/
