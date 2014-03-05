@@ -22,6 +22,9 @@ A gem to configure a VMware vCloud Edge Gateway
 ## [Tag search][tag_search]
 A tool that will perform operations on a set of Vapps that match the given tags.
 
+## [Utils][utils]
+Useful tools that are not ready for promotion into bin/ and should be considered low quality and/or in development.
+
 Required set-up
 ===============
 
@@ -155,3 +158,4 @@ https://github.com/alphagov/vcloud-walker:
 [vcloud-net-launch]: docs/vcloud-net-launch.md
 [vcloud-core]: http://rubygems.org/gems/vcloud-core
 [fog]: http://fog.io/
+[utils]: utils/README.md

@@ -6,3 +6,14 @@ potentially building on the FogInterface or otherwise.
 
 They are not ready for promotion into bin/ and should be considered low
 quality and/or in development.
+
+vcloud-vapp-delete
+----
+
+Usage:
+
+	bundle exec vcloud-vapp-delete {vApp}
+
+Limitations:
+
+* vApp must be stopped.
