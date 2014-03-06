@@ -13,7 +13,7 @@ A tool that takes a YAML configuration file describing vCloud networks and confi
 ## [Vcloud Walker][vcloudwalker]
 A gem that reports on the current state of an environment
 
-## Vcloud Query
+## [Vcloud Query][vcloudquery]
 A tool to expose the vCloud Query API, bundled with the [vCloud Core gem][vcloud-core]
 
 ## [vCloud Edge Gateway][edgegateway]
@@ -149,6 +149,7 @@ https://github.com/alphagov/vcloud-walker:
 ... and look through the returned information for a suitable edgeGateway.
 
 [vcloudwalker]: http://rubygems.org/gems/vcloud-walker
+[vcloudquery]: docs/vcloud-query.md
 [edgegateway]: http://rubygems.org/gems/vcloud-edge_gateway
 [vcloud-launch]: docs/vcloud-launch.md
 [vcloud-net-launch]: docs/vcloud-net-launch.md
