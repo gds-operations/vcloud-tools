@@ -19,9 +19,6 @@ A tool to expose the vCloud Query API, bundled with the [vCloud Core gem][vcloud
 ## [vCloud Edge Gateway][edgegateway]
 A gem to configure a VMware vCloud Edge Gateway
 
-## [Tag search][tag_search]
-A tool that will perform operations on a set of Vapps that match the given tags.
-
 ## [Utils][utils]
 Useful tools that are not ready for promotion into bin/ and should be considered low quality and/or in development.
 
@@ -153,7 +150,6 @@ https://github.com/alphagov/vcloud-walker:
 
 [vcloudwalker]: http://rubygems.org/gems/vcloud-walker
 [edgegateway]: http://rubygems.org/gems/vcloud-edge_gateway
-[tag_search]: docs/tag_search.md
 [vcloud-launch]: docs/vcloud-launch.md
 [vcloud-net-launch]: docs/vcloud-net-launch.md
 [vcloud-core]: http://rubygems.org/gems/vcloud-core
