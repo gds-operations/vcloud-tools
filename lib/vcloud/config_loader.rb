@@ -11,7 +11,7 @@ module Vcloud
       config = JSON.parse(json_string, :symbolize_names => true)
 
       if schema
-        validation = ConfigValidator.validate(:base, config, schema)
+        validation = Vcloud::Core::ConfigValidator.validate(:base, config, schema)
         unless validation.valid?
           validation.errors.each do |error|
             Vcloud.logger.fatal(error)
