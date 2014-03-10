@@ -5,7 +5,7 @@ module Vcloud
   class NetLaunch
 
     def initialize
-      @config_loader = Vcloud::ConfigLoader.new
+      @config_loader = Vcloud::Core::ConfigLoader.new
     end
 
     def run(config_file = nil, options = {})
