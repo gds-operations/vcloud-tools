@@ -11,7 +11,6 @@ require 'vcloud/version'
 require 'vcloud/fog'
 require 'vcloud/core'
 
-require 'vcloud/config_loader'
 require 'vcloud/launch'
 require 'vcloud/net_launch'
 require 'vcloud/vm_orchestrator'
