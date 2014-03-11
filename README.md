@@ -9,16 +9,15 @@ Quick Start
 `bundle install`
 - Create a `.fog` file in your home directory.
 See [.fog example](examples/.fog-example.fog)
-- Test your FOG credentials by installing and running [vcloud-walker](https://github.com/alphagov/vcloud-walker)
-
-This should give you a readout of your organization profile.
-
+- Test your FOG credentials by installing and running [vcloud-walker](https://github.com/alphagov/vcloud-walker):
 ```
+# Install and run vcloud-walker
 gem install vcloud-walker
 rbenv rehash
 FOG_CREDENTIAL=performance-platform-preview vcloud-walk organization --yaml
 ```
 
+This should give you a readout of your organization profile.
 
 Vcloud-tools guide
 ============
