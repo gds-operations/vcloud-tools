@@ -1,17 +1,23 @@
 Quick Start
 ===========
+**NB:** This repo depends on [Fog](http://fog.io/)
+*The fog gem will be installed as a dependency by bundler.*
 
-- Clone this repo.
-
+- Clone this repo and cd into it.
+`git clone git@github.com:alphagov/vcloud-tools.git && cd vcloud-tools`
 - Install all the dependencies required:
 `bundle install`
-
-**NB:** This repo depends on [Fog](http://fog.io/)
-The fog gem will be installed as a dependency by bundler.
-
 - Create a `.fog` file in your home directory.
 See [.fog example](examples/.fog-example.fog)
+- Test your FOG credentials by installing and running [vcloud-walker](https://github.com/alphagov/vcloud-walker)
 
+This should give you a readout of your organization profile.
+
+```
+gem install vcloud-walker
+rbenv rehash
+FOG_CREDENTIAL=performance-platform-preview vcloud-walk organization --yaml
+```
 
 
 Vcloud-tools guide
