@@ -1,3 +1,19 @@
+Quick Start
+===========
+
+- Clone this repo.
+
+- Install all the dependencies required:
+`bundle install`
+
+**NB:** This repo depends on [Fog](http://fog.io/)
+The fog gem will be installed as a dependency by bundler.
+
+- Create a `.fog` file in your home directory.
+See [.fog example](examples/.fog-example.fog)
+
+
+
 Vcloud-tools guide
 ============
 

@@ -1,0 +1,15 @@
+p1-production:
+  vcloud_director_username: '<username_from_top_right_of_skyscape_flash_ui>@<org_id_from_url_in_skyscape_flash_ui>'
+  vcloud_director_password: '<your_skyscape_password>'
+  vcloud_director_host: 'vcd.portal.skyscapecloud.com'
+
+# You can extract this information by logging into skyscape portal
+performance-platform-production:
+  vcloud_director_username: '<xxx.x.xxxxxx>@<x-x-xx-xxxxxx>'
+  vcloud_director_password: '<your_skyscape_password>'
+  vcloud_director_host: 'vcd.portal.skyscapecloud.com'
+
+carrenza-preview:
+  vcloud_director_username: '<email>@<org_id>'
+  vcloud_director_password: ''
+  vcloud_director_host: 'myvdc.carrenza.net'
