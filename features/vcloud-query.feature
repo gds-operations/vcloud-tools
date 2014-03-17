@@ -10,6 +10,5 @@ Feature: "vcloud-query" works as a useful command-line tool
     And the banner should document that this app takes options
     And the following options should be documented:
       |--version|
-      |--mock|
     And the banner should document that this app's arguments are:
       |type|
