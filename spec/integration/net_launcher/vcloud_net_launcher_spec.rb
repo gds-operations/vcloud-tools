@@ -58,8 +58,8 @@ describe Vcloud::NetLaunch, :take_too_long => true do
   end
 
   def find_network(network_name)
-    query = Vcloud::Query.new('orgNetwork', :filter => "name==#{network_name}")
-    query.get_all_results
+    query = Vcloud::QueryRunner.new()
+    query.run('orgNetwork', :filter => "name==#{network_name}")
   end
 
   def generate_data_file(test_data)
