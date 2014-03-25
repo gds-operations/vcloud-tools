@@ -173,7 +173,7 @@ https://github.com/alphagov/vcloud-walker:
 [vcloudquery]: docs/vcloud-query.md
 [edgegateway]: http://rubygems.org/gems/vcloud-edge_gateway
 [vcloud-launch]: docs/vcloud-launch.md
-[vcloud-net-launch]: docs/vcloud-net-launch.md
+[vcloud-net-launch]: http://rubygems.org/gems/vcloud-net_launcher
 [vcloud-core]: http://rubygems.org/gems/vcloud-core
 [fog]: http://fog.io/
 [utils]: utils/README.md
