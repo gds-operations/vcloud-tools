@@ -18,10 +18,10 @@ class App
 
     puts "Getting VDC Information...."
 
-    all_vdcs = Query.new("orgVdc", {}).get_all_results
+    all_vdcs = QueryRunner.new.run("orgVdc", {})
 
     puts "Getting VM Information..."
-    all_vms = Query.new("vm", {}).get_all_results
+    all_vms = QueryRunner.new.run("vm", {})
 
     found = all_vms.select{|v| v[:containerName] =~ /#{vm}/ || v[:name] =~ /#{vm}/ }
 
