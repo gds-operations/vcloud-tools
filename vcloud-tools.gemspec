@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'bundler'
   s.add_runtime_dependency 'methadone'
-  s.add_runtime_dependency 'vcloud-core', '>= 0.0.10'
+  s.add_runtime_dependency 'vcloud-core', '>= 0.0.11'
   s.add_runtime_dependency 'hashdiff'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 2.14.1'
@@ -29,5 +29,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'simplecov', '~> 0.8.2'
   s.add_development_dependency 'aruba', '~> 0.5.3'
   s.add_development_dependency 'cucumber', '~> 1.3.10'
-  s.add_development_dependency 'jeweler', '~> 1.8.8'
+  s.add_development_dependency 'jeweler', '~> 2.0.0'
 end
