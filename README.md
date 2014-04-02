@@ -96,7 +96,7 @@ A basic example of this would be the following:
 
 This will prompt for your password.
 
-Drom the headers returned, select the header below
+From the headers returned, select the header below
 
      x-vcloud-authorization: AAAABBBBBCCCCCCDDDDDDEEEEEEFFFFF=
 
