@@ -100,7 +100,7 @@ From the headers returned, select the header below
 
      x-vcloud-authorization: AAAABBBBBCCCCCCDDDDDDEEEEEEFFFFF=
 
-Export token as ENV var FOG_VCLOUD_TOKEN
+Use token as ENV var FOG_VCLOUD_TOKEN
 
     FOG_VCLOUD_TOKEN=AAAABBBBBCCCCCCDDDDDDEEEEEEFFFFF= bundle exec ...
 
