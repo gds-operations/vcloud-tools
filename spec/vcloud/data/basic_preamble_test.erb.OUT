@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# Default preamble
-
-(
-echo "in $*"
-echo "message: hello world"
-) >> /PREAMBLE_OUTPUT
