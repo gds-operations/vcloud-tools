@@ -19,25 +19,25 @@ FOG_CREDENTIAL=performance-platform-preview vcloud-walk organization --yaml
 
 This should give you a readout of your organization profile.
 
-Vcloud-tools guide
+vCloud Tools
 ============
 
-A collection of tools that support automation of VMWare VCloud Director
+A collection of tools that support automation of VMWare vCloud Director
 
-## [Vcloud Launch][vcloud-launch]
+## [vCloud Launcher][vcloud-launcher]
 A tool that takes a YAML configuration file describing a vDC, and provisions
 the vApps and VMs contained within.
 
-## [Vcloud Net Launch][vcloud-net-launch]
+## [vCloud Net Launcher][vcloud-net-launcher]
 A tool that takes a YAML configuration file describing vCloud networks and configures each of them.
 
-## [Vcloud Walker][vcloudwalker]
+## [vCloud Walker][vcloud-walker]
 A gem that reports on the current state of an environment
 
-## [Vcloud Query][vcloudquery]
+## [vCloud Query][vcloud-query]
 A tool to expose the vCloud Query API, bundled with the [vCloud Core gem][vcloud-core]
 
-## [vCloud Edge Gateway][edgegateway]
+## [vCloud Edge Gateway][vcloud-edgegateway]
 A gem to configure a VMware vCloud Edge Gateway
 
 ## [Utils][utils]
@@ -48,7 +48,7 @@ Required set-up
 
 ## Credentials
 
-VCloud-tools is based around [fog]. To use it you'll need to give it credentials that allow it to talk to a VMware
+vCloud Tools is based around [fog]. To use it you'll need to give it credentials that allow it to talk to a VMware
 environment. Fog offers two ways to do this.
 
 ### 1. Create a `.fog` file containing your credentials
@@ -200,11 +200,11 @@ https://github.com/alphagov/vcloud-walker:
 
 ... and look through the returned information for a suitable edgeGateway.
 
-[vcloudwalker]: http://rubygems.org/gems/vcloud-walker
-[vcloudquery]: docs/vcloud-query.md
-[edgegateway]: http://rubygems.org/gems/vcloud-edge_gateway
-[vcloud-launch]: docs/vcloud-launch.md
-[vcloud-net-launch]: http://rubygems.org/gems/vcloud-net_launcher
+[vcloud-walker]: http://rubygems.org/gems/vcloud-walker
+[vcloud-query]: docs/vcloud-query.md
+[vcloud-edgegateway]: http://rubygems.org/gems/vcloud-edge_gateway
+[vcloud-launcher]: http://rubygems.org/gems/vcloud-launcher
+[vcloud-net-launcher]: http://rubygems.org/gems/vcloud-net_launcher
 [vcloud-core]: http://rubygems.org/gems/vcloud-core
 [fog]: http://fog.io/
 [utils]: utils/README.md
