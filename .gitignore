@@ -1,16 +1,2 @@
-*.gem
-*.rbc
-*.swp
-*.un~
 vcloud_env.sh
-replace_variables.sh
-/.bundle/
-/.ruby-version
 /Gemfile.lock
-/bundle/
-/pkg/
-vendor/
-coverage/
-results.html
-fog_integration_test.config
-.idea
