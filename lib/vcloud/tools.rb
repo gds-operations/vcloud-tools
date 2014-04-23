@@ -1,0 +1,1 @@
+require 'vcloud/tools/version'
