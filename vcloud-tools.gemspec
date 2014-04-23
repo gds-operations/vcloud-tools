@@ -2,11 +2,11 @@
 
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'vcloud/version'
+require 'vcloud/tools/version'
 
 Gem::Specification.new do |s|
   s.name        = 'vcloud-tools'
-  s.version     = Vcloud::VERSION
+  s.version     = Vcloud::Tools::VERSION
   s.authors     = ['Government Digital Service']
   s.summary     = %q{Tools for VMware vCloud}
   s.homepage    = 'https://github.com/alphagov/vcloud-tools'
