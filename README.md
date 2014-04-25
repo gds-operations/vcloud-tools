@@ -55,66 +55,39 @@ Or install it yourself as:
 
 Installing vCloud Tools will install all of the tools listed above.
 
-Required set-up
-===============
-
 ## Credentials
 
-vCloud Tools is based around [fog]. To use it you'll need to give it credentials that allow it to talk to a VMware
-environment. Fog offers two ways to do this.
+vCloud Tools is based around [fog](http://fog.io/). To use it you'll need to give it credentials that allow it to talk to a VMware
+environment.
 
-### 1. Create a `.fog` file containing your credentials
+1. Create a '.fog' file
 
-To use this method, you need a `.fog` file in your home directory.
+  For example:
 
-For example:
+      test_credentials:
+        vcloud_director_host: 'host.api.example.com'
+        vcloud_director_username: 'username@org_name'
+        vcloud_director_password: ''
 
-    test:
-      vcloud_director_username: 'username@org_name'
-      vcloud_director_password: 'password'
-      vcloud_director_host: 'host.api.example.com'
+2. Obtain a session token. First, curl the API:
 
-Unfortunately current usage of fog requires the password in this file. Multiple sets of credentials can be specified in the fog file, using the following format:
+        curl -D- -d '' \
+            -H 'Accept: application/*+xml;version=5.1' -u '<user>@<org>' \
+            https://<host.com>/api/sessions
 
-    test:
-      vcloud_director_username: 'username@org_name'
-      vcloud_director_password: 'password'
-      vcloud_director_host: 'host.api.example.com'
+  This will prompt for your password.
 
-    test2:
-      vcloud_director_username: 'username@org_name'
-      vcloud_director_password: 'password'
-      vcloud_director_host: 'host.api.vendor.net'
+  From the headers returned, the value of the `x-vcloud-authorization` header is your session token, and this will be valid for 30 minutes idle - any activity will extend its life by another 30 minutes.
 
-You can then pass the `FOG_CREDENTIAL` environment variable at the start of your command. The value of the `FOG_CREDENTIAL` environment variable is the name of the credential set in your fog file which you wish to use.  For instance:
+3. Specify your credentials and session token at the beginning of the command. For example:
 
-    FOG_CREDENTIAL=test2 bundle exec vcloud-launch node.yaml
+        FOG_CREDENTIAL=test_credentials \
+            FOG_VCLOUD_TOKEN=AAAABBBBBCCCCCCDDDDDDEEEEEEFFFFF= \
+            vcloud-launch node.yaml
 
-To understand more about `.fog` files, visit the 'Credentials' section here => http://fog.io/about/getting_started.html.
+  You may find it easier to export one or both of the values as environment variables.
 
-### 2. Log on externally and supply your session token
-
-You can choose to log on externally by interacting independently with the API and supplying your session token to the
-tool by setting the `FOG_VCLOUD_TOKEN` ENV variable. This option reduces the risk footprint by allowing the user to
-store their credentials in safe storage. The default token lifetime is '30 minutes idle' - any activity extends the life by another 30 mins.
-
-A basic example of this would be the following:
-
-    curl
-       -D-
-       -d ''
-       -H 'Accept: application/*+xml;version=5.1' -u '<user>@<org>'
-       https://host.com/api/sessions
-
-This will prompt for your password.
-
-From the headers returned, select the header below
-
-     x-vcloud-authorization: AAAABBBBBCCCCCCDDDDDDEEEEEEFFFFF=
-
-Use token as ENV var FOG_VCLOUD_TOKEN
-
-    FOG_VCLOUD_TOKEN=AAAABBBBBCCCCCCDDDDDDEEEEEEFFFFF= bundle exec ...
+  **NB** It is also possible to sidestep the need for the session token by saving your password in the fog file. This is **not recommended**.
 
 ## Contributing
 
