@@ -60,7 +60,7 @@ Installing vCloud Tools will install all of the tools listed above.
 vCloud Tools is based around [fog](http://fog.io/). To use it you'll need to give it credentials that allow it to talk to a VMware
 environment.
 
-1. Create a '.fog' file
+1. Create a '.fog' file in your home directory.
 
   For example:
 
@@ -72,8 +72,8 @@ environment.
 2. Obtain a session token. First, curl the API:
 
         curl -D- -d '' \
-            -H 'Accept: application/*+xml;version=5.1' -u '<user>@<org>' \
-            https://<host.com>/api/sessions
+            -H 'Accept: application/*+xml;version=5.1' -u '<username>@<org_name>' \
+            https://<host.api.example.com>/api/sessions
 
   This will prompt for your password.
 
