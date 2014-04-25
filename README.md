@@ -38,6 +38,23 @@ vCloud Core also comes with command line tool, vCloud Query, which exposes the v
 
 ( [gem in RubyGems](http://rubygems.org/gems/vcloud-core) | [code on GitHub](https://github.com/alphagov/vcloud-core) )
 
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+    gem 'vcloud-tools'
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install vcloud-tools
+
+Installing vCloud Tools will install all of the tools listed above.
+
 Required set-up
 ===============
 
