@@ -57,8 +57,7 @@ Installing vCloud Tools will install all of the tools listed above.
 
 ## Credentials
 
-vCloud Tools is based around [fog](http://fog.io/). To use it you'll need to give it credentials that allow it to talk to a VMware
-environment.
+vCloud Tools is based around [fog](http://fog.io/). To use it you'll need to give it credentials that allow it to talk to a vCloud Director environment.
 
 1. Create a '.fog' file in your home directory.
 
