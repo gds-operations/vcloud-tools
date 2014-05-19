@@ -1,3 +1,11 @@
+## 1.0.0 (2014-05-19)
+
+Features:
+
+  - We no longer specify a version for the gems that this meta-gem installs;
+    installing this gem should now install the most recent versions of its dependencies.
+  - Include vCloud Tools Tester gem
+
 ## 0.8.0 (2014-04-23)
 
 Features:
