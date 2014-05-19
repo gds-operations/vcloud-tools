@@ -24,4 +24,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'vcloud-walker'
   s.add_development_dependency 'gem_publisher', '1.2.0'
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'vcloud-tools-tester'
 end
