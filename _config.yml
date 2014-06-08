@@ -1,10 +1,11 @@
 # Site settings
-title: Your awesome title
-email: your-email@domain.com
-description: "Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description."
+title: vCloud Tools
+email: vcloud-tools@digital.cabinet-office.gov.uk
+description: "A collection of tools for provisioning in vCloud Director"
 baseurl: ""
-url: "http://yourdomain.com"
+url: "http://rubygems.org/gems/vcloud-tools"
+username: vcloud-tools
 
 # Build settings
-markdown: kramdown
+markdown: redcarpet
 permalink: pretty
