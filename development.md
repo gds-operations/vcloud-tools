@@ -18,9 +18,10 @@ Contributions are very welcome. Please see the individual tools for contributing
 
 ## Mailing List
 
-If you have any questions, feedback or suggestions, please email:
+Please see the [vCloud Tools mailing list](https://groups.google.com/a/digital.cabinet-office.gov.uk/forum/#!forum/vcloud-tools)
+to share your suggestions and feedback.
 
-[vcloud-tools@digital.cabinet-office.gov.uk](mailto:vcloud-tools@digital.cabinet-office.gov.uk)
+_Please note, you must be signed in with a Google account to join the group._
 
 ## License
 
