@@ -237,11 +237,15 @@ a:visited { color: #205caa; }
 }
 
 .post code { padding: 1px 5px; }
+.post pre { margin: 15px 0; }
 
 .post ul,
 .post ol { margin-left: 1.35em; }
 
 .post pre code { border: none; }
+.post ul li,
+.post ol li { margin: 15px 0; }
+
 
 /* terminal */
 .post pre.terminal {
