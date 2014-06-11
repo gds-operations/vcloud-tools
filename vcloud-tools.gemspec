@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = Vcloud::Tools::VERSION
   s.authors     = ['Government Digital Service']
   s.summary     = %q{Tools for VMware vCloud}
-  s.homepage    = 'https://github.com/alphagov/vcloud-tools'
+  s.homepage    = 'https://github.com/gds-operations/vcloud-tools'
   s.license     = 'MIT'
 
   s.files         = `git ls-files`.split($/)
