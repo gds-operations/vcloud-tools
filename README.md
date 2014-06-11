@@ -11,24 +11,24 @@ You can install the individual gems you require, or you can include or install v
 A tool that takes a YAML configuration file describing a vDC, and provisions
 the vApps and VMs contained within.
 
-( [gem in RubyGems](http://rubygems.org/gems/vcloud-launcher) | [code on GitHub](https://github.com/alphagov/vcloud-launcher) )
+( [gem in RubyGems](http://rubygems.org/gems/vcloud-launcher) | [code on GitHub](https://github.com/gds-operations/vcloud-launcher) )
 
 
 ## vCloud Net Launcher
 
 A tool that takes a YAML configuration file describing vCloud networks and configures each of them.
 
-( [gem in RubyGems](http://rubygems.org/gems/vcloud-net_launcher) | [code on GitHub](https://github.com/alphagov/vcloud-net_launcher) )
+( [gem in RubyGems](http://rubygems.org/gems/vcloud-net_launcher) | [code on GitHub](https://github.com/gds-operations/vcloud-net_launcher) )
 
 ## vCloud Walker
 A gem that reports on the current state of an environment.
 
-( [gem in RubyGems](http://rubygems.org/gems/vcloud-walker) | [code on GitHub](https://github.com/alphagov/vcloud-walker) )
+( [gem in RubyGems](http://rubygems.org/gems/vcloud-walker) | [code on GitHub](https://github.com/gds-operations/vcloud-walker) )
 
 ## vCloud Edge Gateway
 A gem to configure a VMware vCloud Edge Gateway.
 
-( [gem in RubyGems](http://rubygems.org/gems/vcloud-edge_gateway) | [code on GitHub](https://github.com/alphagov/vcloud-edge_gateway) )
+( [gem in RubyGems](http://rubygems.org/gems/vcloud-edge_gateway) | [code on GitHub](https://github.com/gds-operations/vcloud-edge_gateway) )
 
 ## vCloud Core
 
@@ -36,7 +36,7 @@ The gem that handles the interaction with the vCloud API, via [Fog](http://fog.i
 
 vCloud Core also comes with command line tool, vCloud Query, which exposes the vCloud Query API.
 
-( [gem in RubyGems](http://rubygems.org/gems/vcloud-core) | [code on GitHub](https://github.com/alphagov/vcloud-core) )
+( [gem in RubyGems](http://rubygems.org/gems/vcloud-core) | [code on GitHub](https://github.com/gds-operations/vcloud-core) )
 
 
 ## Installation
