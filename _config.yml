@@ -5,6 +5,7 @@ description: "A collection of tools for provisioning in vCloud Director"
 baseurl: "/vcloud-tools"
 url: "http://rubygems.org/gems/vcloud-tools"
 github_org: gds-operations
+twitter_username: gdsteam
 
 # Build settings
 markdown: redcarpet
