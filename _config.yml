@@ -4,7 +4,7 @@ email: vcloud-tools@digital.cabinet-office.gov.uk
 description: "A collection of tools for provisioning in vCloud Director"
 baseurl: "/vcloud-tools"
 url: "http://rubygems.org/gems/vcloud-tools"
-username: vcloud-tools
+github_org: gds-operations
 
 # Build settings
 markdown: redcarpet
