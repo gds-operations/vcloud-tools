@@ -12,3 +12,5 @@ vCloud Tools is a collection of tools for provisioning in [vCloud Director](http
 They can be used as Ruby libraries or as command-line tools.
 
 See the [Usage](usage/) page to get started.
+
+You may also be interested in other [open source projects from GDS](http://gds-operations.github.io/).
