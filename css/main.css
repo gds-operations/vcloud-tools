@@ -236,11 +236,14 @@ a:visited { color: #205caa; }
   font-size: 15px;
 }
 
-.post pre { margin: 15px 0; }
+.post pre {
+  margin: 15px 0;
+  overflow: auto;
+}
 
 .post code {
   padding: 1px 5px;
-  white-space: nowrap;
+  display: inline-block;
 }
 
 .post ul,
