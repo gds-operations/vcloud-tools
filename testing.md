@@ -28,7 +28,7 @@ If the Mock is not implemented for a particular request, the error when running 
           :body => body
         )
 
-4. Write sample Mock data. The easiest way to figure out what this is is to make a request and use the output from that, replacing the relevant parts with variables and taking care not to commit actual information from our environment. There are a number of helper methods for this, for example `make_href` generates a mock href.
+4. Write sample Mock data. The easiest way to figure out what this is is to make a request and use the output from that, replacing the relevant parts with variables and taking care not to commit actual information from your environment. There are a number of helper methods for this, for example `make_href` generates a mock href.
 To make a request:
 
         $ irb
@@ -40,6 +40,10 @@ To make a request:
 
     You can find the VM ID by running `vcloud-query vm` on an existing VM.
 
+You can look at an [example PR on fog that adds Mocks](https://github.com/fog/fog/pull/3044).
+
+### Testing your Mocks
+
 Once you've made a change, run the fog Mock tests:
 
 `FOG_CREDENTIAL=fog_mock FOG_MOCK=true bundle exec shindont +vcloud_director`
@@ -48,10 +52,13 @@ Once the Mocks are in a released version of fog, the integration tests can be ru
 
 `FOG_CREDENTIAL=fog_mock FOG_MOCK=true bundle exec rspec spec/integration/core/vm_spec.rb`
 
+In order to test Mocks you have written before making a PR on fog, you can set an environment variable to run the tests against the fog master branch, or a local copy of fog (e.g. for changes not yet merged to fog master). Details of that are in the Gemfile for each tool.
+
+### How to know which Mocks to add
+
 Adding all the Mocks required for one of our tests is a case of: run the tests, look at the first failure, fix that one thing, then run the tests again. 
 
 Usually the fix will be writing or adjusting a Mock; because our integration tests all run against a real enviornment a test failure in Mock mode is unlikely to be a bug in our code.
 
-When our code uses the model layer (rarely), it can be hard to find out which Mocks are the ones that are unimplemented and are causing the error. The best way I've found to do this is to put a rescue block around where the error is being thrown and then look at the backtrace in a runtime developer console such as irb or [Pry](https://github.com/pry/pry).
+When our code uses the model layer (rarely), it can be hard to find out which Mocks are the ones that are unimplemented and are causing the error. The best way we've found to do this is to put a rescue block around where the error is being thrown and then look at the backtrace in a runtime developer console such as irb or [Pry](https://github.com/pry/pry).
 
-In order to test Mocks you have written before making a PR on fog, you can set an environment variable to run the tests against the fog master branch, or a local copy of fog (e.g. for changes not yet merged to fog master). Details of that are in the Gemfile for each tool.
