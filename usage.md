@@ -37,7 +37,7 @@ The vCloud Tools projects are based around [fog](http://fog.io/). To use it you'
 
       eval $(FOG_CREDENTIAL=test_credentials vcloud-login)
 
-  This will prompt for your password and export an environment variable.
+  This will prompt for your password and export a `FOG_VCLOUD_TOKEN` environment variable.
 
 3. Specify your credentials at the beginning of the command. For example:
 
