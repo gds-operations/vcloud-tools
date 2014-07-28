@@ -35,7 +35,9 @@ The vCloud Tools projects are based around [fog](http://fog.io/). To use it you'
 
 2. Obtain a session token:
 
-      eval $(FOG_CREDENTIAL=test_credentials vcloud-login)
+    ```bash
+    eval $(FOG_CREDENTIAL=test_credentials vcloud-login)
+    ```
 
   This will prompt for your password and export a `FOG_VCLOUD_TOKEN` environment variable.
 
