@@ -2,6 +2,8 @@ vCloud Tools
 ============
 A collection of tools for provisioning in vCloud Director.
 
+See the [vCloud Tools website](http://gds-operations.github.io/vcloud-tools/) for more information.
+
 vCloud Tools is a meta-gem that depends on the tools listed below.
 
 You can install the individual gems you require, or you can include or install vcloud-tools which will give you all of the below.
