@@ -46,3 +46,11 @@ The vCloud Tools projects are based around [fog](http://fog.io/). To use it you'
     ```bash
     FOG_CREDENTIAL=test_credentials vcloud-launch node.yaml
     ```
+
+4. You can optionally revoke the session token afterwards if you don't want
+   to leave it to expire due to inactivity:
+
+    ```bash
+    FOG_CREDENTIAL=test_credentials vcloud-logout
+    unset FOG_VCLOUD_TOKEN
+    ```
