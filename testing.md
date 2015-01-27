@@ -4,6 +4,39 @@ title: Testing
 permalink: /testing/
 ---
 
+## Running integration tests
+
+All the vCloud Tools also have integration tests which run the code against a live environment, spinning up and destroying VMs etc. Please note that this means they take some time to run.
+
+### Prerequisites
+
+- Access to a suitable vCloud Director organisation.
+
+    *NB* It is not safe to run the integration tests against an environment that
+    is in use (e.g. production, preview) as many of the tests clear down all
+    config at the beginning and/or end to ensure the environment is as the tests
+    expect.
+
+- A config file with the settings configured.
+
+    Each of the tools has a template file in the `spec/integration` directory
+    called `vcloud_tools_testing_config.yaml.template`. This indicates the
+    parameters required to run the integration test for that tool. Copy the
+    template file to spec/integration/vcloud_tools_testing_config.yaml and
+    update with parameters suitable for your environment.
+
+- The set-up for your testing environment needs to be included in your fog file.
+
+- The tests use the vCloud Tools Tester gem. You do not need to install this, bundler will do this for you.
+
+### To run the tests
+
+To run the tests you need to log in in the same way as you would ordinarily. See [usage](/vcloud-tools/usage/) for more details. Once you have obtained a session token, you can run the integration tests:
+
+````
+FOG_CREDENTIAL=test_credential bundle exec integration
+````
+
 ## Writing fog Mocks
 
 Ideally, all requests in [fog](https://github.com/fog/fog) would have Mocks, which would allow us to run our integration tests in Mock mode, taking seconds, rather than minutes. However, many of them do not. This is a quick guide as to how to write Mocks in fog.
