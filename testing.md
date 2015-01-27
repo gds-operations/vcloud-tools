@@ -31,6 +31,8 @@ All the vCloud Tools also have integration tests which run the code against a li
 
 ### To run the tests
 
+To run the tests you need to log in in the same way as you would ordinarily. See [usage](/vcloud-tools/usage/) for more details. Once you have obtained a session token, you can run the integration tests:
+
 ````
 FOG_CREDENTIAL=test_credential bundle exec integration
 ````
