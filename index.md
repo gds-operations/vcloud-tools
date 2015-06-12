@@ -6,6 +6,7 @@ vCloud Tools is a collection of tools for provisioning in [vCloud Director](http
 - [vCloud Walker](https://github.com/alphagov/vcloud-walker): reports on the current state of an environment.
 - [vCloud Edge Gateway](https://github.com/alphagov/vcloud-edge_gateway): configure a vCloud Edge Gateway.
 - [vCloud Net Launcher](https://github.com/alphagov/vcloud-net_launcher): configure vCloud networks.
+- [vCloud Disk Launcher](https://github.com/ministryofjustice/vcloud-disk_launcher): configure independent disks.
 - [vCloud Launcher](https://github.com/alphagov/vcloud-launcher): provision vApps and VMs.
 - [vCloud Core](https://github.com/alphagov/vcloud-core): handles the interaction with the vCloud API, via [fog](http://fog.io/).
 
