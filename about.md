@@ -4,7 +4,8 @@ title: About
 permalink: /about/
 ---
 
-vCloud Tools has been developed by the [Government Digital Service](https://gds.blog.gov.uk/).
+vCloud Tools has been developed by the [Government Digital Service](https://gds.blog.gov.uk/) and
+[Ministry of Justice Digital](https://mojdigital.blog.gov.uk/).
 
 We have written some blog posts about the tools:
 
