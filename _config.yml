@@ -8,5 +8,5 @@ github_org: gds-operations
 twitter_username: gdsteam
 
 # Build settings
-markdown: redcarpet
+markdown: kramdown
 permalink: pretty
