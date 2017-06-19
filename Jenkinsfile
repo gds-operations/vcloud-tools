@@ -15,11 +15,8 @@ node {
     }
 
     stage("bundle install") {
-      govuk.bundleApp()
-    }
-
-    stage("Set rbenv version") {
       sh('source ./rbenv_version.sh')
+      govuk.bundleApp()
     }
 
     stage("Run tests") {
