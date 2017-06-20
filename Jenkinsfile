@@ -15,8 +15,8 @@ node {
     }
 
     stage("bundle install") {
-      sh('source ./rbenv_version.sh')
-      govuk.bundleApp()
+      govuk.setEnvar("RBENV_VERSION", "2.2.2")
+      govuk.bundleGem()
     }
 
     stage("Run tests") {
