@@ -25,7 +25,7 @@ node {
 
     if (env.BRANCH_NAME == "master") {
       stage("Publish gem") {
-        sh('bundle exec rake publish_gem')
+        govuk.publishGem(repoName, env.BRANCH_NAME)
       }
     }
   } catch (e) {
