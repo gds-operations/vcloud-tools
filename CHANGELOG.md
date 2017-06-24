@@ -1,3 +1,9 @@
+## 2.1.0 (2017-06-24)
+
+  - Bring version number into line with the rest of the vCloud Tools estate
+  - Make Ruby 2.2.2 the lowest possible version of Ruby to use as per the rest
+    of the toolset.
+
 ## 1.0.0 (2014-05-19)
 
 Features:
