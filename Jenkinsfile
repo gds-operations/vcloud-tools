@@ -19,10 +19,6 @@ node {
       govuk.bundleGem()
     }
 
-    stage("Run tests") {
-      govuk.runTests()
-    }
-
     if (env.BRANCH_NAME == "master") {
       stage("Publish gem") {
         govuk.publishGem(repoName, env.BRANCH_NAME)
